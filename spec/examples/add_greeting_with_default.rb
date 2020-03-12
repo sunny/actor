@@ -2,6 +2,7 @@
 
 class AddGreetingWithDefault < Actor
   input :name, default: 'world'
+  output :greeting
 
   def call
     context.greeting = "Hello, #{name}!"

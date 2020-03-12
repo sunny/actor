@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
-class ChainActions < Actor
+class ChainActors < Actor
+  input :value
+  output :value
+  output :name
+
   play IncrementValue,
        DoNothing,
        AddNameToContext,

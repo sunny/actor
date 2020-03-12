@@ -16,7 +16,8 @@ require 'examples/add_greeting_with_lambda_default'
 
 require 'examples/fail_chaining_actions'
 require 'examples/fail_chaining_actions_with_rollback'
-require 'examples/chain_actions'
+require 'examples/chain_actors'
+require 'examples/chain_lambdas'
 
 RSpec.describe Actor do
   describe '#call' do
@@ -42,8 +43,8 @@ RSpec.describe Actor do
       end
     end
 
-    context 'when an actor uses `input`' do
-      it 'can use the method name directly' do
+    context 'when an actor uses a method named after the input' do
+      it 'returns what is in the context' do
         result = SetNameToDowncase.call(name: 'JIM')
         expect(result.name).to eq('jim')
       end
@@ -108,9 +109,16 @@ RSpec.describe Actor do
 
     context 'when playing several actors' do
       it 'calls the actors in order' do
-        result = ChainActions.call(value: 1)
+        result = ChainActors.call(value: 1)
         expect(result.name).to eq('jim')
         expect(result.value).to eq(3)
+      end
+    end
+
+    context 'when playing actors and lambdas' do
+      it 'calls the actors and lambdas in order' do
+        result = ChainLambdas.call
+        expect(result.name).to eq('jim number 4')
       end
     end
 
@@ -121,7 +129,8 @@ RSpec.describe Actor do
       end
 
       it 'changes the context up to the failure and calls rollbacks' do
-        result = Actor::Context.new(value: 0)
+        data = { value: 0 }
+        result = Actor::Context.new(data)
 
         expect { FailChainingActionsWithRollback.call(result) }
           .to raise_error(Actor::Failure)
@@ -159,7 +168,7 @@ RSpec.describe Actor do
 
     context 'when playing several actors' do
       it 'calls the actors in order' do
-        result = ChainActions.result(value: 1)
+        result = ChainActors.result(value: 1)
         expect(result).to be_a_success
         expect(result.name).to eq('jim')
         expect(result.value).to eq(3)

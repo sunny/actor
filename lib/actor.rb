@@ -3,43 +3,39 @@
 require 'actor/failure'
 require 'actor/context'
 
-# Service object that represents an action you want to introduce in your
-# application. Your actors should start with a verb, inherit from Actor and
-# implement a `call` method.
+# Actors should start with a verb, inherit from Actor and implement a `call`
+# method.
 class Actor
   class << self
-    # Call an actor with a given context.
+    # Call an actor with a given context. Returns the context.
     #
     #   CreateUser.call(name: 'Joe')
     def call(context = {}, **arguments)
-      actor = new_with_context(context.merge!(arguments))
-      actor.call
-      actor.context
+      context = Actor::Context.to_context(context)
+      new_and_call(context.merge!(arguments))
+      context
     end
 
-    # Call an actor with a given context. Does not raise on failure.
+    # Call an actor with a given context. Returns the context and does not raise
+    # on failure.
     #
     #   CreateUser.call(name: 'Joe')
     def result(context = {}, **arguments)
-      actor = new_with_context(context.merge!(arguments))
-      actor.call
-      actor.context
-    rescue Actor::Failure
-      actor.context
+      call(context, **arguments)
+    rescue Actor::Failure => e
+      e.context
     end
 
     # :nodoc:
-    def new_with_context(context)
-      actor = new
-      actor.context = Actor::Context.to_context(context)
+    def new_and_call(context)
+      actor = new(context)
       actor.apply_defaults
+      actor.call
       actor
     end
 
-    # protected :new_with_context
-
     # DSL to call a series of actors with the same context. On failure, calls
-    # a rollback on any actor that succeeded.
+    # rollback on any actor that succeeded.
     #
     #   class CreateUser < Actor
     #     play SaveUser,
@@ -61,8 +57,7 @@ class Actor
     #     input :name
     #   end
     def input(name, **arguments)
-      @inputs ||= {}
-      @inputs[:name] = arguments
+      inputs[name] = arguments
 
       define_method(name) do
         context.public_send(name)
@@ -73,7 +68,7 @@ class Actor
 
     # :nodoc:
     def inputs
-      @inputs ||= []
+      @inputs ||= {}
     end
 
     # DSL to document the exposed attributes.
@@ -82,52 +77,50 @@ class Actor
     #     output :name
     #   end
     def output(name)
-      @outputs ||= []
-      @outputs << name
+      outputs << name
     end
 
-    # :nodoc:
     def outputs
-      @outputs ||= []
+      @outputs ||= [:error]
     end
   end
 
-  # To implement on children. Defaults to calling all child actors when using
-  # `play`.
-  # rubocop:disable Metrics/MethodLength
+  # :nodoc:
+  def initialize(context)
+    @context = context
+  end
+
+  # To implement on your actors. When using `play`, this defaults to calling
+  # all listed actors.
   def call
     self.class.play_actors.each do |actor|
-      if actor.is_a?(Class) && actor.ancestors.include?(Actor)
-        actor = actor.new_with_context(context)
-        actor.call
+      if actor.respond_to?(:new_and_call)
+        actor = actor.new_and_call(context)
       else
         actor.call(context)
       end
 
-      (@actors_called ||= []).unshift(actor)
+      (@played_actors ||= []).unshift(actor)
     end
   rescue Actor::Failure
     rollback
-    fail!
+    raise
   end
-  # rubocop:enable Metrics/MethodLength
 
-  # To implement on children. Defaults to rolling back child actors when using
-  # `play`.
+  # To implement on your actors. When using `play`, this defaults to rolling
+  # back all the previous actors that have been called.
   def rollback
-    (@actors_called || []).each do |actor|
-      actor.rollback if actor.respond_to?(:rollback)
+    (@played_actors || []).each do |actor|
+      next unless actor.respond_to?(:rollback)
+
+      actor.rollback
     end
   end
-
-  # private
-  attr_accessor :context
 
   # :nodoc:
   def apply_defaults
     (self.class.inputs || {}).each do |name, input|
-      next if context.respond_to?(name)
-      next unless input.key?(:default)
+      next if context.respond_to?(name) || !input.key?(:default)
 
       default = input[:default]
       default = default.call if default.respond_to?(:call)
@@ -135,7 +128,12 @@ class Actor
     end
   end
 
+  # :nodoc:
+  attr_writer :context
+
   private
+
+  attr_reader :context
 
   # Can be called from inside the actor to stop execution and mark as failed.
   def fail!(**ctx)
