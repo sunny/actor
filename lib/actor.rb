@@ -2,6 +2,7 @@
 
 require 'actor/failure'
 require 'actor/context'
+require 'actor/filtered_context'
 
 # Actors should start with a verb, inherit from Actor and implement a `call`
 # method.
@@ -87,7 +88,7 @@ class Actor
 
   # :nodoc:
   def initialize(context)
-    @context = context
+    @full_context = context
   end
 
   # To implement on your actors. When using `play`, this defaults to calling
@@ -95,9 +96,9 @@ class Actor
   def call
     self.class.play_actors.each do |actor|
       if actor.respond_to?(:new_and_call)
-        actor = actor.new_and_call(context)
+        actor = actor.new_and_call(@full_context)
       else
-        actor.call(context)
+        actor.call(@full_context)
       end
 
       (@played_actors ||= []).unshift(actor)
@@ -120,11 +121,11 @@ class Actor
   # :nodoc:
   def apply_defaults
     (self.class.inputs || {}).each do |name, input|
-      next if context.respond_to?(name) || !input.key?(:default)
+      next if !input.key?(:default) || @full_context.key?(name)
 
       default = input[:default]
       default = default.call if default.respond_to?(:call)
-      context.merge!(name => default)
+      @full_context.merge!(name => default)
     end
   end
 
@@ -133,10 +134,16 @@ class Actor
 
   private
 
-  attr_reader :context
+  def context
+    @context ||= Actor::FilteredContext.new(
+      @full_context,
+      readers: self.class.inputs.keys,
+      setters: self.class.outputs,
+    )
+  end
 
   # Can be called from inside the actor to stop execution and mark as failed.
   def fail!(**ctx)
-    context.fail!(**ctx)
+    @full_context.fail!(**ctx)
   end
 end
