@@ -30,7 +30,7 @@ class Actor
     # :nodoc:
     def new_and_call(context)
       actor = new(context)
-      actor.apply_defaults
+      actor.before
       actor.call
       actor
     end
@@ -119,14 +119,8 @@ class Actor
   end
 
   # :nodoc:
-  def apply_defaults
-    (self.class.inputs || {}).each do |name, input|
-      next if !input.key?(:default) || @full_context.key?(name)
-
-      default = input[:default]
-      default = default.call if default.respond_to?(:call)
-      @full_context.merge!(name => default)
-    end
+  def before
+    apply_defaults
   end
 
   # :nodoc:
@@ -140,6 +134,16 @@ class Actor
       readers: self.class.inputs.keys,
       setters: self.class.outputs,
     )
+  end
+
+  def apply_defaults
+    (self.class.inputs || {}).each do |name, input|
+      next if !input.key?(:default) || @full_context.key?(name)
+
+      default = input[:default]
+      default = default.call if default.respond_to?(:call)
+      @full_context.merge!(name => default)
+    end
   end
 
   # Can be called from inside the actor to stop execution and mark as failed.
