@@ -6,7 +6,9 @@ class Actor
     def initialize(context)
       @context = context
 
-      super(context.respond_to?(:error) ? context.error : nil)
+      error = context.respond_to?(:data) ? context.data[:error] : nil
+
+      super(error)
     end
 
     attr_reader :context
