@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class AddNameToContext < Actor
-  output :name
+  output :name, type: 'String'
 
   def call
     context.name = 'Jim'

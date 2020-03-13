@@ -4,16 +4,23 @@ require 'actor/failure'
 require 'actor/context'
 require 'actor/filtered_context'
 
+require 'actor/type_checkable'
+require 'actor/defaultable'
+
 # Actors should start with a verb, inherit from Actor and implement a `call`
 # method.
 class Actor
+  prepend Defaultable
+  prepend TypeCheckable
+
   class << self
     # Call an actor with a given context. Returns the context.
     #
     #   CreateUser.call(name: 'Joe')
     def call(context = {}, **arguments)
       context = Actor::Context.to_context(context)
-      new_and_call(context.merge!(arguments))
+      actor = new(context.merge!(arguments))
+      actor.trigger
       context
     end
 
@@ -25,14 +32,6 @@ class Actor
       call(context, **arguments)
     rescue Actor::Failure => e
       e.context
-    end
-
-    # :nodoc:
-    def new_and_call(context)
-      actor = new(context)
-      actor.before
-      actor.call
-      actor
     end
 
     # DSL to call a series of actors with the same context. On failure, calls
@@ -77,26 +76,27 @@ class Actor
     #   class CreateUser < Actor
     #     output :name
     #   end
-    def output(name)
-      outputs << name
+    def output(name, **arguments)
+      outputs[name] = arguments
     end
 
     def outputs
-      @outputs ||= [:error]
+      @outputs ||= { error: { type: 'String' } }
     end
   end
 
   # :nodoc:
-  def initialize(context)
-    @full_context = context
+  def initialize(full_context)
+    @full_context = full_context
   end
 
   # To implement on your actors. When using `play`, this defaults to calling
   # all listed actors.
   def call
     self.class.play_actors.each do |actor|
-      if actor.respond_to?(:new_and_call)
-        actor = actor.new_and_call(@full_context)
+      if actor.is_a?(Class)
+        actor = actor.new(@full_context)
+        actor.trigger
       else
         actor.call(@full_context)
       end
@@ -119,8 +119,10 @@ class Actor
   end
 
   # :nodoc:
-  def before
-    apply_defaults
+  def trigger
+    before
+    call
+    after
   end
 
   # :nodoc:
@@ -132,19 +134,13 @@ class Actor
     @context ||= Actor::FilteredContext.new(
       @full_context,
       readers: self.class.inputs.keys,
-      setters: self.class.outputs,
+      setters: self.class.outputs.keys,
     )
   end
 
-  def apply_defaults
-    (self.class.inputs || {}).each do |name, input|
-      next if !input.key?(:default) || @full_context.key?(name)
+  def before; end
 
-      default = input[:default]
-      default = default.call if default.respond_to?(:call)
-      @full_context.merge!(name => default)
-    end
-  end
+  def after; end
 
   # Can be called from inside the actor to stop execution and mark as failed.
   def fail!(**ctx)

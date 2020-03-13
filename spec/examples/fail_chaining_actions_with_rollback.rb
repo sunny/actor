@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 class FailChainingActionsWithRollback < Actor
-  input :value
-  output :value
-  output :name
+  input :value, type: 'Integer'
+  output :value, type: 'Integer'
+  output :name, type: 'String'
 
   play AddNameToContext,
        IncrementValueWithRollback,

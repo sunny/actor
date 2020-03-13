@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 class IncrementValueWithRollback < Actor
-  input :value
-  output :value
+  input :value, type: 'Integer'
+  output :value, type: 'Integer'
 
   def call
     context.value += 1

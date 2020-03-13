@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class ChainLambdas < Actor
-  output :name
+  output :name, type: 'String'
 
   play ->(ctx) { ctx.value = 3 },
        IncrementValue,

@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 class FailChainingActions < Actor
-  input :value
-  output :value
+  input :value, type: 'Integer'
+  output :value, type: 'String'
 
   play IncrementValue,
        IncrementValue,

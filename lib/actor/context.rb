@@ -47,6 +47,10 @@ class Actor
       data.key?(name)
     end
 
+    def [](name)
+      data[name]
+    end
+
     private
 
     # rubocop:disable Style/MethodMissingSuper
