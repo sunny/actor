@@ -11,7 +11,7 @@ class Actor
   #   end
   module Defaultable
     def before
-      (self.class.inputs || {}).each do |name, input|
+      self.class.inputs.each do |name, input|
         next if !input.key?(:default) || @context.key?(name)
 
         default = input[:default]

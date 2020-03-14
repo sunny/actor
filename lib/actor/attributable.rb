@@ -7,7 +7,7 @@ class Actor
   #     input :name
   #     output :name
   #   end
-  module Inputable
+  module Attributable
     def self.included(base)
       base.extend(ClassMethods)
       base.prepend(PrependedMethods)

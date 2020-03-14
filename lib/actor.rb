@@ -6,7 +6,7 @@ require 'actor/context'
 require 'actor/filtered_context'
 
 require 'actor/playable'
-require 'actor/inputable'
+require 'actor/attributable'
 require 'actor/defaultable'
 require 'actor/type_checkable'
 require 'actor/requireable'
@@ -15,7 +15,7 @@ require 'actor/conditionable'
 # Actors should start with a verb, inherit from Actor and implement a `call`
 # method.
 class Actor
-  include Inputable
+  include Attributable
   include Playable
   prepend Defaultable
   prepend TypeCheckable
@@ -27,7 +27,7 @@ class Actor
   #   CreateUser.call(name: 'Joe')
   def self.call(context = {}, **arguments)
     context = Actor::Context.to_context(context).merge!(arguments)
-    call_with_context(context)
+    new(context).run
     context
   rescue Actor::Success
     context
@@ -41,15 +41,6 @@ class Actor
     call(context, **arguments)
   rescue Actor::Failure => e
     e.context
-  end
-
-  # :nodoc:
-  def self.call_with_context(context)
-    actor = new(context)
-    actor.before
-    actor.call
-    actor.after
-    actor
   end
 
   # :nodoc:
@@ -68,6 +59,13 @@ class Actor
 
   # :nodoc:
   def after; end
+
+  # :nodoc:
+  def run
+    before
+    call
+    after
+  end
 
   private
 

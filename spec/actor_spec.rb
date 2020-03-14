@@ -5,6 +5,7 @@ require 'pry'
 
 require 'actor'
 
+# Actor examples
 require 'examples/add_greeting_with_default'
 require 'examples/add_greeting_with_lambda_default'
 require 'examples/add_name_to_context'
@@ -23,6 +24,7 @@ require 'examples/use_required_input'
 require 'examples/use_unknown_input'
 require 'examples/succeed_early'
 
+# Play examples
 require 'examples/play_actors'
 require 'examples/play_lambdas'
 require 'examples/fail_playing_actions_with_rollback'
