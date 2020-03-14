@@ -4,7 +4,7 @@ class Actor
   # Represents the result of an action.
   class Context
     def self.to_context(data)
-      return data if data.is_a?(Actor::Context)
+      return data if data.is_a?(self)
 
       new(data)
     end
@@ -32,7 +32,7 @@ class Actor
     end
 
     def failure?
-      data[:failure?]
+      data.fetch(:failure?, false)
     end
 
     def merge!(new_data)

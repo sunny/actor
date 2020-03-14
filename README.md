@@ -233,3 +233,4 @@ However there a a few key differences which make `actor` unique:
 - Shorter fail syntax: `fail!` vs `context.fail!`.
 - Shorter setup syntax: inherit from `< Actor` vs having to `include Interactor` or `include Interactor::Organizer`.
 - [Does not rely on `OpenStruct`](https://github.com/collectiveidea/interactor/issues/183)
+- Does not print warnings on Ruby 2.7.
