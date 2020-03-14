@@ -24,6 +24,7 @@ require 'examples/inherit_from_increment_value'
 require 'examples/play_actors'
 require 'examples/play_lambdas'
 require 'examples/play_multiple_times'
+require 'examples/play_multiple_times_with_conditions'
 require 'examples/succeed_playing_actions'
 require 'examples/inherit_from_play'
 
@@ -138,6 +139,14 @@ RSpec.describe Actor do
       it 'calls the actors in order' do
         result = PlayMultipleTimes.call(value: 1)
         expect(result.name).to eq('jim')
+        expect(result.value).to eq(3)
+      end
+    end
+
+    context 'when using `play` with conditions' do
+      it 'calls the actors in order' do
+        result = PlayMultipleTimesWithConditions.call
+        expect(result.name).to eq('Jim')
         expect(result.value).to eq(3)
       end
     end

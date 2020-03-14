@@ -2,6 +2,7 @@
 
 require 'bundler/setup'
 require 'service_actor'
+require 'pry'
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

@@ -18,16 +18,16 @@ Gem::Specification.new do |spec|
   spec.licenses = ['MIT']
 
   spec.homepage = 'https://github.com/sunny/actor'
-  spec.metadata["homepage_uri"] = spec.homepage
-  spec.metadata["source_code_uri"] = spec.homepage
-  spec.metadata["changelog_uri"] = "#{spec.homepage}/blob/master/CHANGELOG.md"
+  spec.metadata['homepage_uri'] = spec.homepage
+  spec.metadata['source_code_uri'] = spec.homepage
+  spec.metadata['changelog_uri'] = "#{spec.homepage}/blob/master/CHANGELOG.md"
 
   spec.extra_rdoc_files = %w[
     LICENSE.md
     README.md
   ]
 
-  spec.files = Dir.chdir(File.expand_path('..', __FILE__)) do
+  spec.files = Dir.chdir(File.expand_path(__dir__)) do
     `git ls-files -z lib`.split("\x0")
   end
 

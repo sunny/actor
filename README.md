@@ -167,7 +167,6 @@ An actor can call actors in sequence by using `play`. Each actor will hand over
 the context to the next actor.
 
 ```rb
-# app/actors/place_order.rb
 class PlaceOrder < Actor
   play CreateOrder,
        Pay,
@@ -175,7 +174,6 @@ class PlaceOrder < Actor
        NotifyAdmins
 end
 ```
-
 
 ### Rollback
 
@@ -232,6 +230,18 @@ class Pay
 end
 ```
 
+### Play conditions
+
+Some actors in a play can be called conditionaly:
+
+```rb
+class PlaceOrder < Actor
+  play CreateOrder,
+       Pay
+  play NotifyAdmins, if: ->(ctx) { ctx.order.amount > 42 }
+end
+```
+
 ## Influences
 
 This gem is heavily influenced by
@@ -249,6 +259,8 @@ However there a a few key differences which make `actor` unique:
 - Shorter fail syntax: `fail!` vs `context.fail!`.
 - Trigger early success in organisers with `succeed!`.
 - Shorter setup syntax: inherit from `< Actor` vs having to `include Interactor` or `include Interactor::Organizer`.
+- Multiple organizers.
+- Conditions inside organizers.
 - No `before`, `after` and `around` hooks. Prefer simply overriding `call` with `super` which allows wrapping the whole method.
 - [Does not rely on `OpenStruct`](https://github.com/collectiveidea/interactor/issues/183)
 - Does not print warnings on Ruby 2.7.

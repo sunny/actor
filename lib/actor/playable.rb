@@ -19,12 +19,15 @@ class Actor
       def inherited(child)
         super
 
-        child.play(*play_actors)
+        play_actors.each do |actor|
+          child.play_actors << actor
+        end
       end
 
-      def play(*actors)
-        @play_actors ||= []
-        @play_actors += actors
+      def play(*actors, **options)
+        actors.each do |actor|
+          play_actors.push({ actor: actor, **options })
+        end
       end
 
       def play_actors
@@ -34,15 +37,10 @@ class Actor
 
     module PrependedMethods
       def call
-        self.class.play_actors.each do |actor|
-          if actor.respond_to?(:new)
-            actor = actor.new(@context)
-            actor.run
-          else
-            actor.call(@context)
-          end
+        self.class.play_actors.each do |options|
+          next if options[:if] && !options[:if].call(@context)
 
-          (@played ||= []).unshift(actor)
+          play_actor(options[:actor])
         end
       rescue Actor::Failure
         rollback
@@ -57,6 +55,19 @@ class Actor
 
           actor.rollback
         end
+      end
+
+      private
+
+      def play_actor(actor)
+        if actor.respond_to?(:new)
+          actor = actor.new(@context)
+          actor.run
+        else
+          actor.call(@context)
+        end
+
+        (@played ||= []).unshift(actor)
       end
     end
   end
