@@ -1,11 +1,13 @@
 Metrics/BlockLength:
   Exclude:
     - spec/**/*
+    - service_actor.gemspec
 
 Metrics/MethodLength:
   Max: 12
   Exclude:
     - spec/**/*
+    - service_actor.gemspec
 
 Style/HashEachMethods:
   Enabled: true
@@ -21,3 +23,9 @@ Style/Documentation:
 
 Style/TrailingCommaInArguments:
   EnforcedStyleForMultiline: comma
+
+Gemspec/OrderedDependencies:
+  Enabled: false
+
+Bundler/GemComment:
+  Enabled: true

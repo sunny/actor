@@ -1,10 +1,17 @@
 # Actor
 
-Simple service objects in Ruby. Move your application logic into small building blocs to keep your controllers and your models thin.
+Ruby service objects. Lets you move your application logic into small
+building blocs to keep your controllers and your models thin.
 
-## Install
+## Installation
 
-This has not been released yet and is not ready for use in your applications.
+Add these lines to your application's Gemfile:
+
+```rb
+# Service objects to keep the business logic
+gem 'service_actor', git: 'git@github.com:sunny/actor.git'
+```
+
 
 ## Usage
 
@@ -228,30 +235,50 @@ end
 ## Influences
 
 This gem is heavily influenced by
-[Interactor](https://github.com/collectiveidea/interactor) ♥♥♥.
+[Interactor](https://github.com/collectiveidea/interactor) ♥.
 However there a a few key differences which make `actor` unique:
 
-- Defaults to raising errors on failures.
-
-  Actor encourages you to use `call` and `result` instead of `call!` and `call`. This way, the default is to raise an error and failures are not hidden away.
-
-- Methods defined for every input.
-
-  When using `input :name` you can call `name` in your actor instead of `context.name`.
-
-- No `before`, `after` and `around` hooks.
-
-  Prefer simply overriding `call` with `super` which allows wrapping the whole method.
-
+- Defaults to raising errors on failures. Actor uses `call` and `result` instead of `call!` and `call`. This way, the default is to raise an error and failures are not hidden away.
 - Does not [hide errors when an actor fails inside another actor](https://github.com/collectiveidea/interactor/issues/170).
 - You can use lambdas inside organizers.
 - Requires you to document the arguments with `input` and `output`.
 - Type checking of inputs and outputs.
-- Required inputs and outputs.
+- Inputs and outputs can be required.
 - Defaults for inputs.
 - Conditions on inputs.
 - Shorter fail syntax: `fail!` vs `context.fail!`.
-- Early success in organisers with `succeed!`.
+- Trigger early success in organisers with `succeed!`.
 - Shorter setup syntax: inherit from `< Actor` vs having to `include Interactor` or `include Interactor::Organizer`.
+- No `before`, `after` and `around` hooks. Prefer simply overriding `call` with `super` which allows wrapping the whole method.
 - [Does not rely on `OpenStruct`](https://github.com/collectiveidea/interactor/issues/183)
 - Does not print warnings on Ruby 2.7.
+
+
+## Development
+
+After checking out the repo, run `bin/setup` to install dependencies. Then, run
+`rake` to run the tests. You can also run `bin/console` for an interactive
+prompt that will allow you to experiment.
+
+To install this gem onto your local machine, run `bundle exec rake install`.
+To release a new version, update the version number in `version.rb`, and then
+run `bundle exec rake release`, which will create a git tag for the version,
+push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+
+## Contributing
+
+Bug reports and pull requests are welcome on GitHub at
+https://github.com/sunny/actor. This project is intended to be a safe,
+welcoming space for collaboration, and contributors are expected to adhere to
+the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+
+## License
+
+The gem is available as open source under the terms of the
+[MIT License](https://opensource.org/licenses/MIT).
+
+## Code of Conduct
+
+Everyone interacting in the Test project’s codebases, issue trackers, chat
+rooms and mailing lists is expected to follow the
+[code of conduct](https://github.com/sunny/actor/blob/master/CODE_OF_CONDUCT.md).

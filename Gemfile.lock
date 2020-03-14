@@ -1,3 +1,8 @@
+PATH
+  remote: .
+  specs:
+    service_actor (0.0.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -45,6 +50,7 @@ DEPENDENCIES
   pry
   rspec
   rubocop
+  service_actor!
 
 BUNDLED WITH
    2.1.2

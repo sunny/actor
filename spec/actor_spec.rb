@@ -1,10 +1,5 @@
 # frozen_string_literal: true
 
-require 'rspec'
-require 'pry'
-
-require 'actor'
-
 # Actor examples
 require 'examples/add_greeting_with_default'
 require 'examples/add_greeting_with_lambda_default'
@@ -33,6 +28,10 @@ require 'examples/play_multiple_times'
 require 'examples/succeed_playing_actions'
 
 RSpec.describe Actor do
+  it 'has a version number' do
+    expect(Actor::VERSION).not_to be_nil
+  end
+
   describe '#call' do
     context 'when fail! is not called' do
       it 'succeeds' do
