@@ -9,6 +9,7 @@ require 'actor/inputable'
 require 'actor/defaultable'
 require 'actor/type_checkable'
 require 'actor/requireable'
+require 'actor/conditionable'
 
 # Actors should start with a verb, inherit from Actor and implement a `call`
 # method.
@@ -18,6 +19,7 @@ class Actor
   prepend Defaultable
   prepend TypeCheckable
   prepend Requireable
+  prepend Conditionable
 
   # Call an actor with a given context. Returns the context.
   #

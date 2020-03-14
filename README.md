@@ -100,6 +100,20 @@ class UpdateUser < Actor
 end
 ```
 
+### Conditions
+
+If types don't cut it, you can add small conditions with the name of your choice
+under `must`:
+
+```rb
+class UpdateAdminUser < Actor
+  input :user,
+        must: {
+          be_an_admin: ->(user) { user.admin? }
+        }
+end
+```
+
 ### Result
 
 All actors are successful by default. To stop its execution and mark is as
@@ -227,9 +241,10 @@ However there a a few key differences which make `actor` unique:
 - Does not [hide errors when an actor fails inside another actor](https://github.com/collectiveidea/interactor/issues/170).
 - You can use lambdas inside organizers.
 - Requires you to document the arguments with `input` and `output`.
-- Defaults for inputs.
 - Type checking of inputs and outputs.
 - Required inputs and outputs.
+- Defaults for inputs.
+- Conditions on inputs.
 - Shorter fail syntax: `fail!` vs `context.fail!`.
 - Shorter setup syntax: inherit from `< Actor` vs having to `include Interactor` or `include Interactor::Organizer`.
 - [Does not rely on `OpenStruct`](https://github.com/collectiveidea/interactor/issues/183)

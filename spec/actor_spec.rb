@@ -13,6 +13,7 @@ require 'examples/fail_with_error'
 require 'examples/increment_value_with_rollback'
 require 'examples/increment_value'
 require 'examples/set_name_to_downcase'
+require 'examples/set_name_with_input_condition'
 require 'examples/set_output_called_display'
 require 'examples/set_required_output'
 require 'examples/set_unknown_output'
@@ -153,6 +154,21 @@ RSpec.describe Actor do
 
         expect(result.name).to eq('Jim')
         expect(result.value).to eq(0)
+      end
+    end
+
+    context 'when called with a matching condition' do
+      it 'suceeds' do
+        expect(SetNameWithInputCondition.call(name: 'joe').name).to eq('JOE')
+      end
+    end
+
+    context 'when called with the wrong condition' do
+      it 'suceeds' do
+        expected_error = 'Input name must be_lowercase but was "42".'
+
+        expect { SetNameWithInputCondition.call(name: '42') }
+          .to raise_error(ArgumentError, expected_error)
       end
     end
 
