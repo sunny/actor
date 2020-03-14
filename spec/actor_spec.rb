@@ -21,10 +21,11 @@ require 'examples/set_wrong_type_of_output'
 require 'examples/use_required_input'
 require 'examples/use_unknown_input'
 
-require 'examples/chain_actors'
-require 'examples/chain_lambdas'
-require 'examples/fail_chaining_actions_with_rollback'
-require 'examples/fail_chaining_actions'
+require 'examples/play_actors'
+require 'examples/play_lambdas'
+require 'examples/fail_playing_actions_with_rollback'
+require 'examples/fail_playing_actions'
+require 'examples/play_multiple_times'
 
 RSpec.describe Actor do
   describe '#call' do
@@ -116,7 +117,7 @@ RSpec.describe Actor do
 
     context 'when playing several actors' do
       it 'calls the actors in order' do
-        result = ChainActors.call(value: 1)
+        result = PlayActors.call(value: 1)
         expect(result.name).to eq('jim')
         expect(result.value).to eq(3)
       end
@@ -124,14 +125,22 @@ RSpec.describe Actor do
 
     context 'when playing actors and lambdas' do
       it 'calls the actors and lambdas in order' do
-        result = ChainLambdas.call
+        result = PlayLambdas.call
         expect(result.name).to eq('jim number 4')
+      end
+    end
+
+    context 'when using `play` several times' do
+      it 'calls the actors in order' do
+        result = PlayMultipleTimes.call(value: 1)
+        expect(result.name).to eq('jim')
+        expect(result.value).to eq(3)
       end
     end
 
     context 'when playing several actors and one fails' do
       it 'raises with the message' do
-        expect { FailChainingActionsWithRollback.call(value: 0) }
+        expect { FailPlayingActionsWithRollback.call(value: 0) }
           .to raise_error(Actor::Failure, 'Ouch')
       end
 
@@ -139,7 +148,7 @@ RSpec.describe Actor do
         data = { value: 0 }
         result = Actor::Context.new(data)
 
-        expect { FailChainingActionsWithRollback.call(result) }
+        expect { FailPlayingActionsWithRollback.call(result) }
           .to raise_error(Actor::Failure)
 
         expect(result.name).to eq('Jim')
@@ -249,7 +258,7 @@ RSpec.describe Actor do
 
     context 'when playing several actors' do
       it 'calls the actors in order' do
-        result = ChainActors.result(value: 1)
+        result = PlayActors.result(value: 1)
         expect(result).to be_a_success
         expect(result.name).to eq('jim')
         expect(result.value).to eq(3)
@@ -258,7 +267,7 @@ RSpec.describe Actor do
 
     context 'when playing several actors and one fails' do
       it 'calls the rollback method' do
-        result = FailChainingActionsWithRollback.result(value: 0)
+        result = FailPlayingActionsWithRollback.result(value: 0)
         expect(result).to be_a_failure
         expect(result).not_to be_a_success
         expect(result.name).to eq('Jim')

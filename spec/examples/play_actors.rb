@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-class ChainActors < Actor
+class PlayActors < Actor
   input :value, type: 'Integer'
-  output :value, tpye: 'String'
-  output :name, tpye: 'String'
+  output :value, type: 'Integer'
+  output :name, type: 'String'
 
   play IncrementValue,
        DoNothing,

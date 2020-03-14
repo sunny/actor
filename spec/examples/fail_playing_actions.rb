@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class FailChainingActions < Actor
+class FailPlayingActions < Actor
   input :value, type: 'Integer'
   output :value, type: 'String'
 

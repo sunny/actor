@@ -16,8 +16,9 @@ class Actor
     end
 
     module ClassMethods
-      def play(*play_actors)
-        @play_actors = play_actors
+      def play(*actors)
+        @play_actors ||= []
+        @play_actors += actors
       end
 
       def play_actors

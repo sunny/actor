@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class ChainLambdas < Actor
+class PlayLambdas < Actor
   output :name, type: 'String'
 
   play ->(ctx) { ctx.value = 3 },

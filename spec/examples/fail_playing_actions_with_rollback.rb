@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class FailChainingActionsWithRollback < Actor
+class FailPlayingActionsWithRollback < Actor
   input :value, type: 'Integer'
   output :value, type: 'Integer'
   output :name, type: 'String'
