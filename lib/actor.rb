@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'actor/failure'
+require 'actor/success'
 require 'actor/context'
 require 'actor/filtered_context'
 
@@ -27,6 +28,8 @@ class Actor
   def self.call(context = {}, **arguments)
     context = Actor::Context.to_context(context).merge!(arguments)
     call_with_context(context)
+    context
+  rescue Actor::Success
     context
   end
 
@@ -74,5 +77,10 @@ class Actor
   # Can be called from inside an actor to stop execution and mark as failed.
   def fail!(**arguments)
     @context.fail!(**arguments)
+  end
+
+  # Can be called from inside an actor to stop execution early.
+  def succeed!(**arguments)
+    @context.succeed!(**arguments)
   end
 end

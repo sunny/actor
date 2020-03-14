@@ -19,6 +19,10 @@ class Actor
       context.fail!(**arguments)
     end
 
+    def succeed!(**arguments)
+      context.fail!(**arguments)
+    end
+
     private
 
     attr_reader :context, :readers, :setters

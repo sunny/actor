@@ -21,12 +21,14 @@ require 'examples/set_wrong_required_output'
 require 'examples/set_wrong_type_of_output'
 require 'examples/use_required_input'
 require 'examples/use_unknown_input'
+require 'examples/succeed_early'
 
 require 'examples/play_actors'
 require 'examples/play_lambdas'
 require 'examples/fail_playing_actions_with_rollback'
 require 'examples/fail_playing_actions'
 require 'examples/play_multiple_times'
+require 'examples/succeed_playing_actions'
 
 RSpec.describe Actor do
   describe '#call' do
@@ -245,6 +247,25 @@ RSpec.describe Actor do
         end
       end
     end
+
+    context 'when calling an actor that succeeds early' do
+      it 'succeeds' do
+        result = SucceedEarly.call
+        expect(result).to be_kind_of(Actor::Context)
+        expect(result).to be_a_success
+        expect(result).not_to be_a_failure
+      end
+    end
+
+    context 'when playing an actor that succeeds early' do
+      it 'succeeds' do
+        result = SucceedPlayingActions.call
+        expect(result).to be_kind_of(Actor::Context)
+        expect(result).to be_a_success
+        expect(result).not_to be_a_failure
+        expect(result.count).to eq(1)
+      end
+    end
   end
 
   describe '#result' do
@@ -288,6 +309,25 @@ RSpec.describe Actor do
         expect(result).not_to be_a_success
         expect(result.name).to eq('Jim')
         expect(result.value).to eq(0)
+      end
+    end
+
+    context 'when calling an actor that succeeds early' do
+      it 'succeeds' do
+        result = SucceedEarly.result
+        expect(result).to be_kind_of(Actor::Context)
+        expect(result).to be_a_success
+        expect(result).not_to be_a_failure
+      end
+    end
+
+    context 'when playing an actor that succeeds early' do
+      it 'succeeds' do
+        result = SucceedPlayingActions.result
+        expect(result).to be_kind_of(Actor::Context)
+        expect(result).to be_a_success
+        expect(result).not_to be_a_failure
+        expect(result.count).to eq(1)
       end
     end
   end

@@ -21,10 +21,16 @@ class Actor
       "<ActorContext #{data.inspect}>"
     end
 
-    def fail!(new_data = {})
-      merge!(new_data)
+    def fail!(context = {})
+      merge!(context)
       data[:failure?] = true
       raise Actor::Failure, self
+    end
+
+    def succeed!(context = {})
+      merge!(context)
+      data[:failure?] = false
+      raise Actor::Success, self
     end
 
     def success?
@@ -35,8 +41,8 @@ class Actor
       data.fetch(:failure?, false)
     end
 
-    def merge!(new_data)
-      data.merge!(new_data)
+    def merge!(context)
+      data.merge!(context)
 
       self
     end

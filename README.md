@@ -190,6 +190,11 @@ class CreateOrder < Actor
 end
 ```
 
+### Early success
+
+When using `play` you can use `succeed!` so that the following actors will not
+be called, but still consider the actor to be successful.
+
 ### Lambdas
 
 You can call inline actions using lambdas:
@@ -246,6 +251,7 @@ However there a a few key differences which make `actor` unique:
 - Defaults for inputs.
 - Conditions on inputs.
 - Shorter fail syntax: `fail!` vs `context.fail!`.
+- Early success in organisers with `succeed!`.
 - Shorter setup syntax: inherit from `< Actor` vs having to `include Interactor` or `include Interactor::Organizer`.
 - [Does not rely on `OpenStruct`](https://github.com/collectiveidea/interactor/issues/183)
 - Does not print warnings on Ruby 2.7.
