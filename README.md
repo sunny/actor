@@ -229,6 +229,7 @@ However there a a few key differences which make `actor` unique:
 - Requires you to document the arguments with `input` and `output`.
 - Defaults for inputs.
 - Type checking of inputs and outputs.
+- Required inputs and outputs.
 - Shorter fail syntax: `fail!` vs `context.fail!`.
 - Shorter setup syntax: inherit from `< Actor` vs having to `include Interactor` or `include Interactor::Organizer`.
 - [Does not rely on `OpenStruct`](https://github.com/collectiveidea/interactor/issues/183)

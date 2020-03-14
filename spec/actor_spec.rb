@@ -13,9 +13,12 @@ require 'examples/fail_with_error'
 require 'examples/increment_value_with_rollback'
 require 'examples/increment_value'
 require 'examples/set_name_to_downcase'
-require 'examples/set_unknown_output'
-require 'examples/set_wrong_type_of_output'
 require 'examples/set_output_called_display'
+require 'examples/set_required_output'
+require 'examples/set_unknown_output'
+require 'examples/set_wrong_required_output'
+require 'examples/set_wrong_type_of_output'
+require 'examples/use_required_input'
 require 'examples/use_unknown_input'
 
 require 'examples/chain_actors'
@@ -183,6 +186,38 @@ RSpec.describe Actor do
       it 'raises with a message' do
         expect { SetUnknownOutput.call }
           .to raise_error(ArgumentError, /Cannot call foobar= on/)
+      end
+    end
+
+    context 'when using a required input' do
+      context 'when given the input' do
+        it { expect(UseRequiredInput.call(name: 'Jim')).to be_a_success }
+      end
+
+      context 'without the input' do
+        it 'fails' do
+          expected_error =
+            'Input name on UseRequiredInput is required but was nil.'
+
+          expect { UseRequiredInput.call }
+            .to raise_error(ArgumentError, expected_error)
+        end
+      end
+    end
+
+    context 'when setting a required output' do
+      context 'when set correctly' do
+        it { expect(SetRequiredOutput.call).to be_a_success }
+      end
+
+      context 'without the output' do
+        it 'succeeds' do
+          expected_error =
+            'Output name on SetWrongRequiredOutput is required but was nil.'
+
+          expect { SetWrongRequiredOutput.call }
+            .to raise_error(ArgumentError, expected_error)
+        end
       end
     end
   end
