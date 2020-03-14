@@ -13,6 +13,7 @@ require 'examples/set_name_to_downcase'
 require 'examples/fail_with_error'
 require 'examples/add_greeting_with_default'
 require 'examples/add_greeting_with_lambda_default'
+require 'examples/set_wrong_type_of_output'
 
 require 'examples/fail_chaining_actions'
 require 'examples/fail_chaining_actions_with_rollback'
@@ -137,6 +138,28 @@ RSpec.describe Actor do
 
         expect(result.name).to eq('Jim')
         expect(result.value).to eq(0)
+      end
+    end
+
+    context 'when called with the wrong type of argument' do
+      it 'raises with a message' do
+        expect { SetNameToDowncase.call(name: 1) }
+          .to raise_error(
+            ArgumentError,
+            'Input name on SetNameToDowncase must be of type String but was ' \
+              'Integer',
+          )
+      end
+    end
+
+    context 'when setting the wrong type of output' do
+      it 'raises with a message' do
+        expect { SetWrongTypeOfOutput.call }
+          .to raise_error(
+            ArgumentError,
+            'Output name on SetWrongTypeOfOutput must be of type String but ' \
+              'was Integer',
+          )
       end
     end
   end
