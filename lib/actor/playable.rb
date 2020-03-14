@@ -27,8 +27,6 @@ class Actor
 
     module PrependedMethods
       def call
-        super
-
         self.class.play_actors.each do |actor|
           if actor.respond_to?(:call_with_context)
             actor = actor.call_with_context(@context)
@@ -44,8 +42,6 @@ class Actor
       end
 
       def rollback
-        super
-
         (@played_actors || []).each do |actor|
           next unless actor.respond_to?(:rollback)
 
