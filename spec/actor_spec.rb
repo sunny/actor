@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-# Actor examples
 require 'examples/add_greeting_with_default'
 require 'examples/add_greeting_with_lambda_default'
 require 'examples/add_name_to_context'
@@ -15,17 +14,18 @@ require 'examples/set_required_output'
 require 'examples/set_unknown_output'
 require 'examples/set_wrong_required_output'
 require 'examples/set_wrong_type_of_output'
+require 'examples/succeed_early'
 require 'examples/use_required_input'
 require 'examples/use_unknown_input'
-require 'examples/succeed_early'
 
-# Play examples
-require 'examples/play_actors'
-require 'examples/play_lambdas'
 require 'examples/fail_playing_actions_with_rollback'
 require 'examples/fail_playing_actions'
+require 'examples/inherit_from_increment_value'
+require 'examples/play_actors'
+require 'examples/play_lambdas'
 require 'examples/play_multiple_times'
 require 'examples/succeed_playing_actions'
+require 'examples/inherit_from_play'
 
 RSpec.describe Actor do
   it 'has a version number' do
@@ -265,6 +265,20 @@ RSpec.describe Actor do
         expect(result).to be_a_success
         expect(result).not_to be_a_failure
         expect(result.count).to eq(1)
+      end
+    end
+
+    context 'when inheriting' do
+      it 'calls both the parent and child' do
+        result = InheritFromIncrementValue.call(value: 0)
+        expect(result.value).to eq(2)
+      end
+    end
+
+    context 'when inheriting from play' do
+      it 'calls both the parent and child' do
+        result = InheritFromPlay.call(value: 0)
+        expect(result.value).to eq(3)
       end
     end
   end

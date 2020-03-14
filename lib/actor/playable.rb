@@ -16,6 +16,12 @@ class Actor
     end
 
     module ClassMethods
+      def inherited(child)
+        super
+
+        child.play(*play_actors)
+      end
+
       def play(*actors)
         @play_actors ||= []
         @play_actors += actors

@@ -14,6 +14,13 @@ class Actor
     end
 
     module ClassMethods
+      def inherited(child)
+        super
+
+        child.inputs.merge!(inputs)
+        child.outputs.merge!(outputs)
+      end
+
       def input(name, **arguments)
         inputs[name] = arguments
 
