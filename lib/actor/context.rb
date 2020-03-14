@@ -3,17 +3,15 @@
 class Actor
   # Represents the result of an action.
   class Context
-    def self.to_context(data = {})
-      data = data.send(:data) if data.is_a?(Actor::Context)
+    def self.to_context(data)
+      return data if data.is_a?(Actor::Context)
 
       new(data)
     end
 
     def initialize(data = {})
-      @data = data
+      @data = data.dup
     end
-
-    attr_reader :data
 
     def ==(other)
       other.class == self.class && data == other.data
@@ -38,7 +36,7 @@ class Actor
     end
 
     def merge!(new_data)
-      data.merge!(new_data.to_hash)
+      data.merge!(new_data)
 
       self
     end
@@ -50,6 +48,15 @@ class Actor
     def [](name)
       data[name]
     end
+
+    # Redefined here to override the method on `Object`.
+    def display
+      data.fetch(:display)
+    end
+
+    protected
+
+    attr_reader :data
 
     private
 

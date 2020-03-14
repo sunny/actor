@@ -21,8 +21,8 @@ class Actor
   #
   #   CreateUser.call(name: 'Joe')
   def self.call(context = {}, **arguments)
-    context = Actor::Context.to_context(context)
-    call_with_context(context.merge!(arguments))
+    context = Actor::Context.to_context(context).merge!(arguments)
+    call_with_context(context)
     context
   end
 
@@ -69,6 +69,6 @@ class Actor
 
   # Can be called from inside an actor to stop execution and mark as failed.
   def fail!(**arguments)
-    context.fail!(**arguments)
+    @context.fail!(**arguments)
   end
 end

@@ -1,10 +1,16 @@
 # Actor
 
-Simple service objects in Ruby. Move your application logic into small building blocs.
+Simple service objects in Ruby. Move your application logic into small building blocs to keep your controllers and your models thin.
+
+## Install
+
+This has not been released yet and is not ready for use in your applications.
 
 ## Usage
 
-Actors start with a verb, inherit from `Actor` and implement the `call` method.
+Actors are single-purpose actions in your application that represent your
+business logic. They start with a verb, inherit from `Actor` and implement a
+`call` method.
 
 ```rb
 # app/actors/send_notification.rb
@@ -15,18 +21,17 @@ class SendNotification < Actor
 end
 ```
 
-To use them in your application, use `call`:
+Use `.call` to use them in your application:
 
 ```rb
 SendNotification.call
 ```
 
-### Input
+### Inputs
 
 Actors can accept arguments with `input`:
 
 ```rb
-# app/actors/greet_user.rb
 class GreetUser < Actor
   input :user
 
@@ -36,20 +41,20 @@ class GreetUser < Actor
 end
 ```
 
-And calling them with:
+And receive them as arguments to `call`:
 
 ```rb
 GreetUser.call(user: User.first)
 ```
 
-### Output
+### Outputs
 
-They can return arguments with `output`:
+Use `output` to declare what your actor can return, then assign them to your
+context.
 
 ```rb
-# app/actors/build_greeting.rb
 class BuildGreeting < Actor
-  output :name
+  output :greeting
 
   def call
     context.greeting = "Have a wonderful day!"
@@ -57,8 +62,7 @@ class BuildGreeting < Actor
 end
 ```
 
-
-And calling them with:
+Calling an actor returns a context:
 
 ```rb
 result = BuildGreeting.call
@@ -67,12 +71,11 @@ result.greeting # => "Have a wonderful day!"
 
 ### Defaults
 
-Add defaults to your inputs:
+Inputs can have defaults:
 
 ```rb
-# app/actors/build_greeting.rb
 class PrintWelcome < Actor
-  input :name
+  input :user
   input :adjective, default: "wonderful"
   input :length_of_time, default: -> { ["day", "week", "month"].sample }
 
@@ -84,19 +87,32 @@ class PrintWelcome < Actor
 end
 ```
 
-### Result
+### Types
 
-If you want to test the success of an actor, you can use `fail!` which halts the
-actor.
+Inputs can define a type, or an array of possible types it must match:
 
 ```rb
-# app/actors/update_user.rb
+class UpdateUser < Actor
+  input :user, type: 'User'
+  input :age, type: %w[Integer Float]
+
+  # …
+end
+```
+
+### Result
+
+All actors are successful by default. To stop its execution and mark is as
+having failed, use `fail!`:
+
+```rb
 class UpdateUser
   input :user
   input :attributes
 
   def call
     user.attributes = attributes
+
     fail!(error: "Invalid user") unless user.valid?
 
     # …
@@ -104,11 +120,11 @@ class UpdateUser
 end
 ```
 
-When using `.call` this will raise an exception.
+You can then test for the success by calling your actor with `.result` instead
+of `.call`. This will let you test for `success?` or `failure?` on the context
+instead of raising an exception.
 
-If you want to test for its success without raising an exception, use `.result`.
-
-For example in a Rails controller you would:
+For example in a Rails controller:
 
 ```rb
 # app/controllers/users_controller.rb
@@ -116,21 +132,18 @@ class UsersController < ApplicationController
   def create
     result = UpdateUser.result(user: user, attributes: user_attributes)
     if result.success?
-      # …
+      redirect_to result.user
     else
-      # …
+      render :new, notice: result.error
     end
   end
-
-  # …
 end
 ```
 
-You can test `#success?` or `#failure?` that way.
-
 ### Play
 
-An actor can represent a sequence of actors by using `play`.
+An actor can call actors in sequence by using `play`. Each actor will hand over
+the context to the next actor.
 
 ```rb
 # app/actors/place_order.rb
@@ -142,42 +155,44 @@ class PlaceOrder < Actor
 end
 ```
 
-Each actor will be called than will hand over the context to the next actor.
 
 ### Rollback
 
-If one of the actors calls `fail!`, all following actors will not be called.
-Any previous actor that succeeded will call the `rollback` method.
+When using `play`, if one of the actors calls `fail!`, the following actors will
+not be called.
+
+Also, any _previous_ actor that succeeded will call the `rollback` method, if
+you defined one.
 
 ```rb
-class Pay < Actor
+class CreateOrder < Actor
   def call
-    context.user = User.create!(…)
+    context.order = Order.create!(…)
   end
 
   def rollback
-    context.user.destroy
+    context.order.destroy
   end
+end
 ```
-
-The actor on which you called `fail!` will not be rolled back.
 
 ### Lambdas
 
-To do small actions between your actors, you can use lambdas:
+You can call inline actions using lambdas:
 
 ```rb
 class Pay
-  play -> ctx { ctx.payment_method = "stripe" },
+  play ->(ctx) { ctx.payment_provider = "stripe" },
        CreatePayment,
-       -> ctx { ctx.user_to_notify = ctx.payment.user },
+       ->(ctx) { ctx.user_to_notify = ctx.payment.user },
        SendNotification
 end
 ```
 
 ### Before, after and around
 
-To do actions before or after actors, you can use lambdas or call `super`:
+To do actions before or after actors, use lambdas or simply override `call` and
+use `super`. For example:
 
 ```rb
 class Pay
@@ -191,54 +206,29 @@ class Pay
 end
 ```
 
-## Heavily influenced by Interactor
+## Influences
 
-This gem loves `interactor`. However here a a few key differences which makes
-`actor` unique`.
+This gem is heavily influenced by
+[Interactor](https://github.com/collectiveidea/interactor) ♥♥♥.
+However there a a few key differences which make `actor` unique:
 
 - Defaults to raising errors on failures.
 
   Actor encourages you to use `call` and `result` instead of `call!` and `call`. This way, the default is to raise an error and failures are not hidden away.
 
-- Shorter fail syntax.
-
-  Inside an actor you can use `fail!` vs `context.fail!`.
-
-- Shorter setup syntax.
-
-  Inherit from `< Actor` vs having to `include Interactor` and `include Interactor::Organizer`.
-
-- Declare inputs and output with `input` and `output`.
-
-  You are required to document the accepted and returned arguments.
-
-- Defaults for inputs.
-
-  Add defaults with `input :value, default: 0`.
-
-- Type checking of inputs and outputs.
-
-  Optionally check the types of your inputs with `input :value, type: 'Integer'`.
-
 - Methods defined for every input.
 
   When using `input :name` you can call `name` in your actor instead of `context.name`.
 
-- Allows using lambdas inside an organizer. Can be used to transform the
-  context, do quick actions, do before and after cleanup.
-
-  ```rb
-  class PlaceComment < Actor
-    organize CreateComment,
-             -> ctx { ctx.user = ctx.comment.creator },
-             UpdateUser
-  end
-  ```
-
-- No `before_filter` logic.
+- No `before`, `after` and `around` hooks.
 
   Prefer simply overriding `call` with `super` which allows wrapping the whole method.
 
-- Does not hide errors when an actor fails inside another actor.
-
-  https://github.com/collectiveidea/interactor/issues/170
+- Does not [hide errors when an actor fails inside another actor](https://github.com/collectiveidea/interactor/issues/170).
+- You can use lambdas inside organizers.
+- Requires you to document the arguments with `input` and `output`.
+- Defaults for inputs.
+- Type checking of inputs and outputs.
+- Shorter fail syntax: `fail!` vs `context.fail!`.
+- Shorter setup syntax: inherit from `< Actor` vs having to `include Interactor` or `include Interactor::Organizer`.
+- [Does not rely on `OpenStruct`](https://github.com/collectiveidea/interactor/issues/183)

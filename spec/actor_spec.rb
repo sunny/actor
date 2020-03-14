@@ -5,22 +5,23 @@ require 'pry'
 
 require 'actor'
 
-require 'examples/add_name_to_context'
-require 'examples/do_nothing'
-require 'examples/increment_value'
-require 'examples/increment_value_with_rollback'
-require 'examples/set_name_to_downcase'
-require 'examples/fail_with_error'
 require 'examples/add_greeting_with_default'
 require 'examples/add_greeting_with_lambda_default'
-require 'examples/set_wrong_type_of_output'
-require 'examples/use_unknown_input'
+require 'examples/add_name_to_context'
+require 'examples/do_nothing'
+require 'examples/fail_with_error'
+require 'examples/increment_value_with_rollback'
+require 'examples/increment_value'
+require 'examples/set_name_to_downcase'
 require 'examples/set_unknown_output'
+require 'examples/set_wrong_type_of_output'
+require 'examples/set_output_called_display'
+require 'examples/use_unknown_input'
 
-require 'examples/fail_chaining_actions'
-require 'examples/fail_chaining_actions_with_rollback'
 require 'examples/chain_actors'
 require 'examples/chain_lambdas'
+require 'examples/fail_chaining_actions_with_rollback'
+require 'examples/fail_chaining_actions'
 
 RSpec.describe Actor do
   describe '#call' do
@@ -162,6 +163,12 @@ RSpec.describe Actor do
             'Output name on SetWrongTypeOfOutput must be of type String but ' \
               'was Integer',
           )
+      end
+    end
+
+    context 'when using an output called display' do
+      it 'returns it' do
+        expect(SetOutputCalledDisplay.call.display).to eq('Foobar')
       end
     end
 
