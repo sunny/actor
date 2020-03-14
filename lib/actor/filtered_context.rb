@@ -15,6 +15,10 @@ class Actor
         "setters: #{setters.inspect}>"
     end
 
+    def fail!(**arguments)
+      context.fail!(**arguments)
+    end
+
     private
 
     attr_reader :context, :readers, :setters
