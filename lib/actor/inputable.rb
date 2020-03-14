@@ -8,21 +8,11 @@ class Actor
   #     output :name
   #   end
   module Inputable
-    # rubocop:disable Naming/MemoizedInstanceVariableName
-    def context
-      @filtered_context ||= Actor::FilteredContext.new(
-        super,
-        readers: self.class.inputs.keys,
-        setters: self.class.outputs.keys,
-      )
-    end
-    # rubocop:enable Naming/MemoizedInstanceVariableName
-
     def self.included(base)
       base.extend(ClassMethods)
+      base.prepend(PrependedMethods)
     end
 
-    # :nodoc:
     module ClassMethods
       def input(name, **arguments)
         inputs[name] = arguments
@@ -34,7 +24,6 @@ class Actor
         private name
       end
 
-      # :nodoc:
       def inputs
         @inputs ||= {}
       end
@@ -46,6 +35,18 @@ class Actor
       def outputs
         @outputs ||= { error: { type: 'String' } }
       end
+    end
+
+    module PrependedMethods
+      # rubocop:disable Naming/MemoizedInstanceVariableName
+      def context
+        @filtered_context ||= Actor::FilteredContext.new(
+          super,
+          readers: self.class.inputs.keys,
+          setters: self.class.outputs.keys,
+        )
+      end
+      # rubocop:enable Naming/MemoizedInstanceVariableName
     end
   end
 end

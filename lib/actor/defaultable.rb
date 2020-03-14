@@ -12,11 +12,11 @@ class Actor
   module Defaultable
     def before
       (self.class.inputs || {}).each do |name, input|
-        next if !input.key?(:default) || context.key?(name)
+        next if !input.key?(:default) || @context.key?(name)
 
         default = input[:default]
         default = default.call if default.respond_to?(:call)
-        context.merge!(name => default)
+        @context.merge!(name => default)
       end
 
       super

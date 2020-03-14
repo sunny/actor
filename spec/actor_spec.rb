@@ -14,6 +14,8 @@ require 'examples/fail_with_error'
 require 'examples/add_greeting_with_default'
 require 'examples/add_greeting_with_lambda_default'
 require 'examples/set_wrong_type_of_output'
+require 'examples/use_unknown_input'
+require 'examples/set_unknown_output'
 
 require 'examples/fail_chaining_actions'
 require 'examples/fail_chaining_actions_with_rollback'
@@ -160,6 +162,20 @@ RSpec.describe Actor do
             'Output name on SetWrongTypeOfOutput must be of type String but ' \
               'was Integer',
           )
+      end
+    end
+
+    context 'when using an unknown input' do
+      it 'raises with a message' do
+        expect { UseUnknownInput.call }
+          .to raise_error(ArgumentError, /Cannot call foobar on/)
+      end
+    end
+
+    context 'when setting an unknown output' do
+      it 'raises with a message' do
+        expect { SetUnknownOutput.call }
+          .to raise_error(ArgumentError, /Cannot call foobar= on/)
       end
     end
   end
