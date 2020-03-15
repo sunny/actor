@@ -5,6 +5,10 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
 
+Bugfix:
+- Force context to hash, to be compatible with organizers from the Interactor
+  gem.
+
 ## v1.0.0
 
 Added:

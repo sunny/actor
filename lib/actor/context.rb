@@ -6,7 +6,7 @@ class Actor
     def self.to_context(data)
       return data if data.is_a?(self)
 
-      new(data)
+      new(data.to_h)
     end
 
     def initialize(data = {})
