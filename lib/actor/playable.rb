@@ -60,7 +60,7 @@ class Actor
       private
 
       def play_actor(actor)
-        if actor.respond_to?(:new)
+        if actor.is_a?(Class) && actor.ancestors.include?(Actor)
           actor = actor.new(@context)
           actor.run
         else
