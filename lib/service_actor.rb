@@ -22,25 +22,29 @@ class Actor
   prepend Requireable
   prepend Conditionable
 
-  # Call an actor with a given context. Returns the context.
-  #
-  #   CreateUser.call(name: 'Joe')
-  def self.call(context = {}, **arguments)
-    context = Actor::Context.to_context(context).merge!(arguments)
-    new(context).run
-    context
-  rescue Actor::Success
-    context
-  end
+  class << self
+    # Call an actor with a given context. Returns the context.
+    #
+    #   CreateUser.call(name: 'Joe')
+    def call(context = {}, **arguments)
+      context = Actor::Context.to_context(context).merge!(arguments)
+      new(context).run
+      context
+    rescue Actor::Success
+      context
+    end
 
-  # Call an actor with a given context. Returns the context and does not raise
-  # on failure.
-  #
-  #   CreateUser.result(name: 'Joe')
-  def self.result(context = {}, **arguments)
-    call(context, **arguments)
-  rescue Actor::Failure => e
-    e.context
+    alias call! call
+
+    # Call an actor with a given context. Returns the context and does not raise
+    # on failure.
+    #
+    #   CreateUser.result(name: 'Joe')
+    def result(context = {}, **arguments)
+      call(context, **arguments)
+    rescue Actor::Failure => e
+      e.context
+    end
   end
 
   # :nodoc:

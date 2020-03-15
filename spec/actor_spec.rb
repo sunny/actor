@@ -292,6 +292,15 @@ RSpec.describe Actor do
     end
   end
 
+  describe '#call!' do
+    it 'is an alias to call' do
+      result = DoNothing.call!
+      expect(result).to be_kind_of(Actor::Context)
+      expect(result).to be_a_success
+      expect(result).not_to be_a_failure
+    end
+  end
+
   describe '#result' do
     context 'when fail! is not called' do
       it 'succeeds' do
