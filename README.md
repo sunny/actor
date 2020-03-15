@@ -1,5 +1,7 @@
 # Actor
 
+![Tests](https://github.com/sunny/actor/workflows/Tests/badge.svg)
+
 Ruby service objects. Lets you move your application logic into small
 building blocs to keep your controllers and your models thin.
 
