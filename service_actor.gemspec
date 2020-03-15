@@ -23,7 +23,7 @@ Gem::Specification.new do |spec|
   spec.metadata['changelog_uri'] = "#{spec.homepage}/blob/master/CHANGELOG.md"
 
   spec.extra_rdoc_files = %w[
-    LICENSE.md
+    LICENSE.txt
     README.md
   ]
 

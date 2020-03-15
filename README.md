@@ -11,7 +11,7 @@ Add these lines to your application's Gemfile:
 
 ```rb
 # Service objects to keep the business logic
-gem 'service_actor', git: 'git@github.com:sunny/actor.git'
+gem 'service_actor'
 ```
 
 
