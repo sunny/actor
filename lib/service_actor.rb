@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'ostruct'
+
 require 'actor/failure'
 require 'actor/success'
 require 'actor/context'

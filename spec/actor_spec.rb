@@ -2,6 +2,7 @@
 
 require 'examples/add_greeting_with_default'
 require 'examples/add_greeting_with_lambda_default'
+require 'examples/add_hash_to_context'
 require 'examples/add_name_to_context'
 require 'examples/do_nothing'
 require 'examples/fail_with_error'
@@ -53,6 +54,13 @@ RSpec.describe Actor do
       it 'returns the context with the change' do
         result = AddNameToContext.call
         expect(result.name).to eq('Jim')
+      end
+    end
+
+    context 'when an actor updates the context with a hash' do
+      it 'returns the hash with the change' do
+        result = AddHashToContext.call
+        expect(result.stuff).to eq(name: 'Jim')
       end
     end
 

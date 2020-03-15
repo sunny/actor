@@ -264,9 +264,7 @@ However there a a few key differences which make `actor` unique:
 - Multiple organizers.
 - Conditions inside organizers.
 - No `before`, `after` and `around` hooks. Prefer simply overriding `call` with `super` which allows wrapping the whole method.
-- [Does not rely on `OpenStruct`](https://github.com/collectiveidea/interactor/issues/183)
-- Does not print warnings on Ruby 2.7.
-
+- [Fixes issues with `OpenStruct`](https://github.com/collectiveidea/interactor/issues/183)
 
 ## Development
 

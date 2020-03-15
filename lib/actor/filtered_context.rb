@@ -27,15 +27,15 @@ class Actor
 
     attr_reader :context, :readers, :setters
 
+    # rubocop:disable Style/MethodMissingSuper
     def method_missing(name, *arguments, **options)
-      return super unless context.respond_to?(name)
-
       unless available_methods.include?(name)
         raise ArgumentError, "Cannot call #{name} on #{inspect}"
       end
 
-      context.public_send(name, *arguments)
+      context.public_send(name, *arguments, **options)
     end
+    # rubocop:enable Style/MethodMissingSuper
 
     def respond_to_missing?(name, *_arguments)
       available_methods.include?(name)
