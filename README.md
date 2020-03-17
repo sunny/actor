@@ -83,17 +83,22 @@ result.greeting # => "Have a wonderful day!"
 Inputs can have defaults:
 
 ```rb
-class PrintWelcome < Actor
-  input :user
+class BuildGreeting < Actor
   input :adjective, default: "wonderful"
   input :length_of_time, default: -> { ["day", "week", "month"].sample }
 
   output :greeting
 
   def call
-    context.greeting = "Hello #{name}! Have a #{adjective} #{length_of_time}!"
+    context.greeting = "Have a #{adjective} #{length_of_time}!"
   end
 end
+```
+
+This lets you call the actor without specifying those keys:
+
+```rb
+BuildGreeting.call.greeting # => "Have a wonderful week!"
 ```
 
 ### Types
@@ -109,10 +114,22 @@ class UpdateUser < Actor
 end
 ```
 
+### Required
+
+To check that an input must not be `nil`, flag it as required.
+
+```rb
+class UpdateUser < Actor
+  input :user, required: true
+
+  # …
+end
+```
+
 ### Conditions
 
-If types don't cut it, you can add small conditions with the name of your choice
-under `must`:
+You can also add conditions that the inputs must verify, with the name of your
+choice under `must`:
 
 ```rb
 class UpdateAdminUser < Actor
@@ -125,7 +142,7 @@ end
 
 ### Result
 
-All actors are successful by default. To stop its execution and mark is as
+All actors are successful by default. To stop the execution and mark an actor as
 having failed, use `fail!`:
 
 ```rb
@@ -143,11 +160,10 @@ class UpdateUser
 end
 ```
 
-You can then test for the success by calling your actor with `.result` instead
-of `.call`. This will let you test for `success?` or `failure?` on the context
-instead of raising an exception.
+This will raise an error in your app.
 
-For example in a Rails controller:
+To test for the success instead of raising, you can use `.result` instead of
+`.call`. For example in a Rails controller:
 
 ```rb
 # app/controllers/users_controller.rb
@@ -166,7 +182,7 @@ end
 ### Play
 
 An actor can call actors in sequence by using `play`. Each actor will hand over
-the context to the next actor.
+the same context to the next actor.
 
 ```rb
 class PlaceOrder < Actor
@@ -182,8 +198,8 @@ end
 When using `play`, if one of the actors calls `fail!`, the following actors will
 not be called.
 
-Also, any _previous_ actor that succeeded will call the `rollback` method, if
-you defined one.
+Also, all the _previous_ actors that succeeded will have their `rollback`
+method triggered. For example:
 
 ```rb
 class CreateOrder < Actor
@@ -199,12 +215,12 @@ end
 
 ### Early success
 
-When using `play` you can use `succeed!` so that the following actors will not
-be called, but still consider the actor to be successful.
+When using `play` you can use `succeed!` to stop the execution of the following
+actors, but still consider the actor to be successful.
 
 ### Lambdas
 
-You can call inline actions using lambdas:
+You can use inline actions using lambdas:
 
 ```rb
 class Pay

@@ -128,6 +128,16 @@ RSpec.describe Actor do
       end
     end
 
+    context 'when an input has not been given' do
+      it 'raises an error' do
+        expect { SetNameToDowncase.call }
+          .to raise_error(
+            ArgumentError,
+            'Input name on SetNameToDowncase is missing.',
+          )
+      end
+    end
+
     context 'when playing several actors' do
       it 'calls the actors in order' do
         result = PlayActors.call(value: 1)
@@ -244,7 +254,7 @@ RSpec.describe Actor do
           expected_error =
             'Input name on UseRequiredInput is required but was nil.'
 
-          expect { UseRequiredInput.call }
+          expect { UseRequiredInput.call(name: nil) }
             .to raise_error(ArgumentError, expected_error)
         end
       end

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Actor
-  # Adds `required:` checking to inputs and outputs.
+  # Ensure your inputs and outputs are not nil by adding `required: true`.
   #
   # Example:
   #

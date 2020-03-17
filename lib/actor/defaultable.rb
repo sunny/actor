@@ -2,6 +2,7 @@
 
 class Actor
   # Adds the `default:` option to inputs. Accepts regular values and lambdas.
+  # If no default is set and the value has not been given, raises an error.
   #
   # Example:
   #
@@ -12,7 +13,11 @@ class Actor
   module Defaultable
     def before
       self.class.inputs.each do |name, input|
-        next if !input.key?(:default) || @context.key?(name)
+        next if @context.key?(name)
+
+        unless input.key?(:default)
+          raise ArgumentError, "Input #{name} on #{self.class} is missing."
+        end
 
         default = input[:default]
         default = default.call if default.respond_to?(:call)
