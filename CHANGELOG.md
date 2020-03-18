@@ -5,6 +5,8 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
 
+## v1.1.0
+
 Added:
 - An error is raised if inputs have not been given and have no default.
 - Fix assigning hashes and blocks to the output.
