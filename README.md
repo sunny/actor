@@ -2,18 +2,41 @@
 
 ![Tests](https://github.com/sunny/actor/workflows/Tests/badge.svg)
 
-Ruby service objects. Lets you move your application logic into small
-building blocs to keep your controllers and your models thin.
+Composable Ruby service objects.
+
+This gems lets you move your application logic into small building blocs to keep
+your models and controllers thin.
+
+## Contents
+
+- [Installation](#installation)
+- [Usage](#usage)
+  - [Inputs](#inputs)
+  - [Outputs](#outputs)
+  - [Defaults](#defaults)
+  - [Types](#types)
+  - [Requirements](#requirements)
+  - [Conditions](#conditions)
+  - [Result](#result)
+- [Play actors in a sequence](#play-actors-in-a-sequence)
+  - [Rollback](#rollback)
+  - [Early success](#early-success)
+  - [Lambdas](#lambdas)
+  - [Before, after and around](#before-after-and-around)
+  - [Play conditions](#play-conditions)
+- [Influences](#influences)
+- [Development](#development)
+- [Contributing](#contributing)
+- [License](#contributing)
 
 ## Installation
 
 Add these lines to your application's Gemfile:
 
 ```rb
-# Service objects to keep the business logic
+# Composable service objects
 gem 'service_actor'
 ```
-
 
 ## Usage
 
@@ -30,7 +53,7 @@ class SendNotification < Actor
 end
 ```
 
-Use `.call` to use them in your application:
+Trigger them in your application with `.call`:
 
 ```rb
 SendNotification.call
@@ -50,7 +73,7 @@ class GreetUser < Actor
 end
 ```
 
-And receive them as arguments to `call`:
+Inputs can be given as arguments to `call`:
 
 ```rb
 GreetUser.call(user: User.first)
@@ -58,8 +81,8 @@ GreetUser.call(user: User.first)
 
 ### Outputs
 
-Use `output` to declare what your actor can return, then assign them to your
-context.
+Use `output` to declare what your actor can return. You can then assign every
+the actor's context.
 
 ```rb
 class BuildGreeting < Actor
@@ -114,7 +137,7 @@ class UpdateUser < Actor
 end
 ```
 
-### Required
+### Requirements
 
 To check that an input must not be `nil`, flag it as required.
 
@@ -179,10 +202,10 @@ class UsersController < ApplicationController
 end
 ```
 
-### Play
+## Play actors in a sequence
 
-An actor can call actors in sequence by using `play`. Each actor will hand over
-the same context to the next actor.
+An actor can be responsible for calling other actors in sequence by using
+`play`. Each actor will hand over the same context to the next actor.
 
 ```rb
 class PlaceOrder < Actor
@@ -195,11 +218,13 @@ end
 
 ### Rollback
 
-When using `play`, if one of the actors calls `fail!`, the following actors will
-not be called.
+When using `play`, when an actor calls `fail!`, the following actors will not be
+called.
 
-Also, all the _previous_ actors that succeeded will have their `rollback`
-method triggered. For example:
+Instead, all the _previous_ actors that succeeded will have their `rollback`
+method triggered.
+
+You can use this to cleanup, for example:
 
 ```rb
 class CreateOrder < Actor
@@ -233,8 +258,8 @@ end
 
 ### Before, after and around
 
-To do actions before or after actors, use lambdas or simply override `call` and
-use `super`. For example:
+To do actions before or after playing actors, use lambdas or simply override
+`call` (or `rollback`) and use `super`. For example:
 
 ```rb
 class Pay
@@ -250,7 +275,7 @@ end
 
 ### Play conditions
 
-Some actors in a play can be called conditionaly:
+Actors in a play can be called conditionally:
 
 ```rb
 class PlaceOrder < Actor
@@ -264,49 +289,45 @@ end
 
 This gem is heavily influenced by
 [Interactor](https://github.com/collectiveidea/interactor) ♥.
-However there a a few key differences which make `actor` unique:
+However there a few key differences which make `actor` unique:
 
-- Defaults to raising errors on failures. Actor uses `call` and `result` instead of `call!` and `call`. This way, the default is to raise an error and failures are not hidden away.
-- Does not [hide errors when an actor fails inside another actor](https://github.com/collectiveidea/interactor/issues/170).
-- You can use lambdas inside organizers.
-- Requires you to document the arguments with `input` and `output`.
-- Type checking of inputs and outputs.
-- Inputs and outputs can be required.
-- Defaults for inputs.
-- Conditions on inputs.
-- Shorter fail syntax: `fail!` vs `context.fail!`.
-- Trigger early success in organisers with `succeed!`.
-- Shorter setup syntax: inherit from `< Actor` vs having to `include Interactor` or `include Interactor::Organizer`.
-- Multiple organizers.
-- Conditions inside organizers.
-- No `before`, `after` and `around` hooks. Prefer simply overriding `call` with `super` which allows wrapping the whole method.
-- [Fixes issues with `OpenStruct`](https://github.com/collectiveidea/interactor/issues/183)
+- Does not [hide errors when an actor fails inside another
+  actor](https://github.com/collectiveidea/interactor/issues/170).
+- Requires you to document all arguments with `input` and `output`.
+- Defaults to raising errors on failures: actor uses `call` and `result`
+  instead of `call!` and `call`. This way, the _default_ is to raise an error
+  and failures are not hidden away because you forgot to use `!`.
+- Allows defaults, type checking, requirements and conditions on inputs.
+- Delegates methods on the context: `foo` vs `context.foo` (as well as `fail!`
+  vs `context.fail!`).
+- Shorter setup syntax: inherit from `< Actor` vs having to `include Interactor`
+  and `include Interactor::Organizer`.
+- Organizers allow lambdas, being called multiple times and with conditions.
+- Allows triggering an early success with `succeed!`.
+- No `before`, `after` and `around` hooks, prefer using `play` with lambdas or
+  calling `super`.
 
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run
-`rake` to run the tests. You can also run `bin/console` for an interactive
-prompt that will allow you to experiment.
+`rake` to run the tests and linting. You can also run `bin/console` for an
+interactive prompt.
 
-To install this gem onto your local machine, run `bundle exec rake install`.
 To release a new version, update the version number in `version.rb`, and then
-run `bundle exec rake release`, which will create a git tag for the version,
-push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+run `rake release`, which will create a git tag for the version, push git
+commits and tags, and push the gem to [rubygems.org](https://rubygems.org).
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at
-https://github.com/sunny/actor. This project is intended to be a safe,
-welcoming space for collaboration, and contributors are expected to adhere to
-the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome
+[on GitHub](https://github.com/sunny/actor).
+
+This project is intended to be a safe, welcoming space for collaboration, and
+everyone interacting in the project’s codebase and issue tracker is expected to
+adhere to the [Contributor Covenant code of
+conduct](https://github.com/sunny/actor/blob/master/CODE_OF_CONDUCT.md).
 
 ## License
 
 The gem is available as open source under the terms of the
 [MIT License](https://opensource.org/licenses/MIT).
-
-## Code of Conduct
-
-Everyone interacting in the Test project’s codebases, issue trackers, chat
-rooms and mailing lists is expected to follow the
-[code of conduct](https://github.com/sunny/actor/blob/master/CODE_OF_CONDUCT.md).
