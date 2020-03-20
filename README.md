@@ -81,7 +81,7 @@ GreetUser.call(user: User.first)
 
 ### Outputs
 
-Use `output` to declare what your actor can return. You can then assign every
+Use `output` to declare what your actor can return. You can then assign every output in
 the actor's context.
 
 ```rb
@@ -289,7 +289,7 @@ end
 
 This gem is heavily influenced by
 [Interactor](https://github.com/collectiveidea/interactor) ♥.
-However there a few key differences which make `actor` unique:
+However there are a few key differences which make `actor` unique:
 
 - Does not [hide errors when an actor fails inside another
   actor](https://github.com/collectiveidea/interactor/issues/170).
