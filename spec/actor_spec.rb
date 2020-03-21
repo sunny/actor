@@ -1,35 +1,6 @@
 # frozen_string_literal: true
 
-require 'examples/add_greeting_with_default'
-require 'examples/add_greeting_with_lambda_default'
-require 'examples/add_hash_to_context'
-require 'examples/add_name_to_context'
-require 'examples/do_nothing'
-require 'examples/fail_with_error'
-require 'examples/increment_value_with_rollback'
-require 'examples/increment_value'
-require 'examples/set_name_to_downcase'
-require 'examples/set_name_with_input_condition'
-require 'examples/set_output_called_display'
-require 'examples/set_unknown_output'
-require 'examples/set_wrong_required_output'
-require 'examples/set_wrong_type_of_output'
-require 'examples/succeed_early'
-require 'examples/use_unknown_input'
-require 'examples/disallow_nil_on_input'
-require 'examples/disallow_nil_on_input_with_deprecated_required'
-require 'examples/disallow_nil_on_output'
-require 'examples/disallow_nil_on_output_with_deprecated_required'
-
-require 'examples/fail_playing_actions_with_rollback'
-require 'examples/fail_playing_actions'
-require 'examples/inherit_from_increment_value'
-require 'examples/play_actors'
-require 'examples/play_lambdas'
-require 'examples/play_multiple_times'
-require 'examples/play_multiple_times_with_conditions'
-require 'examples/succeed_playing_actions'
-require 'examples/inherit_from_play'
+Dir['./spec/examples/*'].sort.each { |f| require f }
 
 RSpec.describe Actor do
   it 'has a version number' do
