@@ -45,6 +45,8 @@ class Actor
         define_method("#{name}=") do |value|
           context.public_send("#{name}=", value)
         end
+
+        private name, "#{name}="
       end
 
       def outputs
