@@ -2,10 +2,9 @@
 
 ![Tests](https://github.com/sunny/actor/workflows/Tests/badge.svg)
 
-Composable Ruby service objects.
-
-This gems lets you move your application logic into small building blocs to keep
-your models and controllers thin.
+This Ruby gem lets you move your application logic into into small composable
+service objects. It is a lightweight framework that helps you keep your models
+and controllers thin.
 
 ## Contents
 
@@ -15,15 +14,15 @@ your models and controllers thin.
   - [Outputs](#outputs)
   - [Defaults](#defaults)
   - [Types](#types)
-  - [Requirements](#requirements)
+  - [Allow nil](#allow-nil)
   - [Conditions](#conditions)
   - [Result](#result)
 - [Play actors in a sequence](#play-actors-in-a-sequence)
   - [Rollback](#rollback)
   - [Early success](#early-success)
   - [Lambdas](#lambdas)
-  - [Before, after and around](#before-after-and-around)
   - [Play conditions](#play-conditions)
+- [Testing](#testing)
 - [Influences](#influences)
 - [Development](#development)
 - [Contributing](#contributing)
@@ -56,12 +55,15 @@ end
 Trigger them in your application with `.call`:
 
 ```rb
-SendNotification.call
+SendNotification.call # => <Actor::Context …>
 ```
+
+Actors can accept and return multiple arguments. To do so, they read and write
+to their `context` using inputs and outputs. Let's find out how to do that.
 
 ### Inputs
 
-Actors can accept arguments with `input`:
+To accept arguments, use `input`:
 
 ```rb
 class GreetUser < Actor
@@ -73,7 +75,9 @@ class GreetUser < Actor
 end
 ```
 
-Inputs can be given as arguments to `call`:
+When executing your actor, `user` is a shortcut to `context.user`.
+
+You can now call your actor by providing the correct context:
 
 ```rb
 GreetUser.call(user: User.first)
@@ -81,20 +85,22 @@ GreetUser.call(user: User.first)
 
 ### Outputs
 
-Use `output` to declare what your actor can return. You can then assign every output in
-the actor's context.
+An actor can return multiple arguments. Declare them using `output` to help
+clarify what this service does.
+
+Then, modify the context from inside your `call` method:
 
 ```rb
 class BuildGreeting < Actor
   output :greeting
 
   def call
-    context.greeting = "Have a wonderful day!"
+    context.greeting = 'Have a wonderful day!'
   end
 end
 ```
 
-Calling an actor returns a context:
+Calling an actor returns the context with the outputs you defined:
 
 ```rb
 result = BuildGreeting.call
@@ -103,17 +109,18 @@ result.greeting # => "Have a wonderful day!"
 
 ### Defaults
 
-Inputs can have defaults:
+Inputs can be marked as optional by providing a default:
 
 ```rb
 class BuildGreeting < Actor
-  input :adjective, default: "wonderful"
-  input :length_of_time, default: -> { ["day", "week", "month"].sample }
+  input :name
+  input :adjective, default: 'wonderful'
+  input :length_of_time, default: -> { ['day', 'week', 'month'].sample }
 
   output :greeting
 
   def call
-    context.greeting = "Have a #{adjective} #{length_of_time}!"
+    context.greeting = "Have a #{adjective} #{length_of_time} #{name}!"
   end
 end
 ```
@@ -121,12 +128,40 @@ end
 This lets you call the actor without specifying those keys:
 
 ```rb
-BuildGreeting.call.greeting # => "Have a wonderful week!"
+result = BuildGreeting.call(name: 'Jim')
+result.greeting # => "Have a wonderful week Jim!"
 ```
+
+If an input does not have a default, it will raise a error:
+
+```rb
+result = BuildGreeting.call
+=> ArgumentError: Input name on BuildGreeting is missing.
+```
+
+### Conditions
+
+You can add simple conditions that the inputs must verify, with the name of your
+choice under `must`:
+
+```rb
+class UpdateAdminUser < Actor
+  input :user,
+        must: {
+          be_an_admin: ->(user) { user.admin? }
+        }
+
+  # …
+end
+```
+
+In case the input does not match, it will raise an argument error.
 
 ### Types
 
-Inputs can define a type, or an array of possible types it must match:
+Sometimes it can help to have a quick way of making sure we didn't mess up our
+inputs. For that you can use `type` with the name of a class or an array of
+possible classes it must be an instance of.
 
 ```rb
 class UpdateUser < Actor
@@ -137,9 +172,12 @@ class UpdateUser < Actor
 end
 ```
 
-### Requirements
+An exception will be raised if the type doesn't match.
 
-To check that an input must not be `nil`, flag it as required.
+### Allow nil
+
+By default inputs allow the values to be `nil`. To raise an error on `nil`,
+flag it as required.
 
 ```rb
 class UpdateUser < Actor
@@ -149,24 +187,10 @@ class UpdateUser < Actor
 end
 ```
 
-### Conditions
-
-You can also add conditions that the inputs must verify, with the name of your
-choice under `must`:
-
-```rb
-class UpdateAdminUser < Actor
-  input :user,
-        must: {
-          be_an_admin: ->(user) { user.admin? }
-        }
-end
-```
-
 ### Result
 
-All actors are successful by default. To stop the execution and mark an actor as
-having failed, use `fail!`:
+All actors return a successful `context` by default. To stop the execution and
+mark an actor as having failed, use `fail!`:
 
 ```rb
 class UpdateUser
@@ -176,17 +200,20 @@ class UpdateUser
   def call
     user.attributes = attributes
 
-    fail!(error: "Invalid user") unless user.valid?
+    fail!(error: 'Invalid user') unless user.valid?
 
     # …
   end
 end
 ```
 
-This will raise an error in your app.
+This will stop the execution of your actor and raise an error in your app with
+the given data added to the context.
 
-To test for the success instead of raising, you can use `.result` instead of
-`.call`. For example in a Rails controller:
+To test for the success of your actor, use `.result` instead of `.call`. It will
+allow you to return the context without raising an error in case of failure.
+
+For example in a Rails controller:
 
 ```rb
 # app/controllers/users_controller.rb
@@ -202,10 +229,15 @@ class UsersController < ApplicationController
 end
 ```
 
+Any keys you add to `fail!` will be added to the context, for example you could
+do: `fail!(error_type: "validation", error_code: "uv52", …)`.
+
 ## Play actors in a sequence
 
-An actor can be responsible for calling other actors in sequence by using
-`play`. Each actor will hand over the same context to the next actor.
+You should aim for your actors to be small, single-responsibility actions in
+your application.
+
+To help you do that, an actor can use `play` for calling other actors:
 
 ```rb
 class PlaceOrder < Actor
@@ -216,15 +248,17 @@ class PlaceOrder < Actor
 end
 ```
 
+This creates a `call` method where each actor will be called with the same
+context. Therefore, outputs from one actor can be used as inputs for the next,
+and each actor along the way can help shape the final context you application needs.
+
 ### Rollback
 
 When using `play`, when an actor calls `fail!`, the following actors will not be
 called.
 
-Instead, all the _previous_ actors that succeeded will have their `rollback`
-method triggered.
-
-You can use this to cleanup, for example:
+Instead, all the actors that succeeded will have their `rollback` method called
+in reverse order. This allows actors a chance to cleanup, for example:
 
 ```rb
 class CreateOrder < Actor
@@ -238,6 +272,10 @@ class CreateOrder < Actor
 end
 ```
 
+Rollback is only called on the _previous_ actors in `play` and is not called on
+the failing actor itself. Actors should be kept to a single purpose and not have
+anything to clean up if they call `fail!`.
+
 ### Early success
 
 When using `play` you can use `succeed!` to stop the execution of the following
@@ -245,10 +283,11 @@ actors, but still consider the actor to be successful.
 
 ### Lambdas
 
-You can use inline actions using lambdas:
+You can use inline actions using lambdas, which can be useful for preparing the
+context for the next actors:
 
 ```rb
-class Pay
+class Pay < Actor
   play ->(ctx) { ctx.payment_provider = "stripe" },
        CreatePayment,
        ->(ctx) { ctx.user_to_notify = ctx.payment.user },
@@ -256,13 +295,11 @@ class Pay
 end
 ```
 
-### Before, after and around
-
-To do actions before or after playing actors, use lambdas or simply override
-`call` (or `rollback`) and use `super`. For example:
+If you want to do more work before, or after the whole `play`, you can override
+`call` and use `super`. For example:
 
 ```rb
-class Pay
+class Pay < Actor
   # …
 
   def call
@@ -284,6 +321,14 @@ class PlaceOrder < Actor
   play NotifyAdmins, if: ->(ctx) { ctx.order.amount > 42 }
 end
 ```
+
+## Testing
+
+In your application, add automated testing to your actors as you would do to any
+other part of your applications.
+
+You will find that cutting your business logic into single purpose actors makes
+your application much simpler to test.
 
 ## Influences
 
