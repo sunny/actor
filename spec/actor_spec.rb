@@ -203,13 +203,6 @@ RSpec.describe Actor do
       end
     end
 
-    context 'when using an unknown input' do
-      it 'raises with a message' do
-        expect { UseUnknownInput.call }
-          .to raise_error(Actor::ArgumentError, /Cannot call foobar on/)
-      end
-    end
-
     context 'when setting an unknown output' do
       it 'raises' do
         expect { SetUnknownOutput.call }

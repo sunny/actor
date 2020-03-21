@@ -13,7 +13,7 @@ class Actor
   module Defaultable
     def before
       self.class.inputs.each do |name, input|
-        next if @context.key?(name)
+        next if context.key?(name)
 
         unless input.key?(:default)
           raise Actor::ArgumentError,
@@ -22,7 +22,7 @@ class Actor
 
         default = input[:default]
         default = default.call if default.respond_to?(:call)
-        @context[name] = default
+        context[name] = default
       end
 
       super

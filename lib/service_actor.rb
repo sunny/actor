@@ -10,7 +10,6 @@ require 'actor/argument_error'
 
 # Context
 require 'actor/context'
-require 'actor/filtered_context'
 
 # Modules
 require 'actor/playable'
@@ -90,11 +89,11 @@ class Actor
 
   # Can be called from inside an actor to stop execution and mark as failed.
   def fail!(**arguments)
-    @context.fail!(**arguments)
+    context.fail!(**arguments)
   end
 
   # Can be called from inside an actor to stop execution early.
   def succeed!(**arguments)
-    @context.succeed!(**arguments)
+    context.succeed!(**arguments)
   end
 end

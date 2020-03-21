@@ -10,7 +10,6 @@ class Actor
   module Attributable
     def self.included(base)
       base.extend(ClassMethods)
-      base.prepend(PrependedMethods)
     end
 
     module ClassMethods
@@ -25,7 +24,7 @@ class Actor
         inputs[name] = arguments
 
         define_method(name) do
-          context.public_send(name)
+          context[name]
         end
 
         protected name
@@ -39,11 +38,11 @@ class Actor
         outputs[name] = arguments
 
         define_method(name) do
-          context.public_send(name)
+          context[name]
         end
 
         define_method("#{name}=") do |value|
-          context.public_send("#{name}=", value)
+          context[name] = value
         end
 
         protected name, "#{name}="
@@ -52,18 +51,6 @@ class Actor
       def outputs
         @outputs ||= {}
       end
-    end
-
-    module PrependedMethods
-      # rubocop:disable Naming/MemoizedInstanceVariableName
-      def context
-        @filtered_context ||= Actor::FilteredContext.new(
-          super,
-          readers: self.class.inputs.keys,
-          setters: self.class.outputs.keys,
-        )
-      end
-      # rubocop:enable Naming/MemoizedInstanceVariableName
     end
   end
 end
