@@ -5,6 +5,6 @@ class AddGreetingWithDefault < Actor
   output :greeting, type: 'String'
 
   def call
-    context.greeting = "Hello, #{name}!"
+    self.greeting = "Hello, #{name}!"
   end
 end

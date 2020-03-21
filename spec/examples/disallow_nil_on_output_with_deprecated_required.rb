@@ -6,6 +6,6 @@ class DisallowNilOnOutputWithDeprecatedRequired < Actor
   input :test_without_output, default: false
 
   def call
-    context.name = 'Jim' unless test_without_output
+    self.name = 'Jim' unless test_without_output
   end
 end

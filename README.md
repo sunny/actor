@@ -58,12 +58,12 @@ Trigger them in your application with `.call`:
 SendNotification.call # => <Actor::Context …>
 ```
 
-Actors can accept and return multiple arguments. To do so, they read and write
-to their `context` using inputs and outputs. Let's find out how to do that.
+Actors return a context. Reading and writing to this context allows actors to
+accept and return multiple arguments. Let's find out how to do that.
 
 ### Inputs
 
-To accept arguments, use `input`:
+To accept arguments, use `input` to create a method named after this input:
 
 ```rb
 class GreetUser < Actor
@@ -75,8 +75,6 @@ class GreetUser < Actor
 end
 ```
 
-When executing your actor, `user` is a shortcut to `context.user`.
-
 You can now call your actor by providing the correct context:
 
 ```rb
@@ -86,16 +84,15 @@ GreetUser.call(user: User.first)
 ### Outputs
 
 An actor can return multiple arguments. Declare them using `output` to help
-clarify what this service does.
-
-Then, modify the context from inside your `call` method:
+clarify what this service does. This adds a setter to let you, modify the
+context from inside your actor:
 
 ```rb
 class BuildGreeting < Actor
   output :greeting
 
   def call
-    context.greeting = 'Have a wonderful day!'
+    self.greeting = 'Have a wonderful day!'
   end
 end
 ```
@@ -120,7 +117,7 @@ class BuildGreeting < Actor
   output :greeting
 
   def call
-    context.greeting = "Have a #{adjective} #{length_of_time} #{name}!"
+    self.greeting = "Have a #{adjective} #{length_of_time} #{name}!"
   end
 end
 ```
@@ -188,7 +185,7 @@ end
 
 ### Result
 
-All actors return a successful `context` by default. To stop the execution and
+All actors return a successful context by default. To stop the execution and
 mark an actor as having failed, use `fail!`:
 
 ```rb
@@ -249,7 +246,8 @@ end
 
 This creates a `call` method where each actor will be called with the same
 context. Therefore, outputs from one actor can be used as inputs for the next,
-and each actor along the way can help shape the final context you application needs.
+and each actor along the way can help shape the final context you application
+needs.
 
 ### Rollback
 
@@ -261,12 +259,14 @@ in reverse order. This allows actors a chance to cleanup, for example:
 
 ```rb
 class CreateOrder < Actor
+  output :order
+
   def call
-    context.order = Order.create!(…)
+    self.order = Order.create!(…)
   end
 
   def rollback
-    context.order.destroy
+    order.destroy
   end
 end
 ```
@@ -282,8 +282,8 @@ actors, but still consider the actor to be successful.
 
 ### Lambdas
 
-You can use inline actions using lambdas, which can be useful for preparing the
-context for the next actors:
+You can use inline actions using lambdas. Inside these lambdas, you don't have
+getters and setters but have access to the context:
 
 ```rb
 class Pay < Actor
@@ -294,8 +294,9 @@ class Pay < Actor
 end
 ```
 
-If you want to do more work before, or after the whole `play`, you can override
-`call` and use `super`. For example:
+Like in this example, lambdas can be useful for small work or preparing the
+context for the next actors. If you want to do more work before, or after the
+whole `play`, you can also override the `call` method. For example:
 
 ```rb
 class Pay < Actor
@@ -342,14 +343,14 @@ However there are a few key differences which make `actor` unique:
   instead of `call!` and `call`. This way, the _default_ is to raise an error
   and failures are not hidden away because you forgot to use `!`.
 - Allows defaults, type checking, requirements and conditions on inputs.
-- Delegates methods on the context: `foo` vs `context.foo` (as well as `fail!`
-  vs `context.fail!`).
+- Delegates methods on the context: `foo` vs `context.foo`, `self.foo =` vs
+  `context.foo = `, fail!` vs `context.fail!`.
 - Shorter setup syntax: inherit from `< Actor` vs having to `include Interactor`
   and `include Interactor::Organizer`.
-- Organizers allow lambdas, being called multiple times and with conditions.
+- Organizers allow lambdas, being called multiple times, and having conditions.
 - Allows triggering an early success with `succeed!`.
 - No `before`, `after` and `around` hooks, prefer using `play` with lambdas or
-  calling `super`.
+  overriding `call`.
 
 ## Development
 

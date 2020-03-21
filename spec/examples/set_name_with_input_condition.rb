@@ -10,6 +10,6 @@ class SetNameWithInputCondition < Actor
   output :name
 
   def call
-    context.name = name.upcase
+    self.name = name.upcase
   end
 end

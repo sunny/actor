@@ -22,7 +22,7 @@ class Actor
 
         default = input[:default]
         default = default.call if default.respond_to?(:call)
-        @context.merge!(name => default)
+        @context[name] = default
       end
 
       super

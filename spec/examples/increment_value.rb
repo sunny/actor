@@ -5,6 +5,6 @@ class IncrementValue < Actor
   output :value, type: 'Integer'
 
   def call
-    context.value += 1
+    self.value += 1
   end
 end

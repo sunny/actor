@@ -4,6 +4,6 @@ class SetOutputCalledDisplay < Actor
   output :display
 
   def call
-    context.display = 'Foobar'
+    self.display = 'Foobar'
   end
 end

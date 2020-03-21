@@ -4,6 +4,6 @@ class AddHashToContext < Actor
   output :stuff, type: 'Hash'
 
   def call
-    context.stuff = { name: 'Jim' }
+    self.stuff = { name: 'Jim' }
   end
 end
