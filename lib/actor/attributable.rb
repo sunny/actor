@@ -28,7 +28,7 @@ class Actor
           context.public_send(name)
         end
 
-        private name
+        protected name
       end
 
       def inputs
@@ -46,7 +46,7 @@ class Actor
           context.public_send("#{name}=", value)
         end
 
-        private name, "#{name}="
+        protected name, "#{name}="
       end
 
       def outputs
