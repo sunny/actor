@@ -14,6 +14,8 @@ Added:
 - In case of argument errors, raise an `Actor::ArgumentError` instead of a
   `ArgumentError`.
 - All errors inherit from `Actor::Error`.
+- Do not raise an error when accessing `context.` with unknown inputs or
+  outputs.
 
 ## v1.1.0
 
