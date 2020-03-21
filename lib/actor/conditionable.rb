@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 class Actor
-  # Add boolean checks to inputs, by calling lambdas starting with `must*`.
+  # Add checks to your inputs, by calling lambdas with the name of you choice.
+  # Will raise an error if any check does return a truthy value.
   #
   # Example:
   #
@@ -10,8 +11,6 @@ class Actor
   #           must: {
   #             exist: ->(provider) { PROVIDERS.include?(provider) }
   #           }
-  #
-  #     output :user, required: true
   #   end
   module Conditionable
     def before
@@ -24,8 +23,7 @@ class Actor
           value = @context[key]
           next if check.call(value)
 
-          name = name.to_s.sub(/^must_/, '')
-          raise ArgumentError,
+          raise Actor::ArgumentError,
                 "Input #{key} must #{name} but was #{value.inspect}."
         end
       end

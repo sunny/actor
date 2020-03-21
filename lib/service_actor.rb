@@ -2,11 +2,17 @@
 
 require 'ostruct'
 
+# Exceptions
+require 'actor/error'
 require 'actor/failure'
 require 'actor/success'
+require 'actor/argument_error'
+
+# Context
 require 'actor/context'
 require 'actor/filtered_context'
 
+# Modules
 require 'actor/playable'
 require 'actor/attributable'
 require 'actor/defaultable'
