@@ -55,11 +55,11 @@ end
 Trigger them in your application with `.call`:
 
 ```rb
-SendNotification.call # => <Actor::Context …>
+SendNotification.call # => <Actor::Result…>
 ```
 
-Actors return a context. Reading and writing to this context allows actors to
-accept and return multiple arguments. Let's find out how to do that.
+When called, actors return a Result. Reading and writing to this result allows
+actors to accept and return multiple arguments. Let's find out how to do that.
 
 ### Inputs
 
@@ -75,7 +75,7 @@ class GreetUser < Actor
 end
 ```
 
-You can now call your actor by providing the correct context:
+You can now call your actor by providing the correct arguments:
 
 ```rb
 GreetUser.call(user: User.first)
@@ -83,9 +83,8 @@ GreetUser.call(user: User.first)
 
 ### Outputs
 
-An actor can return multiple arguments. Declare them using `output` to help
-clarify what this service does. This adds a setter to let you, modify the
-context from inside your actor:
+An actor can return multiple arguments. Declare them using `output`, which adds
+a setter method to let you modify the result from your actor:
 
 ```rb
 class BuildGreeting < Actor
@@ -97,7 +96,7 @@ class BuildGreeting < Actor
 end
 ```
 
-Calling an actor returns the context with the outputs you defined:
+The result you get from calling an actor will include the outputs you set:
 
 ```rb
 result = BuildGreeting.call
@@ -185,7 +184,7 @@ end
 
 ### Result
 
-All actors return a successful context by default. To stop the execution and
+All actors return a successful result by default. To stop the execution and
 mark an actor as having failed, use `fail!`:
 
 ```rb
@@ -203,11 +202,11 @@ class UpdateUser
 end
 ```
 
-This will stop the execution of your actor and raise an error in your app with
-the given data added to the context.
+This will raise an error in your app with the given data added to the result.
 
-To test for the success of your actor, use `.result` instead of `.call`. It will
-allow you to return the context without raising an error in case of failure.
+To test for the success of your actor instead of raising an exception, use
+`.result` instead of `.call`. This lets you use `success?` and `failure?` on the
+result.
 
 For example in a Rails controller:
 
@@ -225,15 +224,13 @@ class UsersController < ApplicationController
 end
 ```
 
-Any keys you add to `fail!` will be added to the context, for example you could
+Any keys you add to `fail!` will be added to the result, for example you could
 do: `fail!(error_type: "validation", error_code: "uv52", …)`.
 
 ## Play actors in a sequence
 
-You should aim for your actors to be small, single-responsibility actions in
-your application.
-
-To help you do that, an actor can use `play` for calling other actors:
+To help you create actors that are small, single-responsibility actions, an
+actor can use `play` to call other actors:
 
 ```rb
 class PlaceOrder < Actor
@@ -244,10 +241,9 @@ class PlaceOrder < Actor
 end
 ```
 
-This creates a `call` method where each actor will be called with the same
-context. Therefore, outputs from one actor can be used as inputs for the next,
-and each actor along the way can help shape the final context you application
-needs.
+This creates a `call` method where each actor will be called, taking their
+arguments from the previous actor's result. In fact, every actor along shares
+the same result instance to help shape the final result your application needs.
 
 ### Rollback
 
@@ -283,19 +279,19 @@ actors, but still consider the actor to be successful.
 ### Lambdas
 
 You can use inline actions using lambdas. Inside these lambdas, you don't have
-getters and setters but have access to the context:
+getters and setters but have access to the shared result:
 
 ```rb
 class Pay < Actor
-  play ->(ctx) { ctx.payment_provider = "stripe" },
+  play ->(result) { result.payment_provider = "stripe" },
        CreatePayment,
-       ->(ctx) { ctx.user_to_notify = ctx.payment.user },
+       ->(result) { result.user_to_notify = result.payment.user },
        SendNotification
 end
 ```
 
 Like in this example, lambdas can be useful for small work or preparing the
-context for the next actors. If you want to do more work before, or after the
+result for the next actors. If you want to do more work before, or after the
 whole `play`, you can also override the `call` method. For example:
 
 ```rb
