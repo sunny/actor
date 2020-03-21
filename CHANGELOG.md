@@ -8,6 +8,8 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Added:
 - Outputs add writer methods inside your actors, so you can do `self.name =`
   instead of `context.name =`.
+- Outputs adds reader methods as well, so you can use anything you just set on
+  the context right away inside your actor.
 - Deprecate `required: true` in favor of `allow_nil: false`.
 - In case of argument errors, raise an `Actor::ArgumentError` instead of a
   `ArgumentError`.

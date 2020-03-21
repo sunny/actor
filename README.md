@@ -352,6 +352,9 @@ However there are a few key differences which make `actor` unique:
 - No `before`, `after` and `around` hooks, prefer using `play` with lambdas or
   overriding `call`.
 
+Thank you to @nicoolas25, @AnneSottise & @williampollet for the early thoughts
+and feedback on this gem.
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run
