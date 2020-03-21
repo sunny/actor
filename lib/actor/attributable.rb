@@ -40,7 +40,7 @@ class Actor
       end
 
       def outputs
-        @outputs ||= { error: { type: 'String' } }
+        @outputs ||= {}
       end
     end
 
