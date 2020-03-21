@@ -4,6 +4,6 @@ class AddNameToContext < Actor
   output :name, type: 'String'
 
   def call
-    context.name = 'Jim'
+    self.name = 'Jim'
   end
 end

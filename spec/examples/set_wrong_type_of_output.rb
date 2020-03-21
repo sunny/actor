@@ -4,6 +4,6 @@ class SetWrongTypeOfOutput < Actor
   output :name, type: 'String'
 
   def call
-    context.name = 42
+    self.name = 42
   end
 end

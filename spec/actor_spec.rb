@@ -211,9 +211,16 @@ RSpec.describe Actor do
     end
 
     context 'when setting an unknown output' do
-      it 'raises with a message' do
+      it 'raises' do
         expect { SetUnknownOutput.call }
-          .to raise_error(Actor::ArgumentError, /Cannot call foobar= on/)
+          .to raise_error(NoMethodError, /undefined method `foobar='/)
+      end
+    end
+
+    context 'when reading an output' do
+      it 'succeeds' do
+        result = SetAndAccessOutput.result
+        expect(result.email).to eq('jim@example.org')
       end
     end
 

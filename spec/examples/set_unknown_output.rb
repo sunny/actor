@@ -4,6 +4,6 @@ class SetUnknownOutput < Actor
   output :name
 
   def call
-    context.foobar = 42
+    self.foobar = 42
   end
 end

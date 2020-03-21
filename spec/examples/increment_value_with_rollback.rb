@@ -5,10 +5,10 @@ class IncrementValueWithRollback < Actor
   output :value, type: 'Integer'
 
   def call
-    context.value += 1
+    self.value += 1
   end
 
   def rollback
-    context.value -= 1
+    self.value -= 1
   end
 end

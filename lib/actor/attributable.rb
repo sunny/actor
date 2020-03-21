@@ -28,7 +28,7 @@ class Actor
           context.public_send(name)
         end
 
-        private name
+        protected name
       end
 
       def inputs
@@ -37,6 +37,16 @@ class Actor
 
       def output(name, **arguments)
         outputs[name] = arguments
+
+        define_method(name) do
+          context.public_send(name)
+        end
+
+        define_method("#{name}=") do |value|
+          context.public_send("#{name}=", value)
+        end
+
+        protected name, "#{name}="
       end
 
       def outputs

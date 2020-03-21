@@ -5,6 +5,6 @@ class SetNameToDowncase < Actor
   output :name, type: 'String'
 
   def call
-    context.name = name.downcase
+    self.name = name.downcase
   end
 end
