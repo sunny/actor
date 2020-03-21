@@ -11,7 +11,7 @@ require 'actor/playable'
 require 'actor/attributable'
 require 'actor/defaultable'
 require 'actor/type_checkable'
-require 'actor/requireable'
+require 'actor/nil_checkable'
 require 'actor/conditionable'
 
 # Actors should start with a verb, inherit from Actor and implement a `call`
@@ -21,7 +21,7 @@ class Actor
   include Playable
   prepend Defaultable
   prepend TypeCheckable
-  prepend Requireable
+  prepend NilCheckable
   prepend Conditionable
 
   class << self

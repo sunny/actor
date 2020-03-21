@@ -11,13 +11,15 @@ require 'examples/increment_value'
 require 'examples/set_name_to_downcase'
 require 'examples/set_name_with_input_condition'
 require 'examples/set_output_called_display'
-require 'examples/set_required_output'
 require 'examples/set_unknown_output'
 require 'examples/set_wrong_required_output'
 require 'examples/set_wrong_type_of_output'
 require 'examples/succeed_early'
-require 'examples/use_required_input'
 require 'examples/use_unknown_input'
+require 'examples/disallow_nil_on_input'
+require 'examples/disallow_nil_on_input_with_deprecated_required'
+require 'examples/disallow_nil_on_output'
+require 'examples/disallow_nil_on_output_with_deprecated_required'
 
 require 'examples/fail_playing_actions_with_rollback'
 require 'examples/fail_playing_actions'
@@ -244,34 +246,109 @@ RSpec.describe Actor do
       end
     end
 
-    context 'when using a required input' do
+    context 'when disallowing nil on an input' do
       context 'when given the input' do
-        it { expect(UseRequiredInput.call(name: 'Jim')).to be_a_success }
+        it 'succeeds' do
+          expect(DisallowNilOnInput.call(name: 'Jim')).to be_a_success
+        end
       end
 
       context 'without the input' do
         it 'fails' do
           expected_error =
-            'Input name on UseRequiredInput is required but was nil.'
+            'The input "name" on DisallowNilOnInput does not allow nil values.'
 
-          expect { UseRequiredInput.call(name: nil) }
+          expect { DisallowNilOnInput.call(name: nil) }
             .to raise_error(ArgumentError, expected_error)
         end
       end
     end
 
-    context 'when setting a required output' do
+    context 'when disallowing nil on an input with the deprecated required ' \
+            'argument' do
+      let(:expected_warning) do
+        'DEPRECATED: The "required" option is deprecated. Replace `input ' \
+        ':name, required: true` by `input :name, allow_nil: false` in ' \
+        "DisallowNilOnInputWithDeprecatedRequired.\n"
+      end
+
+      context 'when given the input' do
+        it 'succeeds with a warning' do
+          result = nil
+
+          expect do
+            result = DisallowNilOnInputWithDeprecatedRequired.call(name: 'Jim')
+          end.to output(expected_warning).to_stderr
+
+          expect(result).to be_a_success
+        end
+      end
+
+      context 'without the input' do
+        it 'fails' do
+          expected_error =
+            'The input "name" on DisallowNilOnInputWithDeprecatedRequired ' \
+            'does not allow nil values.'
+
+          expect { DisallowNilOnInputWithDeprecatedRequired.call(name: nil) }
+            .to raise_error(ArgumentError, expected_error)
+            .and output(expected_warning).to_stderr
+        end
+      end
+    end
+
+    context 'when disallowing nil on an output' do
       context 'when set correctly' do
-        it { expect(SetRequiredOutput.call).to be_a_success }
+        it 'succeeds' do
+          expect(DisallowNilOnOutput.call).to be_a_success
+        end
       end
 
       context 'without the output' do
-        it 'succeeds' do
+        it 'fails' do
           expected_error =
-            'Output name on SetWrongRequiredOutput is required but was nil.'
+            'The output "name" on DisallowNilOnOutput does not allow nil ' \
+            'values.'
 
-          expect { SetWrongRequiredOutput.call }
+          expect { DisallowNilOnOutput.call(test_without_output: true) }
             .to raise_error(ArgumentError, expected_error)
+        end
+      end
+    end
+
+    context 'when disallowing nil on an output with the deprecated required ' \
+            'argument' do
+      let(:expected_warning) do
+        'DEPRECATED: The "required" option is deprecated. Replace `output ' \
+        ':name, required: true` by `output :name, allow_nil: false` in ' \
+        "DisallowNilOnOutputWithDeprecatedRequired.\n"
+      end
+
+      context 'when set correctly' do
+        it 'succeeds' do
+          result = nil
+
+          expect do
+            result = DisallowNilOnOutputWithDeprecatedRequired.call
+          end.to output(expected_warning).to_stderr
+
+          expect(result).to be_a_success
+        end
+      end
+
+      context 'without the output' do
+        it 'fails' do
+          expected_error =
+            'The output "name" on DisallowNilOnOutputWithDeprecatedRequired ' \
+            'does not allow nil values.'
+
+          expect do
+            DisallowNilOnOutputWithDeprecatedRequired.call(
+              test_without_output: true,
+            )
+          end
+            .to raise_error(ArgumentError, expected_error)
+            .and output(expected_warning).to_stderr
         end
       end
     end

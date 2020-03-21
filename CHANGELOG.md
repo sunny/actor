@@ -5,6 +5,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
 
+Added:
+- Deprecate `required: true` in favor of `allow_nil: false`.
+
 ## v1.1.0
 
 Added:
