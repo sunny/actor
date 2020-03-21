@@ -44,7 +44,7 @@ class Actor
 
     def available_methods
       @available_methods ||=
-        readers + setters.map { |key| "#{key}=".to_sym }
+        readers + setters + setters.map { |key| "#{key}=".to_sym }
     end
   end
 end

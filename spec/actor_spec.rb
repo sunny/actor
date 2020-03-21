@@ -217,6 +217,13 @@ RSpec.describe Actor do
       end
     end
 
+    context 'when reading an output' do
+      it 'succeeds' do
+        result = SetAndAccessOutput.result
+        expect(result.email).to eq('jim@example.org')
+      end
+    end
+
     context 'when disallowing nil on an input' do
       context 'when given the input' do
         it 'succeeds' do
