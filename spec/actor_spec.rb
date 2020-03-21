@@ -360,7 +360,14 @@ RSpec.describe Actor do
 
   describe '#call!' do
     it 'is an alias to call' do
-      result = DoNothing.call!
+      expected_warning =
+        "DEPRECATED: Prefer `DoNothing.call` to `DoNothing.call!`.\n"
+
+      result = nil
+      expect { result = DoNothing.call! }
+        .to output(expected_warning)
+        .to_stderr
+
       expect(result).to be_kind_of(Actor::Context)
       expect(result).to be_a_success
       expect(result).not_to be_a_failure
