@@ -134,7 +134,7 @@ RSpec.describe Actor do
       it 'raises an error' do
         expect { SetNameToDowncase.call }
           .to raise_error(
-            ArgumentError,
+            Actor::ArgumentError,
             'Input name on SetNameToDowncase is missing.',
           )
       end
@@ -200,7 +200,7 @@ RSpec.describe Actor do
         expected_error = 'Input name must be_lowercase but was "42".'
 
         expect { SetNameWithInputCondition.call(name: '42') }
-          .to raise_error(ArgumentError, expected_error)
+          .to raise_error(Actor::ArgumentError, expected_error)
       end
     end
 
@@ -208,7 +208,7 @@ RSpec.describe Actor do
       it 'raises with a message' do
         expect { SetNameToDowncase.call(name: 1) }
           .to raise_error(
-            ArgumentError,
+            Actor::ArgumentError,
             'Input name on SetNameToDowncase must be of type String but was ' \
               'Integer',
           )
@@ -219,7 +219,7 @@ RSpec.describe Actor do
       it 'raises with a message' do
         expect { SetWrongTypeOfOutput.call }
           .to raise_error(
-            ArgumentError,
+            Actor::ArgumentError,
             'Output name on SetWrongTypeOfOutput must be of type String but ' \
               'was Integer',
           )
@@ -235,14 +235,14 @@ RSpec.describe Actor do
     context 'when using an unknown input' do
       it 'raises with a message' do
         expect { UseUnknownInput.call }
-          .to raise_error(ArgumentError, /Cannot call foobar on/)
+          .to raise_error(Actor::ArgumentError, /Cannot call foobar on/)
       end
     end
 
     context 'when setting an unknown output' do
       it 'raises with a message' do
         expect { SetUnknownOutput.call }
-          .to raise_error(ArgumentError, /Cannot call foobar= on/)
+          .to raise_error(Actor::ArgumentError, /Cannot call foobar= on/)
       end
     end
 
@@ -259,7 +259,7 @@ RSpec.describe Actor do
             'The input "name" on DisallowNilOnInput does not allow nil values.'
 
           expect { DisallowNilOnInput.call(name: nil) }
-            .to raise_error(ArgumentError, expected_error)
+            .to raise_error(Actor::ArgumentError, expected_error)
         end
       end
     end
@@ -291,7 +291,7 @@ RSpec.describe Actor do
             'does not allow nil values.'
 
           expect { DisallowNilOnInputWithDeprecatedRequired.call(name: nil) }
-            .to raise_error(ArgumentError, expected_error)
+            .to raise_error(Actor::ArgumentError, expected_error)
             .and output(expected_warning).to_stderr
         end
       end
@@ -311,7 +311,7 @@ RSpec.describe Actor do
             'values.'
 
           expect { DisallowNilOnOutput.call(test_without_output: true) }
-            .to raise_error(ArgumentError, expected_error)
+            .to raise_error(Actor::ArgumentError, expected_error)
         end
       end
     end
@@ -347,7 +347,7 @@ RSpec.describe Actor do
               test_without_output: true,
             )
           end
-            .to raise_error(ArgumentError, expected_error)
+            .to raise_error(Actor::ArgumentError, expected_error)
             .and output(expected_warning).to_stderr
         end
       end

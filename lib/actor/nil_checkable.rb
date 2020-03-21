@@ -32,7 +32,7 @@ class Actor
         next unless options.key?(:allow_nil)
         next if options[:allow_nil]
 
-        raise ArgumentError,
+        raise Actor::ArgumentError,
               "The #{origin} \"#{key}\" on #{self.class} does not allow nil " \
               'values.'
       end

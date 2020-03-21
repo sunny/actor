@@ -30,7 +30,8 @@ class Actor
     # rubocop:disable Style/MethodMissingSuper
     def method_missing(name, *arguments, &block)
       unless available_methods.include?(name)
-        raise ArgumentError, "Cannot call #{name} on #{inspect}"
+        raise Actor::ArgumentError,
+              "Cannot call #{name} on #{inspect}"
       end
 
       context.public_send(name, *arguments, &block)

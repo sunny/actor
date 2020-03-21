@@ -34,9 +34,9 @@ class Actor
         types = Array(type_definition).map { |name| Object.const_get(name) }
         next if types.any? { |type| value.is_a?(type) }
 
-        error = "#{kind} #{key} on #{self.class} must be of type " \
-                "#{types.join(', ')} but was #{value.class}"
-        raise ArgumentError, error
+        raise Actor::ArgumentError,
+              "#{kind} #{key} on #{self.class} must be of type " \
+              "#{types.join(', ')} but was #{value.class}"
       end
     end
   end
