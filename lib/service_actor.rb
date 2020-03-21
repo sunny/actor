@@ -42,7 +42,11 @@ class Actor
       context
     end
 
-    alias call! call
+    # :nodoc:
+    def call!(**arguments)
+      warn "DEPRECATED: Prefer `#{name}.call` to `#{name}.call!`."
+      call(**arguments)
+    end
 
     # Call an actor with a given context. Returns the context and does not raise
     # on failure.
