@@ -13,9 +13,7 @@ class Actor
   #           }
   #   end
   module Conditionable
-    def before
-      super
-
+    def _call
       self.class.inputs.each do |key, options|
         next unless options[:must]
 
@@ -27,6 +25,8 @@ class Actor
                 "Input #{key} must #{name} but was #{value.inspect}."
         end
       end
+
+      super
     end
   end
 end

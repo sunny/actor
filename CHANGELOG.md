@@ -17,6 +17,9 @@ Added:
 - Do not raise an error when accessing `context.` with unknown inputs or
   outputs.
 
+Fixes:
+- Do not expose methods called `before`, `after` and `run` in actors.
+
 ## v1.1.0
 
 Added:
