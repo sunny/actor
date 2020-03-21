@@ -35,7 +35,7 @@ class Actor
     #   CreateUser.call(name: 'Joe')
     def call(context = {}, **arguments)
       context = Actor::Context.to_context(context).merge!(arguments)
-      new(context).run
+      new(context)._call
       context
     rescue Actor::Success
       context
@@ -70,16 +70,8 @@ class Actor
   def rollback; end
 
   # :nodoc:
-  def before; end
-
-  # :nodoc:
-  def after; end
-
-  # :nodoc:
-  def run
-    before
+  def _call
     call
-    after
   end
 
   private

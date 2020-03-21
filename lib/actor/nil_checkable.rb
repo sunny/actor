@@ -10,13 +10,9 @@ class Actor
   #     output :user, allow_nil: false
   #   end
   module NilCheckable
-    def before
-      super
-
+    def _call
       check_context_for_nil(self.class.inputs, origin: 'input')
-    end
 
-    def after
       super
 
       check_context_for_nil(self.class.outputs, origin: 'output')
