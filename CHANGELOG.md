@@ -6,6 +6,7 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## Unreleased
 
 Added:
+- Deprecate `required: true` in favor of `allow_nil: false`.
 - In case of argument errors, raise an `Actor::ArgumentError` instead of a
   `ArgumentError`.
 - All errors inherit from `Actor::Error`.

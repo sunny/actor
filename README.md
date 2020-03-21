@@ -176,12 +176,11 @@ An exception will be raised if the type doesn't match.
 
 ### Allow nil
 
-By default inputs allow the values to be `nil`. To raise an error on `nil`,
-flag it as required.
+By default inputs accept `nil` values. To raise an error instead:
 
 ```rb
 class UpdateUser < Actor
-  input :user, required: true
+  input :user, allow_nil: false
 
   # …
 end
