@@ -29,6 +29,3 @@ Gemspec/OrderedDependencies:
 
 Bundler/GemComment:
   Enabled: true
-
-Style/NegatedIf:
-  Enabled: false
