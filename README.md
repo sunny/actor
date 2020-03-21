@@ -59,31 +59,29 @@ SendNotification.call # => <Actor::Context …>
 ```
 
 Actors can accept and return multiple arguments. To do so, they read and write
-to their `context`. Let's find out how to do that and all the superpowers we
-can add to inputs and outputs.
+to their `context` using inputs and outputs. Let's find out how to do that.
 
 ### Inputs
 
-An actor can accept arguments with `input`:
+To accept arguments, use `input`:
 
 ```rb
 class GreetUser < Actor
   input :user
 
   def call
-    # Here `user.name` is the same as `context.user.name`.
     puts "Hello #{user.name}!"
   end
 end
 ```
 
-Which you can then use as arguments to `call`:
+When executing your actor, `user` is a shortcut to `context.user`.
+
+You can now call your actor by providing the correct context:
 
 ```rb
 GreetUser.call(user: User.first)
 ```
-
-Every `input` adds a method named after your input to fetch the context value.
 
 ### Outputs
 
