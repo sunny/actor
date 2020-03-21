@@ -2,7 +2,7 @@
 
 class Actor
   # Error raised when using `fail!` inside an actor.
-  class Failure < StandardError
+  class Failure < Actor::Error
     def initialize(context)
       @context = context
 

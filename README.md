@@ -136,7 +136,7 @@ If an input does not have a default, it will raise a error:
 
 ```rb
 result = BuildGreeting.call
-=> ArgumentError: Input name on BuildGreeting is missing.
+=> Actor::ArgumentError: Input name on BuildGreeting is missing.
 ```
 
 ### Conditions

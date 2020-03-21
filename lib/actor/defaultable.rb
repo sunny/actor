@@ -16,7 +16,8 @@ class Actor
         next if @context.key?(name)
 
         unless input.key?(:default)
-          raise ArgumentError, "Input #{name} on #{self.class} is missing."
+          raise Actor::ArgumentError,
+                "Input #{name} on #{self.class} is missing."
         end
 
         default = input[:default]

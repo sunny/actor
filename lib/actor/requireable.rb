@@ -28,7 +28,7 @@ class Actor
       definitions.each do |key, options|
         next unless options[:required] && @context[key].nil?
 
-        raise ArgumentError,
+        raise Actor::ArgumentError,
               "#{kind} #{key} on #{self.class} is required but was nil."
       end
     end

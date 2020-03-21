@@ -132,7 +132,7 @@ RSpec.describe Actor do
       it 'raises an error' do
         expect { SetNameToDowncase.call }
           .to raise_error(
-            ArgumentError,
+            Actor::ArgumentError,
             'Input name on SetNameToDowncase is missing.',
           )
       end
@@ -198,7 +198,7 @@ RSpec.describe Actor do
         expected_error = 'Input name must be_lowercase but was "42".'
 
         expect { SetNameWithInputCondition.call(name: '42') }
-          .to raise_error(ArgumentError, expected_error)
+          .to raise_error(Actor::ArgumentError, expected_error)
       end
     end
 
@@ -206,7 +206,7 @@ RSpec.describe Actor do
       it 'raises with a message' do
         expect { SetNameToDowncase.call(name: 1) }
           .to raise_error(
-            ArgumentError,
+            Actor::ArgumentError,
             'Input name on SetNameToDowncase must be of type String but was ' \
               'Integer',
           )
@@ -217,7 +217,7 @@ RSpec.describe Actor do
       it 'raises with a message' do
         expect { SetWrongTypeOfOutput.call }
           .to raise_error(
-            ArgumentError,
+            Actor::ArgumentError,
             'Output name on SetWrongTypeOfOutput must be of type String but ' \
               'was Integer',
           )
@@ -233,14 +233,14 @@ RSpec.describe Actor do
     context 'when using an unknown input' do
       it 'raises with a message' do
         expect { UseUnknownInput.call }
-          .to raise_error(ArgumentError, /Cannot call foobar on/)
+          .to raise_error(Actor::ArgumentError, /Cannot call foobar on/)
       end
     end
 
     context 'when setting an unknown output' do
       it 'raises with a message' do
         expect { SetUnknownOutput.call }
-          .to raise_error(ArgumentError, /Cannot call foobar= on/)
+          .to raise_error(Actor::ArgumentError, /Cannot call foobar= on/)
       end
     end
 
@@ -255,7 +255,7 @@ RSpec.describe Actor do
             'Input name on UseRequiredInput is required but was nil.'
 
           expect { UseRequiredInput.call(name: nil) }
-            .to raise_error(ArgumentError, expected_error)
+            .to raise_error(Actor::ArgumentError, expected_error)
         end
       end
     end
@@ -271,7 +271,7 @@ RSpec.describe Actor do
             'Output name on SetWrongRequiredOutput is required but was nil.'
 
           expect { SetWrongRequiredOutput.call }
-            .to raise_error(ArgumentError, expected_error)
+            .to raise_error(Actor::ArgumentError, expected_error)
         end
       end
     end

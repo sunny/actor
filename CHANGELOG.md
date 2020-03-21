@@ -5,6 +5,11 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
 
+Added:
+- In case of argument errors, raise an `Actor::ArgumentError` instead of a
+  `ArgumentError`.
+- All errors inherit from `Actor::Error`.
+
 ## v1.1.0
 
 Added:
