@@ -2,5 +2,5 @@
 
 module ServiceActor
   # Raised when an input or output does not match the given conditions.
-  class ArgumentError < ServiceActor::Error; end
+  class ArgumentError < Error; end
 end

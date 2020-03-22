@@ -2,7 +2,7 @@
 
 module ServiceActor
   # Error raised when using `fail!` inside an actor.
-  class Failure < ServiceActor::Error
+  class Failure < Error
     def initialize(result)
       @result = result
 
