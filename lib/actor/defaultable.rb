@@ -11,7 +11,7 @@ class Actor
   #     input :multiplier, default: -> { rand(1..10) }
   #   end
   module Defaultable
-    def before
+    def _call
       self.class.inputs.each do |name, input|
         next if result.key?(name)
 

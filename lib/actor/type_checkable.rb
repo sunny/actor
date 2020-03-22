@@ -12,13 +12,9 @@ class Actor
   #     input :bonus_applied, type: %w[TrueClass FalseClass]
   #   end
   module TypeCheckable
-    def before
-      super
-
+    def _call
       check_type_definitions(self.class.inputs, kind: 'Input')
-    end
 
-    def after
       super
 
       check_type_definitions(self.class.outputs, kind: 'Output')

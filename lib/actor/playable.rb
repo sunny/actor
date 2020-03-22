@@ -62,7 +62,7 @@ class Actor
       def play_actor(actor)
         if actor.is_a?(Class) && actor.ancestors.include?(Actor)
           actor = actor.new(result)
-          actor.run
+          actor._call
         else
           actor.call(result)
         end

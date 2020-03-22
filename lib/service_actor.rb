@@ -35,7 +35,7 @@ class Actor
     #   CreateUser.call(name: 'Joe')
     def call(options = nil, **arguments)
       result = Actor::Result.to_result(options).merge!(arguments)
-      new(result).run
+      new(result)._call
       result
     rescue Actor::Success
       result
@@ -70,16 +70,8 @@ class Actor
   def rollback; end
 
   # :nodoc:
-  def before; end
-
-  # :nodoc:
-  def after; end
-
-  # :nodoc:
-  def run
-    before
+  def _call
     call
-    after
   end
 
   private
