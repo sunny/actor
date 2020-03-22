@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Actor
+module ServiceActor
   # Standard exception from which other inherit.
   class Error < StandardError; end
 end

@@ -3,11 +3,11 @@
 lib = File.expand_path('lib', __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
-require 'actor/version'
+require 'service_actor/version'
 
 Gem::Specification.new do |spec|
   spec.name = 'service_actor'
-  spec.version = Actor::VERSION
+  spec.version = ServiceActor::VERSION
 
   spec.require_paths = ['lib']
   spec.authors = ['Sunny Ripert']

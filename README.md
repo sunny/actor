@@ -55,7 +55,7 @@ end
 Trigger them in your application with `.call`:
 
 ```rb
-SendNotification.call # => <Actor::Result…>
+SendNotification.call # => <ServiceActor::Result…>
 ```
 
 When called, actors return a Result. Reading and writing to this result allows
@@ -132,7 +132,7 @@ If an input does not have a default, it will raise a error:
 
 ```rb
 result = BuildGreeting.call
-=> Actor::ArgumentError: Input name on BuildGreeting is missing.
+=> ServiceActor::ArgumentError: Input name on BuildGreeting is missing.
 ```
 
 ### Conditions
@@ -315,6 +315,22 @@ class PlaceOrder < Actor
   play CreateOrder,
        Pay
   play NotifyAdmins, if: ->(ctx) { ctx.order.amount > 42 }
+end
+```
+
+### Build your own actor
+
+If you application already uses "Actor", you can build your own with:
+
+```rb
+gem 'service_actor', require: 'service_actor/base'
+```
+
+And building your own class:
+
+```rb
+class ApplicationActor
+  include ServiceActor::Base
 end
 ```
 

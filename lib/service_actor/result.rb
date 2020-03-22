@@ -2,7 +2,7 @@
 
 require 'ostruct'
 
-class Actor
+module ServiceActor
   # Represents the result of an actor.
   class Result < OpenStruct
     def self.to_result(data)
@@ -19,14 +19,14 @@ class Actor
       merge!(result)
       merge!(failure?: true)
 
-      raise Actor::Failure, self
+      raise Failure, self
     end
 
     def succeed!(result = {})
       merge!(result)
       merge!(failure?: false)
 
-      raise Actor::Success, self
+      raise Success, self
     end
 
     def success?

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Actor
+module ServiceActor
   # Raised when using `succeed!` to halt the progression of an organizer.
-  class Success < Actor::Error; end
+  class Success < ServiceActor::Error; end
 end
