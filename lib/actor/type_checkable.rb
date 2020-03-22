@@ -12,27 +12,33 @@ class Actor
   #     input :bonus_applied, type: %w[TrueClass FalseClass]
   #   end
   module TypeCheckable
-    def _call
-      check_type_definitions(self.class.inputs, kind: 'Input')
-
-      super
-
-      check_type_definitions(self.class.outputs, kind: 'Output')
+    def self.included(base)
+      base.prepend(PrependedMethods)
     end
 
-    private
+    module PrependedMethods
+      def _call
+        check_type_definitions(self.class.inputs, kind: 'Input')
 
-    def check_type_definitions(definitions, kind:)
-      definitions.each do |key, options|
-        type_definition = options[:type] || next
-        value = result[key] || next
+        super
 
-        types = Array(type_definition).map { |name| Object.const_get(name) }
-        next if types.any? { |type| value.is_a?(type) }
+        check_type_definitions(self.class.outputs, kind: 'Output')
+      end
 
-        raise Actor::ArgumentError,
-              "#{kind} #{key} on #{self.class} must be of type " \
-              "#{types.join(', ')} but was #{value.class}"
+      private
+
+      def check_type_definitions(definitions, kind:)
+        definitions.each do |key, options|
+          type_definition = options[:type] || next
+          value = result[key] || next
+
+          types = Array(type_definition).map { |name| Object.const_get(name) }
+          next if types.any? { |type| value.is_a?(type) }
+
+          raise Actor::ArgumentError,
+                "#{kind} #{key} on #{self.class} must be of type " \
+                "#{types.join(', ')} but was #{value.class}"
+        end
       end
     end
   end

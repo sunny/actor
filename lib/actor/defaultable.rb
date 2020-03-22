@@ -11,21 +11,27 @@ class Actor
   #     input :multiplier, default: -> { rand(1..10) }
   #   end
   module Defaultable
-    def _call
-      self.class.inputs.each do |name, input|
-        next if result.key?(name)
+    def self.included(base)
+      base.prepend(PrependedMethods)
+    end
 
-        unless input.key?(:default)
-          raise Actor::ArgumentError,
-                "Input #{name} on #{self.class} is missing."
+    module PrependedMethods
+      def _call
+        self.class.inputs.each do |name, input|
+          next if result.key?(name)
+
+          unless input.key?(:default)
+            raise Actor::ArgumentError,
+                  "Input #{name} on #{self.class} is missing."
+          end
+
+          default = input[:default]
+          default = default.call if default.respond_to?(:call)
+          result[name] = default
         end
 
-        default = input[:default]
-        default = default.call if default.respond_to?(:call)
-        result[name] = default
+        super
       end
-
-      super
     end
   end
 end

@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'ostruct'
+
 class Actor
   # Represents the result of an actor.
   class Result < OpenStruct
