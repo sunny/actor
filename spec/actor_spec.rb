@@ -1,10 +1,6 @@
 # frozen_string_literal: true
 
 RSpec.describe Actor do
-  it 'has a version number' do
-    expect(ServiceActor::VERSION).not_to be_nil
-  end
-
   describe '#call' do
     context 'when fail! is not called' do
       let(:result) { DoNothing.call }
