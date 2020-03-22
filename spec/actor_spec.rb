@@ -9,12 +9,11 @@ RSpec.describe Actor do
 
   describe '#call' do
     context 'when fail! is not called' do
-      it 'succeeds' do
-        result = DoNothing.call
-        expect(result).to be_kind_of(Actor::Result)
-        expect(result).to be_a_success
-        expect(result).not_to be_a_failure
-      end
+      let(:result) { DoNothing.call }
+
+      it { expect(result).to be_kind_of(Actor::Result) }
+      it { expect(result).to be_a_success }
+      it { expect(result).not_to be_a_failure }
     end
 
     context 'when fail! is called' do
@@ -112,52 +111,66 @@ RSpec.describe Actor do
     end
 
     context 'when playing several actors' do
-      it 'calls the actors in order' do
-        result = PlayActors.call(value: 1)
-        expect(result.name).to eq('jim')
+      let(:result) { PlayActors.call(value: 1) }
+
+      it 'shares the result between actors' do
         expect(result.value).to eq(3)
+      end
+
+      it 'calls the actors in order' do
+        expect(result.name).to eq('jim')
       end
     end
 
     context 'when playing actors and lambdas' do
+      let(:result) { PlayLambdas.call }
+
       it 'calls the actors and lambdas in order' do
-        result = PlayLambdas.call
         expect(result.name).to eq('jim number 4')
       end
     end
 
     context 'when using `play` several times' do
-      it 'calls the actors in order' do
-        result = PlayMultipleTimes.call(value: 1)
-        expect(result.name).to eq('jim')
+      let(:result) { PlayMultipleTimes.call(value: 1) }
+
+      it 'shares the result between actors' do
         expect(result.value).to eq(3)
+      end
+
+      it 'calls the actors in order' do
+        expect(result.name).to eq('jim')
       end
     end
 
     context 'when using `play` with conditions' do
-      it 'calls the actors in order' do
-        result = PlayMultipleTimesWithConditions.call
+      let(:result) { PlayMultipleTimesWithConditions.call }
+
+      it 'does not trigger actors with conditions' do
         expect(result.name).to eq('Jim')
+      end
+
+      it 'shares the result between actors' do
         expect(result.value).to eq(3)
       end
     end
 
     context 'when playing several actors and one fails' do
+      let(:result) { Actor::Result.new(value: 0) }
+
       it 'raises with the message' do
-        expect { FailPlayingActionsWithRollback.call(value: 0) }
+        expect { FailPlayingActionsWithRollback.call(result) }
           .to raise_error(Actor::Failure, 'Ouch')
       end
 
-      it 'changes the context up to the failure and calls rollbacks' do
-        data = { value: 0 }
-        result = Actor::Result.new(data)
-
+      # rubocop:disable RSpec/MultipleExpectations
+      it 'changes the context up to the failure then calls rollbacks' do
         expect { FailPlayingActionsWithRollback.call(result) }
           .to raise_error(Actor::Failure)
 
         expect(result.name).to eq('Jim')
         expect(result.value).to eq(0)
       end
+      # rubocop:enable RSpec/MultipleExpectations
     end
 
     context 'when called with a matching condition' do
@@ -176,24 +189,26 @@ RSpec.describe Actor do
     end
 
     context 'when called with the wrong type of argument' do
-      it 'raises with a message' do
+      let(:expected_message) do
+        'Input name on SetNameToDowncase must be of type String but was ' \
+        'Integer'
+      end
+
+      it 'raises' do
         expect { SetNameToDowncase.call(name: 1) }
-          .to raise_error(
-            Actor::ArgumentError,
-            'Input name on SetNameToDowncase must be of type String but was ' \
-              'Integer',
-          )
+          .to raise_error(Actor::ArgumentError, expected_message)
       end
     end
 
     context 'when setting the wrong type of output' do
-      it 'raises with a message' do
+      let(:expected_message) do
+        'Output name on SetWrongTypeOfOutput must be of type String but was ' \
+        'Integer'
+      end
+
+      it 'raises' do
         expect { SetWrongTypeOfOutput.call }
-          .to raise_error(
-            Actor::ArgumentError,
-            'Output name on SetWrongTypeOfOutput must be of type String but ' \
-              'was Integer',
-          )
+          .to raise_error(Actor::ArgumentError, expected_message)
       end
     end
 
@@ -244,23 +259,26 @@ RSpec.describe Actor do
       end
 
       context 'when given the input' do
-        it 'succeeds with a warning' do
+        let(:muffled_result) do
           result = nil
 
           expect do
             result = DisallowNilOnInputWithDeprecatedRequired.call(name: 'Jim')
           end.to output(expected_warning).to_stderr
 
-          expect(result).to be_a_success
+          result
         end
+
+        it { expect(muffled_result).to be_a_success }
       end
 
       context 'without the input' do
-        it 'fails' do
-          expected_error =
-            'The input "name" on DisallowNilOnInputWithDeprecatedRequired ' \
-            'does not allow nil values.'
+        let(:expected_error) do
+          'The input "name" on DisallowNilOnInputWithDeprecatedRequired ' \
+          'does not allow nil values.'
+        end
 
+        it 'fails' do
           expect { DisallowNilOnInputWithDeprecatedRequired.call(name: nil) }
             .to raise_error(Actor::ArgumentError, expected_error)
             .and output(expected_warning).to_stderr
@@ -295,52 +313,54 @@ RSpec.describe Actor do
         "DisallowNilOnOutputWithDeprecatedRequired.\n"
       end
 
-      context 'when set correctly' do
-        it 'succeeds' do
-          result = nil
-
-          expect do
-            result = DisallowNilOnOutputWithDeprecatedRequired.call
-          end.to output(expected_warning).to_stderr
-
-          expect(result).to be_a_success
-        end
+      let(:call) do
+        DisallowNilOnOutputWithDeprecatedRequired.call
       end
 
-      context 'without the output' do
-        it 'fails' do
-          expected_error =
-            'The output "name" on DisallowNilOnOutputWithDeprecatedRequired ' \
-            'does not allow nil values.'
+      let(:muffled_result) do
+        result = nil
 
-          expect do
-            DisallowNilOnOutputWithDeprecatedRequired.call(
-              test_without_output: true,
-            )
-          end
+        expect { result = call }.to output(expected_warning).to_stderr
+
+        result
+      end
+
+      it { expect(muffled_result).to be_a_success }
+
+      context 'without the output' do
+        let(:call) do
+          DisallowNilOnOutputWithDeprecatedRequired.call(
+            test_without_output: true,
+          )
+        end
+
+        let(:expected_error) do
+          'The output "name" on DisallowNilOnOutputWithDeprecatedRequired ' \
+          'does not allow nil values.'
+        end
+
+        it 'fails' do
+          expect { muffled_result }
             .to raise_error(Actor::ArgumentError, expected_error)
-            .and output(expected_warning).to_stderr
         end
       end
     end
 
     context 'when calling an actor that succeeds early' do
-      it 'succeeds' do
-        result = SucceedEarly.call
-        expect(result).to be_kind_of(Actor::Result)
-        expect(result).to be_a_success
-        expect(result).not_to be_a_failure
-      end
+      let(:result) { SucceedEarly.call }
+
+      it { expect(result).to be_kind_of(Actor::Result) }
+      it { expect(result).to be_a_success }
+      it { expect(result).not_to be_a_failure }
     end
 
     context 'when playing an actor that succeeds early' do
-      it 'succeeds' do
-        result = SucceedPlayingActions.call
-        expect(result).to be_kind_of(Actor::Result)
-        expect(result).to be_a_success
-        expect(result).not_to be_a_failure
-        expect(result.count).to eq(1)
-      end
+      let(:result) { SucceedPlayingActions.call }
+
+      it { expect(result).to be_kind_of(Actor::Result) }
+      it { expect(result).to be_a_success }
+      it { expect(result).not_to be_a_failure }
+      it { expect(result.count).to eq(1) }
     end
 
     context 'when inheriting' do
@@ -359,82 +379,72 @@ RSpec.describe Actor do
   end
 
   describe '#call!' do
-    it 'is an alias to call' do
-      expected_warning =
-        "DEPRECATED: Prefer `DoNothing.call` to `DoNothing.call!`.\n"
-
-      result = nil
-      expect { result = DoNothing.call! }
-        .to output(expected_warning)
-        .to_stderr
-
-      expect(result).to be_kind_of(Actor::Result)
-      expect(result).to be_a_success
-      expect(result).not_to be_a_failure
+    let(:expected_warning) do
+      "DEPRECATED: Prefer `DoNothing.call` to `DoNothing.call!`.\n"
     end
+
+    let(:muffled_result) do
+      result = nil
+      expect { result = DoNothing.call! }.to output(expected_warning).to_stderr
+      result
+    end
+
+    it { expect(muffled_result).to be_kind_of(Actor::Result) }
+    it { expect(muffled_result).to be_a_success }
+    it { expect(muffled_result).not_to be_a_failure }
   end
 
   describe '#result' do
     context 'when fail! is not called' do
-      it 'succeeds' do
-        result = DoNothing.result
-        expect(result).to be_kind_of(Actor::Result)
-        expect(result).to be_a_success
-        expect(result).not_to be_a_failure
-      end
+      let(:result) { DoNothing.result }
+
+      it { expect(result).to be_kind_of(Actor::Result) }
+      it { expect(result).to be_a_success }
+      it { expect(result).not_to be_a_failure }
     end
 
     context 'when fail! is called' do
-      it 'fails' do
-        result = FailWithError.result
-        expect(result).to be_kind_of(Actor::Result)
-        expect(result).to be_a_failure
-        expect(result).not_to be_a_success
-      end
+      let(:result) { FailWithError.result }
 
-      it 'adds failure data to the context' do
-        result = FailWithError.result
-        expect(result.error).to eq('Ouch')
-        expect(result.some_other_key).to eq(42)
-      end
+      it { expect(result).to be_kind_of(Actor::Result) }
+      it { expect(result).to be_a_failure }
+      it { expect(result).not_to be_a_success }
+      it { expect(result.error).to eq('Ouch') }
+      it { expect(result.some_other_key).to eq(42) }
     end
 
     context 'when playing several actors' do
-      it 'calls the actors in order' do
-        result = PlayActors.result(value: 1)
-        expect(result).to be_a_success
-        expect(result.name).to eq('jim')
-        expect(result.value).to eq(3)
-      end
+      let(:result) { PlayActors.result(value: 1) }
+
+      it { expect(result).to be_a_success }
+      it { expect(result.name).to eq('jim') }
+      it { expect(result.value).to eq(3) }
     end
 
-    context 'when playing several actors and one fails' do
-      it 'calls the rollback method' do
-        result = FailPlayingActionsWithRollback.result(value: 0)
-        expect(result).to be_a_failure
-        expect(result).not_to be_a_success
-        expect(result.name).to eq('Jim')
-        expect(result.value).to eq(0)
-      end
+    context 'when playing several actors with a rollback and one fails' do
+      let(:result) { FailPlayingActionsWithRollback.result(value: 0) }
+
+      it { expect(result).to be_a_failure }
+      it { expect(result).not_to be_a_success }
+      it { expect(result.name).to eq('Jim') }
+      it { expect(result.value).to eq(0) }
     end
 
     context 'when calling an actor that succeeds early' do
-      it 'succeeds' do
-        result = SucceedEarly.result
-        expect(result).to be_kind_of(Actor::Result)
-        expect(result).to be_a_success
-        expect(result).not_to be_a_failure
-      end
+      let(:result) { SucceedEarly.result }
+
+      it { expect(result).to be_kind_of(Actor::Result) }
+      it { expect(result).to be_a_success }
+      it { expect(result).not_to be_a_failure }
     end
 
     context 'when playing an actor that succeeds early' do
-      it 'succeeds' do
-        result = SucceedPlayingActions.result
-        expect(result).to be_kind_of(Actor::Result)
-        expect(result).to be_a_success
-        expect(result).not_to be_a_failure
-        expect(result.count).to eq(1)
-      end
+      let(:result) { SucceedPlayingActions.result }
+
+      it { expect(result).to be_kind_of(Actor::Result) }
+      it { expect(result).to be_a_success }
+      it { expect(result).not_to be_a_failure }
+      it { expect(result.count).to eq(1) }
     end
   end
 end
