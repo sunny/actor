@@ -8,7 +8,7 @@ class Actor
   # method.
   module Base
     def self.included(base)
-      base.extend(Actor::ClassMethods)
+      base.extend(ClassMethods)
       base.include(Actor::Attributable)
       base.include(Actor::Playable)
     end
