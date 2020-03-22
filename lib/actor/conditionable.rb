@@ -13,20 +13,26 @@ class Actor
   #           }
   #   end
   module Conditionable
-    def _call
-      self.class.inputs.each do |key, options|
-        next unless options[:must]
+    def self.included(base)
+      base.prepend(PrependedMethods)
+    end
 
-        options[:must].each do |name, check|
-          value = result[key]
-          next if check.call(value)
+    module PrependedMethods
+      def _call
+        self.class.inputs.each do |key, options|
+          next unless options[:must]
 
-          raise Actor::ArgumentError,
-                "Input #{key} must #{name} but was #{value.inspect}."
+          options[:must].each do |name, check|
+            value = result[key]
+            next if check.call(value)
+
+            raise Actor::ArgumentError,
+                  "Input #{key} must #{name} but was #{value.inspect}."
+          end
         end
-      end
 
-      super
+        super
+      end
     end
   end
 end

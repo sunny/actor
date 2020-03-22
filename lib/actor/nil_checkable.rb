@@ -10,39 +10,45 @@ class Actor
   #     output :user, allow_nil: false
   #   end
   module NilCheckable
-    def _call
-      check_context_for_nil(self.class.inputs, origin: 'input')
-
-      super
-
-      check_context_for_nil(self.class.outputs, origin: 'output')
+    def self.included(base)
+      base.prepend(PrependedMethods)
     end
 
-    private
+    module PrependedMethods
+      def _call
+        check_context_for_nil(self.class.inputs, origin: 'input')
 
-    def check_context_for_nil(definitions, origin:)
-      definitions.each do |key, options|
-        options = deprecated_required_option(options, name: key, origin: origin)
+        super
 
-        next unless result[key].nil?
-        next unless options.key?(:allow_nil)
-        next if options[:allow_nil]
-
-        raise Actor::ArgumentError,
-              "The #{origin} \"#{key}\" on #{self.class} does not allow nil " \
-              'values.'
+        check_context_for_nil(self.class.outputs, origin: 'output')
       end
-    end
 
-    def deprecated_required_option(options, name:, origin:)
-      return options unless options.key?(:required)
+      private
 
-      warn 'DEPRECATED: The "required" option is deprecated. Replace ' \
-           "`#{origin} :#{name}, required: #{options[:required]}` by " \
-           "`#{origin} :#{name}, allow_nil: #{!options[:required]}` in " \
-           "#{self.class}."
+      def check_context_for_nil(definitions, origin:)
+        definitions.each do |key, options|
+          options = deprecated_required_option(options, key, origin)
 
-      options.merge(allow_nil: !options[:required])
+          next unless result[key].nil?
+          next unless options.key?(:allow_nil)
+          next if options[:allow_nil]
+
+          raise Actor::ArgumentError,
+                "The #{origin} \"#{key}\" on #{self.class} does not allow " \
+                'nil values.'
+        end
+      end
+
+      def deprecated_required_option(options, name, origin)
+        return options unless options.key?(:required)
+
+        warn 'DEPRECATED: The "required" option is deprecated. Replace ' \
+            "`#{origin} :#{name}, required: #{options[:required]}` by " \
+            "`#{origin} :#{name}, allow_nil: #{!options[:required]}` in " \
+            "#{self.class}."
+
+        options.merge(allow_nil: !options[:required])
+      end
     end
   end
 end

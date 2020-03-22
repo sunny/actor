@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 class Actor
-  # DSL to call a series of actors with the same result. On failure, calls
-  # rollback on any actor that succeeded.
+  # Play class method to call a series of actors with the same result. On
+  # failure, calls rollback on any actor that succeeded.
   #
   #   class CreateUser < Actor
   #     play SaveUser,
