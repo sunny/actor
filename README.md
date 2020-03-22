@@ -320,13 +320,14 @@ end
 
 ### Build your own actor
 
-If you application already uses "Actor", you can build your own with:
+If you application already uses an "Actor" class, you can build your own by
+changing the gem's require statement:
 
 ```rb
 gem 'service_actor', require: 'service_actor/base'
 ```
 
-And building your own class:
+And building your own class to inherit from:
 
 ```rb
 class ApplicationActor
