@@ -24,7 +24,7 @@ class Actor
         inputs[name] = arguments
 
         define_method(name) do
-          context[name]
+          result[name]
         end
 
         protected name
@@ -38,11 +38,11 @@ class Actor
         outputs[name] = arguments
 
         define_method(name) do
-          context[name]
+          result[name]
         end
 
         define_method("#{name}=") do |value|
-          context[name] = value
+          result[name] = value
         end
 
         protected name, "#{name}="

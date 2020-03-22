@@ -8,8 +8,8 @@ require 'actor/failure'
 require 'actor/success'
 require 'actor/argument_error'
 
-# Context
-require 'actor/context'
+# Result
+require 'actor/result'
 
 # Modules
 require 'actor/playable'
@@ -30,15 +30,15 @@ class Actor
   prepend Conditionable
 
   class << self
-    # Call an actor with a given context. Returns the context.
+    # Call an actor with a given result. Returns the result.
     #
     #   CreateUser.call(name: 'Joe')
-    def call(context = {}, **arguments)
-      context = Actor::Context.to_context(context).merge!(arguments)
-      new(context)._call
-      context
+    def call(options = nil, **arguments)
+      result = Actor::Result.to_result(options).merge!(arguments)
+      new(result)._call
+      result
     rescue Actor::Success
-      context
+      result
     end
 
     # :nodoc:
@@ -47,20 +47,20 @@ class Actor
       call(**arguments)
     end
 
-    # Call an actor with a given context. Returns the context and does not raise
-    # on failure.
+    # Call an actor with arguments. Returns the result and does not raise on
+    # failure.
     #
     #   CreateUser.result(name: 'Joe')
-    def result(context = {}, **arguments)
-      call(context, **arguments)
+    def result(data = nil, **arguments)
+      call(data, **arguments)
     rescue Actor::Failure => e
-      e.context
+      e.result
     end
   end
 
   # :nodoc:
-  def initialize(context)
-    @context = context
+  def initialize(result)
+    @result = result
   end
 
   # To implement in your actors.
@@ -77,15 +77,21 @@ class Actor
   private
 
   # Returns the current context from inside an actor.
-  attr_reader :context
+  attr_reader :result
+
+  def context
+    warn "DEPRECATED: Prefer `result.` to `context.` in #{self.class.name}."
+
+    result
+  end
 
   # Can be called from inside an actor to stop execution and mark as failed.
   def fail!(**arguments)
-    context.fail!(**arguments)
+    result.fail!(**arguments)
   end
 
   # Can be called from inside an actor to stop execution early.
   def succeed!(**arguments)
-    context.succeed!(**arguments)
+    result.succeed!(**arguments)
   end
 end

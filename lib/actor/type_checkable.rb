@@ -25,7 +25,7 @@ class Actor
     def check_type_definitions(definitions, kind:)
       definitions.each do |key, options|
         type_definition = options[:type] || next
-        value = context[key] || next
+        value = result[key] || next
 
         types = Array(type_definition).map { |name| Object.const_get(name) }
         next if types.any? { |type| value.is_a?(type) }

@@ -6,6 +6,8 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## Unreleased
 
 Added:
+- Rename `Actor::Context` to `Actor::Result`.
+- Deprecate `context.` in favor of `result.`.
 - Outputs add writer methods inside your actors, so you can do `self.name =`
   instead of `context.name =`.
 - Outputs adds reader methods as well, so you can use anything you just set on

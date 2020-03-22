@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Actor
-  # DSL to call a series of actors with the same context. On failure, calls
+  # DSL to call a series of actors with the same result. On failure, calls
   # rollback on any actor that succeeded.
   #
   #   class CreateUser < Actor
@@ -38,7 +38,7 @@ class Actor
     module PrependedMethods
       def call
         self.class.play_actors.each do |options|
-          next if options[:if] && !options[:if].call(context)
+          next if options[:if] && !options[:if].call(result)
 
           play_actor(options[:actor])
         end
@@ -61,10 +61,10 @@ class Actor
 
       def play_actor(actor)
         if actor.is_a?(Class) && actor.ancestors.include?(Actor)
-          actor = actor.new(context)
+          actor = actor.new(result)
           actor._call
         else
-          actor.call(context)
+          actor.call(result)
         end
 
         (@played ||= []).unshift(actor)

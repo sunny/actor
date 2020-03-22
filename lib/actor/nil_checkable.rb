@@ -24,7 +24,7 @@ class Actor
       definitions.each do |key, options|
         options = deprecated_required_option(options, name: key, origin: origin)
 
-        next unless context[key].nil?
+        next unless result[key].nil?
         next unless options.key?(:allow_nil)
         next if options[:allow_nil]
 

@@ -11,7 +11,7 @@ RSpec.describe Actor do
     context 'when fail! is not called' do
       it 'succeeds' do
         result = DoNothing.call
-        expect(result).to be_kind_of(Actor::Context)
+        expect(result).to be_kind_of(Actor::Result)
         expect(result).to be_a_success
         expect(result).not_to be_a_failure
       end
@@ -46,13 +46,13 @@ RSpec.describe Actor do
 
     context 'when given a context instead of a hash' do
       it 'returns the same context' do
-        result = Actor::Context.new(name: 'Jim')
+        result = Actor::Result.new(name: 'Jim')
 
         expect(AddNameToContext.call(result)).to eq(result)
       end
 
       it 'can update the given context' do
-        result = Actor::Context.new(name: 'Jim')
+        result = Actor::Result.new(name: 'Jim')
 
         SetNameToDowncase.call(result)
 
@@ -84,7 +84,7 @@ RSpec.describe Actor do
       end
 
       it 'ignores values already in the context' do
-        result = AddGreetingWithDefault.call(Actor::Context.new(name: 'jim'))
+        result = AddGreetingWithDefault.call(Actor::Result.new(name: 'jim'))
         expect(result.name).to eq('jim')
       end
     end
@@ -150,7 +150,7 @@ RSpec.describe Actor do
 
       it 'changes the context up to the failure and calls rollbacks' do
         data = { value: 0 }
-        result = Actor::Context.new(data)
+        result = Actor::Result.new(data)
 
         expect { FailPlayingActionsWithRollback.call(result) }
           .to raise_error(Actor::Failure)
@@ -327,7 +327,7 @@ RSpec.describe Actor do
     context 'when calling an actor that succeeds early' do
       it 'succeeds' do
         result = SucceedEarly.call
-        expect(result).to be_kind_of(Actor::Context)
+        expect(result).to be_kind_of(Actor::Result)
         expect(result).to be_a_success
         expect(result).not_to be_a_failure
       end
@@ -336,7 +336,7 @@ RSpec.describe Actor do
     context 'when playing an actor that succeeds early' do
       it 'succeeds' do
         result = SucceedPlayingActions.call
-        expect(result).to be_kind_of(Actor::Context)
+        expect(result).to be_kind_of(Actor::Result)
         expect(result).to be_a_success
         expect(result).not_to be_a_failure
         expect(result.count).to eq(1)
@@ -368,7 +368,7 @@ RSpec.describe Actor do
         .to output(expected_warning)
         .to_stderr
 
-      expect(result).to be_kind_of(Actor::Context)
+      expect(result).to be_kind_of(Actor::Result)
       expect(result).to be_a_success
       expect(result).not_to be_a_failure
     end
@@ -378,7 +378,7 @@ RSpec.describe Actor do
     context 'when fail! is not called' do
       it 'succeeds' do
         result = DoNothing.result
-        expect(result).to be_kind_of(Actor::Context)
+        expect(result).to be_kind_of(Actor::Result)
         expect(result).to be_a_success
         expect(result).not_to be_a_failure
       end
@@ -387,7 +387,7 @@ RSpec.describe Actor do
     context 'when fail! is called' do
       it 'fails' do
         result = FailWithError.result
-        expect(result).to be_kind_of(Actor::Context)
+        expect(result).to be_kind_of(Actor::Result)
         expect(result).to be_a_failure
         expect(result).not_to be_a_success
       end
@@ -421,7 +421,7 @@ RSpec.describe Actor do
     context 'when calling an actor that succeeds early' do
       it 'succeeds' do
         result = SucceedEarly.result
-        expect(result).to be_kind_of(Actor::Context)
+        expect(result).to be_kind_of(Actor::Result)
         expect(result).to be_a_success
         expect(result).not_to be_a_failure
       end
@@ -430,7 +430,7 @@ RSpec.describe Actor do
     context 'when playing an actor that succeeds early' do
       it 'succeeds' do
         result = SucceedPlayingActions.result
-        expect(result).to be_kind_of(Actor::Context)
+        expect(result).to be_kind_of(Actor::Result)
         expect(result).to be_a_success
         expect(result).not_to be_a_failure
         expect(result.count).to eq(1)

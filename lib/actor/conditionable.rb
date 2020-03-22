@@ -18,7 +18,7 @@ class Actor
         next unless options[:must]
 
         options[:must].each do |name, check|
-          value = context[key]
+          value = result[key]
           next if check.call(value)
 
           raise Actor::ArgumentError,
