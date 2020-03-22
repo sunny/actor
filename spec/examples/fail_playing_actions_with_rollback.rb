@@ -5,9 +5,9 @@ require_relative './increment_value_with_rollback'
 require_relative './fail_with_error'
 
 class FailPlayingActionsWithRollback < Actor
-  input :value, type: 'Integer'
-  output :value, type: 'Integer'
-  output :name, type: 'String'
+  input :value, type: Integer
+  output :value, type: Integer
+  output :name, type: String
 
   play AddNameToContext,
        IncrementValueWithRollback,
