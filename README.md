@@ -156,19 +156,21 @@ In case the input does not match, it will raise an argument error.
 ### Types
 
 Sometimes it can help to have a quick way of making sure we didn't mess up our
-inputs. For that you can use `type` with the name of a class or an array of
-possible classes it must be an instance of.
+inputs. For that you can use `type` with a class or an array of possible classes
+it must be an instance of.
 
 ```rb
 class UpdateUser < Actor
-  input :user, type: 'User'
-  input :age, type: %w[Integer Float]
+  input :user, type: User
+  input :age, type: [Integer, Float]
 
   # …
 end
 ```
 
-An exception will be raised if the type doesn't match.
+You may also use strings instead of constants, such as `type: 'User'`.
+
+An exception will be raised if the type doesn't match when called.
 
 ### Allow nil
 

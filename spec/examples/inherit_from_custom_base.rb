@@ -5,8 +5,8 @@ class ExampleApplicationActor
 end
 
 class InheritFromCustomBase < ExampleApplicationActor
-  input :value, type: 'Integer'
-  output :value, type: 'Integer'
+  input :value, type: Integer
+  output :value, type: Integer
 
   def call
     self.value += 1

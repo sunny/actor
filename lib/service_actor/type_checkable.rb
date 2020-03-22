@@ -1,15 +1,16 @@
 # frozen_string_literal: true
 
 module ServiceActor
-  # Adds `type:` checking to inputs and outputs. Accepts strings that should
-  # match an ancestor. Also accepts arrays.
+  # Adds `type:` checking to inputs and outputs. Accepts classes or class names
+  # that should match an ancestor. Also accepts arrays.
   #
   # Example:
   #
   #   class ReduceOrderAmount < Actor
-  #     input :order, type: 'Order'
-  #     input :amount, type: %w[Integer Float]
-  #     input :bonus_applied, type: %w[TrueClass FalseClass]
+  #     input :order, type: Order
+  #     input :coupon, type: 'Coupon'
+  #     input :amount, type: [Integer, Float]
+  #     input :bonus_applied, type: [TrueClass FalseClass]
   #   end
   module TypeCheckable
     def self.included(base)
@@ -32,12 +33,18 @@ module ServiceActor
           type_definition = options[:type] || next
           value = result[key] || next
 
-          types = Array(type_definition).map { |name| Object.const_get(name) }
+          types = types_for_definition(type_definition)
           next if types.any? { |type| value.is_a?(type) }
 
           raise ArgumentError,
                 "#{kind} #{key} on #{self.class} must be of type " \
                 "#{types.join(', ')} but was #{value.class}"
+        end
+      end
+
+      def types_for_definition(type_definition)
+        Array(type_definition).map do |name|
+          name.is_a?(String) ? Object.const_get(name) : name
         end
       end
     end

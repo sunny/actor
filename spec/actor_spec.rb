@@ -197,6 +197,21 @@ RSpec.describe Actor do
       end
     end
 
+    context 'when called with a type as a string instead of a class' do
+      it 'succeeds' do
+        result = DoubleWithTypeAsString.call(value: 2.0)
+        expect(result.double).to eq(4.0)
+      end
+
+      it 'does not allow other types' do
+        expected_error =
+          'Input value on DoubleWithTypeAsString must be of type Integer, ' \
+          'Float but was String'
+        expect { DoubleWithTypeAsString.call(value: '2.0') }
+          .to raise_error(ServiceActor::ArgumentError, expected_error)
+      end
+    end
+
     context 'when setting the wrong type of output' do
       let(:expected_message) do
         'Output name on SetWrongTypeOfOutput must be of type String but was ' \
