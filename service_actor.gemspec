@@ -31,8 +31,16 @@ Gem::Specification.new do |spec|
     `git ls-files -z lib`.split("\x0")
   end
 
+  # Tests
   spec.add_development_dependency 'rspec'
+
+  # Development Tasks
   spec.add_development_dependency 'rake'
+
+  # Debugger
   spec.add_development_dependency 'pry'
+
+  # Linting
   spec.add_development_dependency 'rubocop'
+  spec.add_development_dependency 'rubocop-rspec'
 end

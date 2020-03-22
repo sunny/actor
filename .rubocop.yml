@@ -1,3 +1,6 @@
+require:
+  - rubocop-rspec
+
 Metrics/BlockLength:
   Exclude:
     - spec/**/*
@@ -29,3 +32,6 @@ Gemspec/OrderedDependencies:
 
 Bundler/GemComment:
   Enabled: true
+
+RSpec/NestedGroups:
+  Max: 4
