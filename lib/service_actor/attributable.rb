@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Actor
+module ServiceActor
   # DSL to document the accepted attributes.
   #
   #   class CreateUser < Actor

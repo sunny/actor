@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Actor
+module ServiceActor
   # Adds the `default:` option to inputs. Accepts regular values and lambdas.
   # If no default is set and the value has not been given, raises an error.
   #
@@ -21,8 +21,7 @@ class Actor
           next if result.key?(name)
 
           unless input.key?(:default)
-            raise Actor::ArgumentError,
-                  "Input #{name} on #{self.class} is missing."
+            raise ArgumentError, "Input #{name} on #{self.class} is missing."
           end
 
           default = input[:default]

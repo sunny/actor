@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Actor
+module ServiceActor
   # Ensure your inputs and outputs are not nil by adding `allow_nil: false`.
   #
   # Example:
@@ -33,7 +33,7 @@ class Actor
           next unless options.key?(:allow_nil)
           next if options[:allow_nil]
 
-          raise Actor::ArgumentError,
+          raise ArgumentError,
                 "The #{origin} \"#{key}\" on #{self.class} does not allow " \
                 'nil values.'
         end

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Actor
+module ServiceActor
   # Play class method to call a series of actors with the same result. On
   # failure, calls rollback on any actor that succeeded.
   #
@@ -42,7 +42,7 @@ class Actor
 
           play_actor(options[:actor])
         end
-      rescue Actor::Failure
+      rescue Failure
         rollback
         raise
       end

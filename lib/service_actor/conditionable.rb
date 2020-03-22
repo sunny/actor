@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Actor
+module ServiceActor
   # Add checks to your inputs, by calling lambdas with the name of you choice.
   # Will raise an error if any check does return a truthy value.
   #
@@ -26,7 +26,7 @@ class Actor
             value = result[key]
             next if check.call(value)
 
-            raise Actor::ArgumentError,
+            raise ArgumentError,
                   "Input #{key} must #{name} but was #{value.inspect}."
           end
         end

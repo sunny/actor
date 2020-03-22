@@ -1,24 +1,19 @@
 # frozen_string_literal: true
 
-Dir['./spec/examples/*'].sort.each { |f| require f }
-
 RSpec.describe Actor do
-  it 'has a version number' do
-    expect(Actor::VERSION).not_to be_nil
-  end
-
   describe '#call' do
     context 'when fail! is not called' do
       let(:result) { DoNothing.call }
 
-      it { expect(result).to be_kind_of(Actor::Result) }
+      it { expect(result).to be_kind_of(ServiceActor::Result) }
       it { expect(result).to be_a_success }
       it { expect(result).not_to be_a_failure }
     end
 
     context 'when fail! is called' do
       it 'raises the error message' do
-        expect { FailWithError.call }.to raise_error(Actor::Failure, 'Ouch')
+        expect { FailWithError.call }
+          .to raise_error(ServiceActor::Failure, 'Ouch')
       end
     end
 
@@ -45,13 +40,13 @@ RSpec.describe Actor do
 
     context 'when given a context instead of a hash' do
       it 'returns the same context' do
-        result = Actor::Result.new(name: 'Jim')
+        result = ServiceActor::Result.new(name: 'Jim')
 
         expect(AddNameToContext.call(result)).to eq(result)
       end
 
       it 'can update the given context' do
-        result = Actor::Result.new(name: 'Jim')
+        result = ServiceActor::Result.new(name: 'Jim')
 
         SetNameToDowncase.call(result)
 
@@ -83,7 +78,9 @@ RSpec.describe Actor do
       end
 
       it 'ignores values already in the context' do
-        result = AddGreetingWithDefault.call(Actor::Result.new(name: 'jim'))
+        result = AddGreetingWithDefault.call(
+          ServiceActor::Result.new(name: 'jim'),
+        )
         expect(result.name).to eq('jim')
       end
     end
@@ -104,7 +101,7 @@ RSpec.describe Actor do
       it 'raises an error' do
         expect { SetNameToDowncase.call }
           .to raise_error(
-            Actor::ArgumentError,
+            ServiceActor::ArgumentError,
             'Input name on SetNameToDowncase is missing.',
           )
       end
@@ -155,17 +152,17 @@ RSpec.describe Actor do
     end
 
     context 'when playing several actors and one fails' do
-      let(:result) { Actor::Result.new(value: 0) }
+      let(:result) { ServiceActor::Result.new(value: 0) }
 
       it 'raises with the message' do
         expect { FailPlayingActionsWithRollback.call(result) }
-          .to raise_error(Actor::Failure, 'Ouch')
+          .to raise_error(ServiceActor::Failure, 'Ouch')
       end
 
       # rubocop:disable RSpec/MultipleExpectations
       it 'changes the context up to the failure then calls rollbacks' do
         expect { FailPlayingActionsWithRollback.call(result) }
-          .to raise_error(Actor::Failure)
+          .to raise_error(ServiceActor::Failure)
 
         expect(result.name).to eq('Jim')
         expect(result.value).to eq(0)
@@ -184,7 +181,7 @@ RSpec.describe Actor do
         expected_error = 'Input name must be_lowercase but was "42".'
 
         expect { SetNameWithInputCondition.call(name: '42') }
-          .to raise_error(Actor::ArgumentError, expected_error)
+          .to raise_error(ServiceActor::ArgumentError, expected_error)
       end
     end
 
@@ -196,7 +193,7 @@ RSpec.describe Actor do
 
       it 'raises' do
         expect { SetNameToDowncase.call(name: 1) }
-          .to raise_error(Actor::ArgumentError, expected_message)
+          .to raise_error(ServiceActor::ArgumentError, expected_message)
       end
     end
 
@@ -208,7 +205,7 @@ RSpec.describe Actor do
 
       it 'raises' do
         expect { SetWrongTypeOfOutput.call }
-          .to raise_error(Actor::ArgumentError, expected_message)
+          .to raise_error(ServiceActor::ArgumentError, expected_message)
       end
     end
 
@@ -245,7 +242,7 @@ RSpec.describe Actor do
             'The input "name" on DisallowNilOnInput does not allow nil values.'
 
           expect { DisallowNilOnInput.call(name: nil) }
-            .to raise_error(Actor::ArgumentError, expected_error)
+            .to raise_error(ServiceActor::ArgumentError, expected_error)
         end
       end
     end
@@ -280,7 +277,7 @@ RSpec.describe Actor do
 
         it 'fails' do
           expect { DisallowNilOnInputWithDeprecatedRequired.call(name: nil) }
-            .to raise_error(Actor::ArgumentError, expected_error)
+            .to raise_error(ServiceActor::ArgumentError, expected_error)
             .and output(expected_warning).to_stderr
         end
       end
@@ -300,7 +297,7 @@ RSpec.describe Actor do
             'values.'
 
           expect { DisallowNilOnOutput.call(test_without_output: true) }
-            .to raise_error(Actor::ArgumentError, expected_error)
+            .to raise_error(ServiceActor::ArgumentError, expected_error)
         end
       end
     end
@@ -341,7 +338,7 @@ RSpec.describe Actor do
 
         it 'fails' do
           expect { muffled_result }
-            .to raise_error(Actor::ArgumentError, expected_error)
+            .to raise_error(ServiceActor::ArgumentError, expected_error)
         end
       end
     end
@@ -349,7 +346,7 @@ RSpec.describe Actor do
     context 'when calling an actor that succeeds early' do
       let(:result) { SucceedEarly.call }
 
-      it { expect(result).to be_kind_of(Actor::Result) }
+      it { expect(result).to be_kind_of(ServiceActor::Result) }
       it { expect(result).to be_a_success }
       it { expect(result).not_to be_a_failure }
     end
@@ -357,7 +354,7 @@ RSpec.describe Actor do
     context 'when playing an actor that succeeds early' do
       let(:result) { SucceedPlayingActions.call }
 
-      it { expect(result).to be_kind_of(Actor::Result) }
+      it { expect(result).to be_kind_of(ServiceActor::Result) }
       it { expect(result).to be_a_success }
       it { expect(result).not_to be_a_failure }
       it { expect(result.count).to eq(1) }
@@ -389,7 +386,7 @@ RSpec.describe Actor do
       result
     end
 
-    it { expect(muffled_result).to be_kind_of(Actor::Result) }
+    it { expect(muffled_result).to be_kind_of(ServiceActor::Result) }
     it { expect(muffled_result).to be_a_success }
     it { expect(muffled_result).not_to be_a_failure }
   end
@@ -398,7 +395,7 @@ RSpec.describe Actor do
     context 'when fail! is not called' do
       let(:result) { DoNothing.result }
 
-      it { expect(result).to be_kind_of(Actor::Result) }
+      it { expect(result).to be_kind_of(ServiceActor::Result) }
       it { expect(result).to be_a_success }
       it { expect(result).not_to be_a_failure }
     end
@@ -406,7 +403,7 @@ RSpec.describe Actor do
     context 'when fail! is called' do
       let(:result) { FailWithError.result }
 
-      it { expect(result).to be_kind_of(Actor::Result) }
+      it { expect(result).to be_kind_of(ServiceActor::Result) }
       it { expect(result).to be_a_failure }
       it { expect(result).not_to be_a_success }
       it { expect(result.error).to eq('Ouch') }
@@ -433,7 +430,7 @@ RSpec.describe Actor do
     context 'when calling an actor that succeeds early' do
       let(:result) { SucceedEarly.result }
 
-      it { expect(result).to be_kind_of(Actor::Result) }
+      it { expect(result).to be_kind_of(ServiceActor::Result) }
       it { expect(result).to be_a_success }
       it { expect(result).not_to be_a_failure }
     end
@@ -441,7 +438,7 @@ RSpec.describe Actor do
     context 'when playing an actor that succeeds early' do
       let(:result) { SucceedPlayingActions.result }
 
-      it { expect(result).to be_kind_of(Actor::Result) }
+      it { expect(result).to be_kind_of(ServiceActor::Result) }
       it { expect(result).to be_a_success }
       it { expect(result).not_to be_a_failure }
       it { expect(result.count).to eq(1) }

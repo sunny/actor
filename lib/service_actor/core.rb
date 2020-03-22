@@ -1,16 +1,13 @@
 # frozen_string_literal: true
 
-require 'actor/attributable'
-require 'actor/playable'
-
-class Actor
+module ServiceActor
   # Actors should start with a verb, inherit from Actor and implement a `call`
   # method.
-  module Base
+  module Core
     def self.included(base)
       base.extend(ClassMethods)
-      base.include(Actor::Attributable)
-      base.include(Actor::Playable)
+      base.include(Attributable)
+      base.include(Playable)
     end
 
     module ClassMethods
@@ -18,10 +15,10 @@ class Actor
       #
       #   CreateUser.call(name: 'Joe')
       def call(options = nil, **arguments)
-        result = Actor::Result.to_result(options).merge!(arguments)
+        result = Result.to_result(options).merge!(arguments)
         new(result)._call
         result
-      rescue Actor::Success
+      rescue Success
         result
       end
 
@@ -37,7 +34,7 @@ class Actor
       #   CreateUser.result(name: 'Joe')
       def result(data = nil, **arguments)
         call(data, **arguments)
-      rescue Actor::Failure => e
+      rescue Failure => e
         e.result
       end
     end

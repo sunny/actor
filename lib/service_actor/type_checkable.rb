@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Actor
+module ServiceActor
   # Adds `type:` checking to inputs and outputs. Accepts strings that should
   # match an ancestor. Also accepts arrays.
   #
@@ -35,7 +35,7 @@ class Actor
           types = Array(type_definition).map { |name| Object.const_get(name) }
           next if types.any? { |type| value.is_a?(type) }
 
-          raise Actor::ArgumentError,
+          raise ArgumentError,
                 "#{kind} #{key} on #{self.class} must be of type " \
                 "#{types.join(', ')} but was #{value.class}"
         end
