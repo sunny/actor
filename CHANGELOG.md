@@ -5,6 +5,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
 
+Breaking changes:
+- Disallow nil when a type is set by default.
+
 Added:
 - Move all code inside `ServiceActor`, only exposing a base `Actor`, enabling
   you to change the default class name.
