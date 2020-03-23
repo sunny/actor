@@ -6,8 +6,8 @@ require_relative './set_name_to_downcase'
 class PlayLambdas < Actor
   output :name, type: String
 
-  play ->(ctx) { ctx.value = 3 },
+  play ->(result) { result.value = 3 },
        IncrementValue,
-       ->(ctx) { ctx.name = "Jim number #{ctx.value}" },
+       ->(result) { result.name = "Jim number #{result.value}" },
        SetNameToDowncase
 end

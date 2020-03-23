@@ -316,7 +316,7 @@ Actors in a play can be called conditionally:
 class PlaceOrder < Actor
   play CreateOrder,
        Pay
-  play NotifyAdmins, if: ->(ctx) { ctx.order.amount > 42 }
+  play NotifyAdmins, if: ->(result) { result.order.amount > 42 }
 end
 ```
 
