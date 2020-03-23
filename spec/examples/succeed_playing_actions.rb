@@ -3,7 +3,7 @@
 require_relative './succeed_early'
 
 class SucceedPlayingActions < Actor
-  play ->(ctx) { ctx.count = 1 },
+  play ->(result) { result.count = 1 },
        SucceedEarly,
-       ->(ctx) { ctx.count = 2 }
+       ->(result) { result.count = 2 }
 end
