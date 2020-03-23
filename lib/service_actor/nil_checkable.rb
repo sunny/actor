@@ -28,9 +28,9 @@ module ServiceActor
       def check_context_for_nil(definitions, origin:)
         definitions.each do |key, options|
           options = deprecated_required_option(options, key, origin)
+          options = default_allow_nil(options)
 
           next unless result[key].nil?
-          next unless options.key?(:allow_nil)
           next if options[:allow_nil]
 
           raise ArgumentError,
@@ -48,6 +48,12 @@ module ServiceActor
             "#{self.class}."
 
         options.merge(allow_nil: !options[:required])
+      end
+
+      def default_allow_nil(options)
+        return options if options.key?(:allow_nil)
+
+        options.merge(allow_nil: !options[:type])
       end
     end
   end

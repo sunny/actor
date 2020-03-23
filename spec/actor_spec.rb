@@ -197,6 +197,17 @@ RSpec.describe Actor do
       end
     end
 
+    context 'when a type is defined but the argument is nil' do
+      let(:expected_message) do
+        'The input "name" on SetNameToDowncase does not allow nil values.'
+      end
+
+      it 'raises' do
+        expect { SetNameToDowncase.call(name: nil) }
+          .to raise_error(ServiceActor::ArgumentError, expected_message)
+      end
+    end
+
     context 'when called with a type as a string instead of a class' do
       it 'succeeds' do
         result = DoubleWithTypeAsString.call(value: 2.0)
