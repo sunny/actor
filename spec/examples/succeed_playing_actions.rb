@@ -2,6 +2,7 @@
 
 require_relative './succeed_early'
 
+# DEPRECATED
 class SucceedPlayingActions < Actor
   play ->(ctx) { ctx.count = 1 },
        SucceedEarly,

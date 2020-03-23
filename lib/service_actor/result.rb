@@ -23,6 +23,9 @@ module ServiceActor
     end
 
     def succeed!(result = {})
+      warn 'DEPRECATED: Early success with `succeed!` is deprecated in favor ' \
+           'of adding conditions to `play` calls.'
+
       merge!(result)
       merge!(failure?: false)
 
