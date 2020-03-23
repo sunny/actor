@@ -13,9 +13,9 @@ and controllers thin.
   - [Inputs](#inputs)
   - [Outputs](#outputs)
   - [Defaults](#defaults)
-  - [Types](#types)
-  - [Allow nil](#allow-nil)
   - [Conditions](#conditions)
+  - [Allow nil](#allow-nil)
+  - [Types](#types)
   - [Result](#result)
 - [Play actors in a sequence](#play-actors-in-a-sequence)
   - [Rollback](#rollback)
@@ -153,11 +153,26 @@ end
 
 In case the input does not match, it will raise an argument error.
 
+### Allow nil
+
+By default inputs accept `nil` values. To raise an error instead:
+
+```rb
+class UpdateUser < Actor
+  input :user, allow_nil: false
+
+  # …
+end
+```
+
 ### Types
 
 Sometimes it can help to have a quick way of making sure we didn't mess up our
-inputs. For that you can use `type` with a class or an array of possible classes
-it must be an instance of.
+inputs.
+
+For that you can use the `type` option and giving a class or an array
+of possible classes. If the input or output doesn't match is not an instance of
+these types, an error is raised.
 
 ```rb
 class UpdateUser < Actor
@@ -170,19 +185,7 @@ end
 
 You may also use strings instead of constants, such as `type: 'User'`.
 
-An exception will be raised if the type doesn't match when called.
-
-### Allow nil
-
-By default inputs accept `nil` values. To raise an error instead:
-
-```rb
-class UpdateUser < Actor
-  input :user, allow_nil: false
-
-  # …
-end
-```
+When using a type condition, `allow_nil` defaults to `false`.
 
 ### Result
 

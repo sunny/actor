@@ -15,10 +15,10 @@ require 'service_actor/playable'
 require 'service_actor/core'
 
 # Concerns
-require 'service_actor/defaultable'
 require 'service_actor/type_checkable'
 require 'service_actor/nil_checkable'
 require 'service_actor/conditionable'
+require 'service_actor/defaultable'
 
 module ServiceActor
   module Base
@@ -27,10 +27,10 @@ module ServiceActor
       base.include(Core)
 
       # Concerns
-      base.include(Defaultable)
       base.include(TypeCheckable)
       base.include(NilCheckable)
       base.include(Conditionable)
+      base.include(Defaultable)
     end
   end
 end
