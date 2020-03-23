@@ -273,6 +273,21 @@ RSpec.describe Actor do
       end
     end
 
+    context 'when setting a default to nil and a type on an input' do
+      context 'when given the input' do
+        it 'succeeds' do
+          expect(AllowNilOnInputWithTypeAndDefaultNil.call(name: 'Jim'))
+            .to be_a_success
+        end
+      end
+
+      context 'when not given any input' do
+        it 'succeeds' do
+          expect(AllowNilOnInputWithTypeAndDefaultNil.call).to be_a_success
+        end
+      end
+    end
+
     context 'when disallowing nil on an input with the deprecated required ' \
             'argument' do
       let(:expected_warning) do

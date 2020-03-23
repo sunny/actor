@@ -26,34 +26,38 @@ module ServiceActor
       private
 
       def check_context_for_nil(definitions, origin:)
-        definitions.each do |key, options|
-          options = deprecated_required_option(options, key, origin)
-          options = default_allow_nil(options)
+        definitions.each do |name, options|
+          warn_of_deprecated_required_option(options, name, origin)
 
-          next unless result[key].nil?
-          next if options[:allow_nil]
+          next if !result[name].nil? || allow_nil?(options)
 
           raise ArgumentError,
-                "The #{origin} \"#{key}\" on #{self.class} does not allow " \
+                "The #{origin} \"#{name}\" on #{self.class} does not allow " \
                 'nil values.'
         end
       end
 
-      def deprecated_required_option(options, name, origin)
-        return options unless options.key?(:required)
+      def warn_of_deprecated_required_option(options, name, origin)
+        return unless options.key?(:required)
 
         warn 'DEPRECATED: The "required" option is deprecated. Replace ' \
             "`#{origin} :#{name}, required: #{options[:required]}` by " \
             "`#{origin} :#{name}, allow_nil: #{!options[:required]}` in " \
             "#{self.class}."
-
-        options.merge(allow_nil: !options[:required])
       end
 
-      def default_allow_nil(options)
-        return options if options.key?(:allow_nil)
-
-        options.merge(allow_nil: !options[:type])
+      def allow_nil?(options)
+        if options.key?(:allow_nil)
+          options[:allow_nil]
+        elsif options.key?(:required)
+          !options[:required]
+        elsif options.key?(:default) && options[:default].nil?
+          true
+        elsif options[:type]
+          false
+        else
+          true
+        end
       end
     end
   end
