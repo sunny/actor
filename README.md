@@ -19,9 +19,9 @@ and controllers thin.
   - [Result](#result)
 - [Play actors in a sequence](#play-actors-in-a-sequence)
   - [Rollback](#rollback)
-  - [Early success](#early-success)
   - [Lambdas](#lambdas)
   - [Play conditions](#play-conditions)
+- [Build your own actor](#build-your-own-actor)
 - [Testing](#testing)
 - [Influences](#influences)
 - [Development](#development)
@@ -273,11 +273,6 @@ Rollback is only called on the _previous_ actors in `play` and is not called on
 the failing actor itself. Actors should be kept to a single purpose and not have
 anything to clean up if they call `fail!`.
 
-### Early success
-
-When using `play` you can use `succeed!` to stop the execution of the following
-actors, but still consider the actor to be successful.
-
 ### Lambdas
 
 You can use inline actions using lambdas. Inside these lambdas, you don't have
@@ -320,7 +315,9 @@ class PlaceOrder < Actor
 end
 ```
 
-### Build your own actor
+You can use this to trigger an early success.
+
+## Build your own actor
 
 If you application already uses an "Actor" class, you can build your own by
 changing the gem's require statement:
@@ -363,7 +360,7 @@ However there are a few key differences which make `actor` unique:
 - Shorter setup syntax: inherit from `< Actor` vs having to `include Interactor`
   and `include Interactor::Organizer`.
 - Organizers allow lambdas, being called multiple times, and having conditions.
-- Allows triggering an early success with `succeed!`.
+- Allows early success with conditions inside organizers.
 - No `before`, `after` and `around` hooks, prefer using `play` with lambdas or
   overriding `call`.
 

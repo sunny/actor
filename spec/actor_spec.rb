@@ -358,16 +358,42 @@ RSpec.describe Actor do
       end
     end
 
-    context 'when calling an actor that succeeds early' do
-      let(:result) { SucceedEarly.call }
+    context 'when calling an actor with a deprecated early success' do
+      let(:deprecation_message) do
+        'DEPRECATED: Early success with `succeed!` is deprecated in favor of ' \
+        "adding conditions to `play` calls.\n"
+      end
+
+      let(:result) do
+        result = nil
+
+        expect { result = SucceedPlayingActions.call }
+          .to output(deprecation_message)
+          .to_stderr
+
+        result
+      end
 
       it { expect(result).to be_kind_of(ServiceActor::Result) }
       it { expect(result).to be_a_success }
       it { expect(result).not_to be_a_failure }
     end
 
-    context 'when playing an actor that succeeds early' do
-      let(:result) { SucceedPlayingActions.call }
+    context 'when playing an actor with a deprecated early success' do
+      let(:deprecation_message) do
+        'DEPRECATED: Early success with `succeed!` is deprecated in favor of ' \
+        "adding conditions to `play` calls.\n"
+      end
+
+      let(:result) do
+        result = nil
+
+        expect { result = SucceedPlayingActions.call }
+          .to output(deprecation_message)
+          .to_stderr
+
+        result
+      end
 
       it { expect(result).to be_kind_of(ServiceActor::Result) }
       it { expect(result).to be_a_success }
@@ -442,16 +468,42 @@ RSpec.describe Actor do
       it { expect(result.value).to eq(0) }
     end
 
-    context 'when calling an actor that succeeds early' do
-      let(:result) { SucceedEarly.result }
+    context 'when calling an actor with a deprecated early success' do
+      let(:deprecation_message) do
+        'DEPRECATED: Early success with `succeed!` is deprecated in favor of ' \
+        "adding conditions to `play` calls.\n"
+      end
+
+      let(:result) do
+        result = nil
+
+        expect { result = SucceedPlayingActions.result }
+          .to output(deprecation_message)
+          .to_stderr
+
+        result
+      end
 
       it { expect(result).to be_kind_of(ServiceActor::Result) }
       it { expect(result).to be_a_success }
       it { expect(result).not_to be_a_failure }
     end
 
-    context 'when playing an actor that succeeds early' do
-      let(:result) { SucceedPlayingActions.result }
+    context 'when playing an actor with a deprecated early success' do
+      let(:deprecation_message) do
+        'DEPRECATED: Early success with `succeed!` is deprecated in favor of ' \
+        "adding conditions to `play` calls.\n"
+      end
+
+      let(:result) do
+        result = nil
+
+        expect { result = SucceedPlayingActions.result }
+          .to output(deprecation_message)
+          .to_stderr
+
+        result
+      end
 
       it { expect(result).to be_kind_of(ServiceActor::Result) }
       it { expect(result).to be_a_success }

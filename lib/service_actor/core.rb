@@ -18,6 +18,7 @@ module ServiceActor
         result = Result.to_result(options).merge!(arguments)
         new(result)._call
         result
+      # DEPRECATED
       rescue Success
         result
       end
@@ -71,7 +72,7 @@ module ServiceActor
       result.fail!(**arguments)
     end
 
-    # Can be called from inside an actor to stop execution early.
+    # DEPRECATED
     def succeed!(**arguments)
       result.succeed!(**arguments)
     end

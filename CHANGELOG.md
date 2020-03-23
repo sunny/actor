@@ -19,6 +19,7 @@ Added:
 - In case of argument errors, raise an `ServiceActor::ArgumentError` instead of
   a `ArgumentError`.
 - Allow classes as well as strings in type definitions.
+- Deprecate early success in favor of play conditions.
 
 Fixes:
 - Allow inputs and outputs called `before`, `after` and `run`.
