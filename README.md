@@ -246,9 +246,15 @@ class PlaceOrder < Actor
 end
 ```
 
-This creates a `call` method where each actor will be called, taking their
-arguments from the previous actor's result. In fact, every actor along shares
-the same result instance to help shape the final result your application needs.
+This creates a `call` method that will call every actor along the way:
+
+```rb
+PlaceOrder.call(…)
+```
+
+The first actor will receive the inputs and pass the result along to the next
+actor. In fact, every actor along the way shares the same set of results until
+it it finally returned.
 
 ### Rollback
 
