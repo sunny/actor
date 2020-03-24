@@ -376,7 +376,8 @@ After checking out the repo, run `bin/setup` to install dependencies. Then, run
 `rake` to run the tests and linting. You can also run `bin/console` for an
 interactive prompt.
 
-To release a new version, update the version number in `version.rb`, and then
+To release a new version, update the version number in `version.rb`, and in the
+`CHANGELOG.md`, run `rake`, and create a commit for this version. You can then
 run `rake release`, which will create a git tag for the version, push git
 commits and tags, and push the gem to [rubygems.org](https://rubygems.org).
 
