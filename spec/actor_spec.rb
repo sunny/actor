@@ -117,6 +117,14 @@ RSpec.describe Actor do
       it 'calls the actors in order' do
         expect(result.name).to eq('jim')
       end
+
+      context 'when not providing arguments' do
+        let(:result) { PlayActors.call }
+
+        it 'uses defaults from the inner actors' do
+          expect(result.value).to eq(2)
+        end
+      end
     end
 
     context 'when playing actors and lambdas' do

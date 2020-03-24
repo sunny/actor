@@ -9,7 +9,6 @@ Gem::Specification.new do |spec|
   spec.name = 'service_actor'
   spec.version = ServiceActor::VERSION
 
-  spec.require_paths = ['lib']
   spec.authors = ['Sunny Ripert']
   spec.email = ['sunny@sunfox.org']
 
@@ -22,6 +21,7 @@ Gem::Specification.new do |spec|
   spec.metadata['source_code_uri'] = spec.homepage
   spec.metadata['changelog_uri'] = "#{spec.homepage}/blob/master/CHANGELOG.md"
 
+  spec.require_paths = ['lib']
   spec.extra_rdoc_files = %w[
     LICENSE.txt
     README.md
