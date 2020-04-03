@@ -23,9 +23,11 @@ and controllers thin.
   - [Rollback](#rollback)
   - [Lambdas](#lambdas)
   - [Play conditions](#play-conditions)
-- [Build your own actor](#build-your-own-actor)
+- [Use with Rails](#use-with-rails)
 - [Testing](#testing)
+- [Build your own actor](#build-your-own-actor)
 - [Influences](#influences)
+- [Thanks](#thanks)
 - [Development](#development)
 - [Contributing](#contributing)
 - [License](#contributing)
@@ -322,6 +324,19 @@ end
 
 You can use this to trigger an early success.
 
+## Use with Rails
+
+The [service_actor-rails](https://github.com/sunny/actor-rails/) gem includes a
+Rails generator to create an actor and its spec.
+
+## Testing
+
+In your application, add automated testing to your actors as you would do to any
+other part of your applications.
+
+You will find that cutting your business logic into single purpose actors will
+make it easier for you to test your application.
+
 ## Build your own actor
 
 If you application already uses an "Actor" class, you can build your own by
@@ -338,14 +353,6 @@ class ApplicationActor
   include ServiceActor::Base
 end
 ```
-
-## Testing
-
-In your application, add automated testing to your actors as you would do to any
-other part of your applications.
-
-You will find that cutting your business logic into single purpose actors makes
-your application much simpler to test.
 
 ## Influences
 
@@ -368,7 +375,7 @@ However there are a few key differences which make `actor` unique:
 - Allows early success with conditions inside organizers.
 - No `before`, `after` and `around` hooks, prefer using `play` with lambdas or
   overriding `call`.
-  
+
 ## Thanks
 
 Thank you to @nicoolas25, @AnneSottise & @williampollet for the early thoughts
