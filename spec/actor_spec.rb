@@ -196,7 +196,7 @@ RSpec.describe Actor do
     context 'when called with the wrong type of argument' do
       let(:expected_message) do
         'Input name on SetNameToDowncase must be of type String but was ' \
-        'Integer'
+        "#{1.class.name}"
       end
 
       it 'raises' do
@@ -234,7 +234,7 @@ RSpec.describe Actor do
     context 'when setting the wrong type of output' do
       let(:expected_message) do
         'Output name on SetWrongTypeOfOutput must be of type String but was ' \
-        'Integer'
+        "#{1.class.name}"
       end
 
       it 'raises' do
