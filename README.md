@@ -6,6 +6,8 @@ This Ruby gem lets you move your application logic into into small composable
 service objects. It is a lightweight framework that helps you keep your models
 and controllers thin.
 
+![Photo of theater seats](https://user-images.githubusercontent.com/132/78340166-e7567000-7595-11ea-97c0-b3e5da2de7a1.png)
+
 ## Contents
 
 - [Installation](#installation)
@@ -372,9 +374,13 @@ However there are a few key differences which make `actor` unique:
 - Allows early success with conditions inside organizers.
 - No `before`, `after` and `around` hooks, prefer using `play` with lambdas or
   overriding `call`.
+  
+## Thanks
 
 Thank you to @nicoolas25, @AnneSottise & @williampollet for the early thoughts
 and feedback on this gem.
+
+Photo by [Lloyd Dirks](https://unsplash.com/photos/4SLz_RCk6kQ).
 
 ## Development
 
