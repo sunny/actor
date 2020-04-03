@@ -61,7 +61,8 @@ SendNotification.call # => <ServiceActor::Result…>
 ```
 
 When called, actors return a Result. Reading and writing to this result allows
-actors to accept and return multiple arguments. Let's find out how to do that.
+actors to accept and return multiple arguments. Let's find out how to do that
+and then we'll see how to chain multiple actors togethor.
 
 ### Inputs
 
@@ -212,8 +213,7 @@ end
 This will raise an error in your app with the given data added to the result.
 
 To test for the success of your actor instead of raising an exception, use
-`.result` instead of `.call`. This lets you use `success?` and `failure?` on the
-result.
+`.result` instead of `.call` and call `success?` or `failure?` on the result.
 
 For example in a Rails controller:
 
@@ -248,15 +248,9 @@ class PlaceOrder < Actor
 end
 ```
 
-This creates a `call` method that will call every actor along the way:
-
-```rb
-PlaceOrder.call(…)
-```
-
-The first actor will receive the inputs and pass the result along to the next
-actor. In fact, every actor along the way shares the same set of results until
-it it finally returned.
+This creates a `call` method that will call every actor along the way. Inputs
+and outputs will go from one actor to the next, all sharing the same result set
+until it is finally returned.
 
 ### Rollback
 
