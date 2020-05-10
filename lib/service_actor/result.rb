@@ -22,16 +22,6 @@ module ServiceActor
       raise Failure, self
     end
 
-    def succeed!(result = {})
-      warn 'DEPRECATED: Early success with `succeed!` is deprecated in favor ' \
-           'of adding conditions to `play` calls.'
-
-      merge!(result)
-      merge!(failure?: false)
-
-      raise Success, self
-    end
-
     def success?
       !failure?
     end

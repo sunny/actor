@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file. This
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## unreleased
+
+Breaking changes:
+- Dropped deprecated support for `call!` on an actor.
+- Dropped deprecated support for `succeed!` inside an actor.
+- Dropped deprecated support for `context` inside an actor.
+- Dropped deprecated support for `required` in input and output definitions.
+
 ## v2.0.0
 
 Breaking changes:

@@ -18,15 +18,6 @@ module ServiceActor
         result = Result.to_result(options).merge!(arguments)
         new(result)._call
         result
-      # DEPRECATED
-      rescue Success
-        result
-      end
-
-      # :nodoc:
-      def call!(**arguments)
-        warn "DEPRECATED: Prefer `#{name}.call` to `#{name}.call!`."
-        call(**arguments)
       end
 
       # Call an actor with arguments. Returns the result and does not raise on
@@ -61,20 +52,9 @@ module ServiceActor
     # Returns the current context from inside an actor.
     attr_reader :result
 
-    def context
-      warn "DEPRECATED: Prefer `result.` to `context.` in #{self.class.name}."
-
-      result
-    end
-
     # Can be called from inside an actor to stop execution and mark as failed.
     def fail!(**arguments)
       result.fail!(**arguments)
-    end
-
-    # DEPRECATED
-    def succeed!(**arguments)
-      result.succeed!(**arguments)
     end
   end
 end

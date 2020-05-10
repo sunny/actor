@@ -5,7 +5,6 @@ require 'service_actor/core'
 # Exceptions
 require 'service_actor/error'
 require 'service_actor/failure'
-require 'service_actor/success'
 require 'service_actor/argument_error'
 
 # Core

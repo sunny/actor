@@ -296,42 +296,6 @@ RSpec.describe Actor do
       end
     end
 
-    context 'when disallowing nil on an input with the deprecated required ' \
-            'argument' do
-      let(:expected_warning) do
-        'DEPRECATED: The "required" option is deprecated. Replace `input ' \
-        ':name, required: true` by `input :name, allow_nil: false` in ' \
-        "DisallowNilOnInputWithDeprecatedRequired.\n"
-      end
-
-      context 'when given the input' do
-        let(:muffled_result) do
-          result = nil
-
-          expect do
-            result = DisallowNilOnInputWithDeprecatedRequired.call(name: 'Jim')
-          end.to output(expected_warning).to_stderr
-
-          result
-        end
-
-        it { expect(muffled_result).to be_a_success }
-      end
-
-      context 'without the input' do
-        let(:expected_error) do
-          'The input "name" on DisallowNilOnInputWithDeprecatedRequired ' \
-          'does not allow nil values.'
-        end
-
-        it 'fails' do
-          expect { DisallowNilOnInputWithDeprecatedRequired.call(name: nil) }
-            .to raise_error(ServiceActor::ArgumentError, expected_error)
-            .and output(expected_warning).to_stderr
-        end
-      end
-    end
-
     context 'when disallowing nil on an output' do
       context 'when set correctly' do
         it 'succeeds' do
@@ -351,90 +315,6 @@ RSpec.describe Actor do
       end
     end
 
-    context 'when disallowing nil on an output with the deprecated required ' \
-            'argument' do
-      let(:expected_warning) do
-        'DEPRECATED: The "required" option is deprecated. Replace `output ' \
-        ':name, required: true` by `output :name, allow_nil: false` in ' \
-        "DisallowNilOnOutputWithDeprecatedRequired.\n"
-      end
-
-      let(:call) do
-        DisallowNilOnOutputWithDeprecatedRequired.call
-      end
-
-      let(:muffled_result) do
-        result = nil
-
-        expect { result = call }.to output(expected_warning).to_stderr
-
-        result
-      end
-
-      it { expect(muffled_result).to be_a_success }
-
-      context 'without the output' do
-        let(:call) do
-          DisallowNilOnOutputWithDeprecatedRequired.call(
-            test_without_output: true,
-          )
-        end
-
-        let(:expected_error) do
-          'The output "name" on DisallowNilOnOutputWithDeprecatedRequired ' \
-          'does not allow nil values.'
-        end
-
-        it 'fails' do
-          expect { muffled_result }
-            .to raise_error(ServiceActor::ArgumentError, expected_error)
-        end
-      end
-    end
-
-    context 'when calling an actor with a deprecated early success' do
-      let(:deprecation_message) do
-        'DEPRECATED: Early success with `succeed!` is deprecated in favor of ' \
-        "adding conditions to `play` calls.\n"
-      end
-
-      let(:result) do
-        result = nil
-
-        expect { result = SucceedPlayingActions.call }
-          .to output(deprecation_message)
-          .to_stderr
-
-        result
-      end
-
-      it { expect(result).to be_kind_of(ServiceActor::Result) }
-      it { expect(result).to be_a_success }
-      it { expect(result).not_to be_a_failure }
-    end
-
-    context 'when playing an actor with a deprecated early success' do
-      let(:deprecation_message) do
-        'DEPRECATED: Early success with `succeed!` is deprecated in favor of ' \
-        "adding conditions to `play` calls.\n"
-      end
-
-      let(:result) do
-        result = nil
-
-        expect { result = SucceedPlayingActions.call }
-          .to output(deprecation_message)
-          .to_stderr
-
-        result
-      end
-
-      it { expect(result).to be_kind_of(ServiceActor::Result) }
-      it { expect(result).to be_a_success }
-      it { expect(result).not_to be_a_failure }
-      it { expect(result.count).to eq(1) }
-    end
-
     context 'when inheriting' do
       it 'calls both the parent and child' do
         result = InheritFromIncrementValue.call(value: 0)
@@ -448,22 +328,6 @@ RSpec.describe Actor do
         expect(result.value).to eq(3)
       end
     end
-  end
-
-  describe '#call!' do
-    let(:expected_warning) do
-      "DEPRECATED: Prefer `DoNothing.call` to `DoNothing.call!`.\n"
-    end
-
-    let(:muffled_result) do
-      result = nil
-      expect { result = DoNothing.call! }.to output(expected_warning).to_stderr
-      result
-    end
-
-    it { expect(muffled_result).to be_kind_of(ServiceActor::Result) }
-    it { expect(muffled_result).to be_a_success }
-    it { expect(muffled_result).not_to be_a_failure }
   end
 
   describe '#result' do
@@ -500,49 +364,6 @@ RSpec.describe Actor do
       it { expect(result).not_to be_a_success }
       it { expect(result.name).to eq('Jim') }
       it { expect(result.value).to eq(0) }
-    end
-
-    context 'when calling an actor with a deprecated early success' do
-      let(:deprecation_message) do
-        'DEPRECATED: Early success with `succeed!` is deprecated in favor of ' \
-        "adding conditions to `play` calls.\n"
-      end
-
-      let(:result) do
-        result = nil
-
-        expect { result = SucceedPlayingActions.result }
-          .to output(deprecation_message)
-          .to_stderr
-
-        result
-      end
-
-      it { expect(result).to be_kind_of(ServiceActor::Result) }
-      it { expect(result).to be_a_success }
-      it { expect(result).not_to be_a_failure }
-    end
-
-    context 'when playing an actor with a deprecated early success' do
-      let(:deprecation_message) do
-        'DEPRECATED: Early success with `succeed!` is deprecated in favor of ' \
-        "adding conditions to `play` calls.\n"
-      end
-
-      let(:result) do
-        result = nil
-
-        expect { result = SucceedPlayingActions.result }
-          .to output(deprecation_message)
-          .to_stderr
-
-        result
-      end
-
-      it { expect(result).to be_kind_of(ServiceActor::Result) }
-      it { expect(result).to be_a_success }
-      it { expect(result).not_to be_a_failure }
-      it { expect(result.count).to eq(1) }
     end
   end
 end
