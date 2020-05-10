@@ -8,10 +8,10 @@ require 'service_actor/failure'
 require 'service_actor/argument_error'
 
 # Core
-require 'service_actor/result'
+require 'service_actor/core'
 require 'service_actor/attributable'
 require 'service_actor/playable'
-require 'service_actor/core'
+require 'service_actor/result'
 
 # Concerns
 require 'service_actor/type_checkable'
@@ -24,6 +24,8 @@ module ServiceActor
     def self.included(base)
       # Core
       base.include(Core)
+      base.include(Attributable)
+      base.include(Playable)
 
       # Concerns
       base.include(TypeCheckable)

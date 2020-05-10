@@ -3,7 +3,8 @@
 require 'ostruct'
 
 module ServiceActor
-  # Represents the result of an actor.
+  # Represents the context of an actor, holding the data from both its inputs
+  # and outputs.
   class Result < OpenStruct
     def self.to_result(data)
       return data if data.is_a?(self)

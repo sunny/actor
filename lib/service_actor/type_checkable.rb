@@ -1,14 +1,13 @@
 # frozen_string_literal: true
 
 module ServiceActor
-  # Adds `type:` checking to inputs and outputs. Accepts classes or class names
+  # Adds `type:` checking to inputs and outputs. Accepts class names or classes
   # that should match an ancestor. Also accepts arrays.
   #
   # Example:
   #
   #   class ReduceOrderAmount < Actor
-  #     input :order, type: Order
-  #     input :coupon, type: 'Coupon'
+  #     input :order, type: 'Order'
   #     input :amount, type: [Integer, Float]
   #     input :bonus_applied, type: [TrueClass FalseClass]
   #   end

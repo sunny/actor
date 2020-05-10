@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
 module ServiceActor
-  # Add checks to your inputs, by calling lambdas with the name of you choice.
-  # Will raise an error if any check does return a truthy value.
+  # Add checks to your inputs, by calling lambdas with the name of you choice
+  # under the "must" key.
+  #
+  # Will raise an error if any check returns a truthy value.
   #
   # Example:
   #

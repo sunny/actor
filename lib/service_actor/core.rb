@@ -1,13 +1,9 @@
 # frozen_string_literal: true
 
 module ServiceActor
-  # Actors should start with a verb, inherit from Actor and implement a `call`
-  # method.
   module Core
     def self.included(base)
       base.extend(ClassMethods)
-      base.include(Attributable)
-      base.include(Playable)
     end
 
     module ClassMethods
