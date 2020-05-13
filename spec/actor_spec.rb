@@ -328,6 +328,22 @@ RSpec.describe Actor do
         expect(result.value).to eq(3)
       end
     end
+
+    context 'when using type, default, allow_nil and must' do
+      context 'when not given a value' do
+        it 'uses the default' do
+          result = ValidateWeekdays.call
+          expect(result.weekdays).to eq([0, 1, 2, 3, 4])
+        end
+      end
+
+      context 'when given a nil value' do
+        it 'returns nil' do
+          result = ValidateWeekdays.call(weekdays: nil)
+          expect(result.weekdays).to be_nil
+        end
+      end
+    end
   end
 
   describe '#result' do
