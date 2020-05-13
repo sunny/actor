@@ -344,6 +344,27 @@ RSpec.describe Actor do
         end
       end
     end
+
+    context 'when using in' do
+      context 'when given a correct value' do
+        it 'returns the message' do
+          result = PayWithProvider.call(provider: 'PayPal')
+          expect(result.message).to eq('Money transferred to PayPal!')
+        end
+      end
+
+      context 'when given an incorrect value' do
+        let(:expected_alert) do
+          'Input provider must be included in ' \
+            '["MANGOPAY", "PayPal", "Stripe"]'
+        end
+
+        it 'fails' do
+          expect { PayWithProvider.call(provider: 'Paypal') }
+            .to raise_error(expected_alert)
+        end
+      end
+    end
   end
 
   describe '#result' do

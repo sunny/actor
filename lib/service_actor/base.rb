@@ -18,6 +18,7 @@ require 'service_actor/type_checkable'
 require 'service_actor/nil_checkable'
 require 'service_actor/conditionable'
 require 'service_actor/defaultable'
+require 'service_actor/collectionable'
 
 module ServiceActor
   module Base
@@ -32,6 +33,7 @@ module ServiceActor
       base.include(NilCheckable)
       base.include(Conditionable)
       base.include(Defaultable)
+      base.include(Collectionable)
     end
   end
 end
