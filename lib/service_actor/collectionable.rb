@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module ServiceActor
-  # Add checks to your inputs, by specifyig what values are authorized
+  # Add checks to your inputs, by specifying what values are authorized
   # under the "in" key.
   #
   # Example:
@@ -9,7 +9,6 @@ module ServiceActor
   #   class Pay < Actor
   #     input :provider, in: ['MANGOPAY', 'PayPal', 'Stripe']
   #   end
-
   module Collectionable
     def self.included(base)
       base.prepend(PrependedMethods)
