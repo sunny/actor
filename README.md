@@ -142,8 +142,21 @@ result = BuildGreeting.call
 
 ### Conditions
 
-You can add simple conditions that the inputs must verify, with the name of your
-choice under `must`:
+You can ensure an input is included in a collection by using `in` (unreleased
+yet):
+
+```rb
+class Pay < Actor
+  input :currency, in: %w[EUR USD]
+
+  # …
+end
+```
+
+This raises an argument error if the input does not match one of the given
+values.
+
+You can also add custom conditions with the name of your choice by using `must`:
 
 ```rb
 class UpdateAdminUser < Actor
@@ -156,7 +169,7 @@ class UpdateAdminUser < Actor
 end
 ```
 
-In case the input does not match, it will raise an argument error.
+This raises an argument error if the given lambda returns a falsey value.
 
 ### Allow nil
 
@@ -390,9 +403,10 @@ After checking out the repo, run `bin/setup` to install dependencies. Then, run
 interactive prompt.
 
 To release a new version, update the version number in `version.rb`, and in the
-`CHANGELOG.md`, run `rake`, and create a commit for this version. You can then
-run `rake release`, which will create a git tag for the version, push git
-commits and tags, and push the gem to [rubygems.org](https://rubygems.org).
+`CHANGELOG.md`. Update the `README.md` if there are missing segments, make sure
+tests and linting are pristine by calling `rake`, then create a commit for this
+version. You can then run `rake release`, which will create a git tag, push
+using git, and push the gem to [rubygems.org](https://rubygems.org).
 
 ## Contributing
 

@@ -5,6 +5,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## unreleased
 
+Added:
+- Add `in:` option to inputs to ensure they match a given collection.
+
 Breaking changes:
 - Dropped deprecated support for `call!` on an actor.
 - Dropped deprecated support for `succeed!` inside an actor.
