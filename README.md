@@ -416,7 +416,7 @@ Bug reports and pull requests are welcome
 This project is intended to be a safe, welcoming space for collaboration, and
 everyone interacting in the project’s codebase and issue tracker is expected to
 adhere to the [Contributor Covenant code of
-conduct](https://github.com/sunny/actor/blob/master/CODE_OF_CONDUCT.md).
+conduct](https://github.com/sunny/actor/blob/main/CODE_OF_CONDUCT.md).
 
 ## License
 
