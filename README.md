@@ -381,7 +381,7 @@ However there are a few key differences which make `actor` unique:
   and failures are not hidden away because you forgot to use `!`.
 - Allows defaults, type checking, requirements and conditions on inputs.
 - Delegates methods on the context: `foo` vs `context.foo`, `self.foo =` vs
-  `context.foo = `, fail!` vs `context.fail!`.
+  `context.foo =`, fail!` vs `context.fail!`.
 - Shorter setup syntax: inherit from `< Actor` vs having to `include Interactor`
   and `include Interactor::Organizer`.
 - Organizers allow lambdas, being called multiple times, and having conditions.
