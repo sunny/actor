@@ -42,5 +42,10 @@ Gem::Specification.new do |spec|
 
   # Linting
   spec.add_development_dependency 'rubocop'
+
+  # Lint RSpec code
   spec.add_development_dependency 'rubocop-rspec'
+
+  # Formatter for GitHub's Code scanning
+  spec.add_development_dependency 'code-scanning-rubocop'
 end
