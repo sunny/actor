@@ -48,6 +48,6 @@ Gem::Specification.new do |spec|
   # Lint RSpec code
   spec.add_development_dependency 'rubocop-rspec'
 
-  # Formatter for GitHub's Code scanning
+  # Formatter for GitHub's code scanning
   spec.add_development_dependency 'code-scanning-rubocop'
 end
