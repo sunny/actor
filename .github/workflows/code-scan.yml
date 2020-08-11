@@ -1,12 +1,10 @@
-name: Lint
+name: Code scan
 
 on: push
 
 jobs:
   rubocop:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
 
     steps:
     - name: Checkout repository
@@ -20,7 +18,6 @@ jobs:
     - name: Install dependencies
       run: bundle install --jobs 4 --retry 3
 
-
     - name: RuboCop code scanning
       run: |
         bash -c "
@@ -32,6 +29,3 @@ jobs:
       uses: github/codeql-action/upload-sarif@v1
       with:
         sarif_file: rubocop.sarif
-
-    - name: RuboCop output
-      run: bin/rubocop

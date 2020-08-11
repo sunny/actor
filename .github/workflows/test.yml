@@ -1,4 +1,4 @@
-name: Test
+name: Test & Lint
 
 on:
   push:
@@ -8,7 +8,6 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -22,4 +21,7 @@ jobs:
       run: bundle install --jobs 4 --retry 3
 
     - name: Specs
-      run: bundle exec rake spec
+      run: bin/rake spec
+
+    - lint: Lint
+      run: bin/rubocop
