@@ -1,4 +1,4 @@
-name: "Rubocop"
+name: Lint
 
 on: push
 
@@ -12,20 +12,18 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    # If running on a self-hosted runner, check it meets the requirements
-    # listed at https://github.com/ruby/setup-ruby#using-self-hosted-runners
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: 2.7.1
 
     - name: Install dependencies
-      run: bundle install
+      run: bundle install --jobs 4 --retry 3
 
-    - name: Rubocop run
+    - name: Run RuboCop
       run: |
         bash -c "
-          bundle exec rubocop --require code_scanning --format CodeScanning::SarifFormatter -o rubocop.sarif
+          bin/rubocop --require code_scanning --format CodeScanning::SarifFormatter -o rubocop.sarif
           [[ $? -ne 2 ]]
         "
 

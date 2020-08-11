@@ -1,4 +1,4 @@
-name: Tests
+name: Test
 
 on:
   push:
@@ -18,8 +18,8 @@ jobs:
       with:
         ruby-version: 2.7.1
 
-    - name: Test and lint with rake
-      run: |
-        gem install bundler
-        bundle install --jobs 4 --retry 3
-        bundle exec rake
+    - name: Install dependencies
+      run: bundle install --jobs 4 --retry 3
+
+    - name: Specs
+      run: bundle exec rake spec
