@@ -1,0 +1,27 @@
+name: Test & Lint
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Ruby
+      uses: actions/setup-ruby@v1
+      with:
+        ruby-version: 2.7.1
+
+    - name: Install dependencies
+      run: bundle install --jobs 4 --retry 3
+
+    - name: Specs
+      run: bin/rake spec
+
+    - lint: Lint
+      run: bin/rubocop

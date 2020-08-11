@@ -20,13 +20,14 @@ module ServiceActor
         self.class.inputs.each do |name, input|
           next if result.key?(name)
 
-          unless input.key?(:default)
-            raise ArgumentError, "Input #{name} on #{self.class} is missing."
+          if input.key?(:default)
+            default = input[:default]
+            default = default.call if default.respond_to?(:call)
+            result[name] = default
+            next
           end
 
-          default = input[:default]
-          default = default.call if default.respond_to?(:call)
-          result[name] = default
+          raise(ArgumentError, "Input #{name} on #{self.class} is missing.")
         end
 
         super

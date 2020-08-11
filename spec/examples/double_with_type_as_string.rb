@@ -5,6 +5,6 @@ class DoubleWithTypeAsString < Actor
   output :double
 
   def call
-    self.double = value * value
+    self.double = value * 2
   end
 end

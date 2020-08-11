@@ -31,6 +31,8 @@ Gem::Specification.new do |spec|
     `git ls-files -z lib`.split("\x0")
   end
 
+  spec.required_ruby_version = ['>= 2.3.7', '< 2.8.0']
+
   # Tests
   spec.add_development_dependency 'rspec'
 
@@ -42,5 +44,10 @@ Gem::Specification.new do |spec|
 
   # Linting
   spec.add_development_dependency 'rubocop'
+
+  # Lint RSpec code
   spec.add_development_dependency 'rubocop-rspec'
+
+  # Formatter for GitHub's code scanning
+  spec.add_development_dependency 'code-scanning-rubocop'
 end
