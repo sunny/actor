@@ -13,11 +13,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Ruby 2.6
+    - name: Set up Ruby
       uses: actions/setup-ruby@v1
       with:
-        ruby-version: 2.6.x
-    - name: Build and test with Rake
+        ruby-version: 2.7.1
+
+    - name: Test and lint with rake
       run: |
         gem install bundler
         bundle install --jobs 4 --retry 3
