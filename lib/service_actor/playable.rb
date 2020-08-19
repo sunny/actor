@@ -64,7 +64,8 @@ module ServiceActor
           actor = actor.new(result)
           actor._call
         else
-          actor.call(result)
+          new_result = actor.call(result)
+          result.merge!(new_result.to_h) if new_result.respond_to?(:to_h)
         end
 
         (@played ||= []).unshift(actor)

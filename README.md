@@ -389,6 +389,9 @@ However there are a few key differences which make `actor` unique:
 - No `before`, `after` and `around` hooks, prefer using `play` with lambdas or
   overriding `call`.
 
+Actor supports mixing actors & interactors when using `play` for a smooth
+migration.
+
 ## Thanks
 
 Thank you to @nicoolas25, @AnneSottise & @williampollet for the early thoughts

@@ -7,6 +7,7 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 Added:
 - Add `in:` option to inputs to ensure they match a given collection.
+- Add support for instances of Interactor instead of actors when using `play`.
 
 Breaking changes:
 - Dropped deprecated support for `call!` on an actor.

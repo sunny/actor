@@ -50,4 +50,7 @@ Gem::Specification.new do |spec|
 
   # Formatter for GitHub's code scanning
   spec.add_development_dependency 'code-scanning-rubocop'
+
+  # For testing Interactor migration support
+  spec.add_development_dependency 'interactor'
 end
