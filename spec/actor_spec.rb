@@ -345,7 +345,7 @@ RSpec.describe Actor do
       end
     end
 
-    context 'when using in' do
+    context 'when using "in"' do
       context 'when given a correct value' do
         it 'returns the message' do
           result = PayWithProvider.call(provider: 'PayPal')
@@ -363,6 +363,13 @@ RSpec.describe Actor do
           expect { PayWithProvider.call(provider: 'Paypal') }
             .to raise_error(expected_alert)
         end
+      end
+    end
+
+    context 'when playing interactors' do
+      it 'succeeds' do
+        result = PlayInteractor.call(value: 5)
+        expect(result.value).to eq(5 + 2)
       end
     end
   end
