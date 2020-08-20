@@ -23,5 +23,5 @@ jobs:
     - name: Specs
       run: bin/rake spec
 
-    - lint: Lint
+    - name: Lint
       run: bin/rubocop
