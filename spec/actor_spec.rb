@@ -393,6 +393,17 @@ RSpec.describe Actor do
       it { expect(result.some_other_key).to eq(42) }
     end
 
+    context 'with an argument error, caught by fail_on' do
+      let(:result) { FailOnArgumentError.result(name: 42) }
+      let(:expected_error_message) do
+        'Input name on FailOnArgumentError must be of type String but was ' \
+        'Integer'
+      end
+
+      it { expect(result).to be_a_failure }
+      it { expect(result.error).to eq(expected_error_message) }
+    end
+
     context 'when playing several actors' do
       let(:result) { PlayActors.result(value: 1) }
 

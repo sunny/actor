@@ -337,6 +337,20 @@ end
 
 You can use this to trigger an early success.
 
+### Fail on argument error
+
+By default, errors on inputs will raise an error, even when using `.result`
+instead of `.call`. If instead you want to mark the actor as failed, you can
+catch the exception to treat it as an actor failure:
+
+```rb
+class PlaceOrder < Actor
+  fail_on ServiceActor::ArgumentError
+
+  # …
+end
+```
+
 ## Use with Rails
 
 The [service_actor-rails](https://github.com/sunny/actor-rails/) gem includes a
