@@ -29,7 +29,7 @@ module ServiceActor
             next if check.call(value)
 
             raise ArgumentError,
-                  "Input #{key} must #{name} but was #{value.inspect}."
+                  "Input #{key} must #{name} but was #{value.inspect}"
           end
         end
 
