@@ -102,7 +102,7 @@ RSpec.describe Actor do
         expect { SetNameToDowncase.call }
           .to raise_error(
             ServiceActor::ArgumentError,
-            'Input name on SetNameToDowncase is missing.',
+            'Input name on SetNameToDowncase is missing',
           )
       end
     end
@@ -186,7 +186,7 @@ RSpec.describe Actor do
 
     context 'when called with the wrong condition' do
       it 'suceeds' do
-        expected_error = 'Input name must be_lowercase but was "42".'
+        expected_error = 'Input name must be_lowercase but was "42"'
 
         expect { SetNameWithInputCondition.call(name: '42') }
           .to raise_error(ServiceActor::ArgumentError, expected_error)
@@ -207,7 +207,7 @@ RSpec.describe Actor do
 
     context 'when a type is defined but the argument is nil' do
       let(:expected_message) do
-        'The input "name" on SetNameToDowncase does not allow nil values.'
+        'The input "name" on SetNameToDowncase does not allow nil values'
       end
 
       it 'raises' do
@@ -273,7 +273,7 @@ RSpec.describe Actor do
       context 'without the input' do
         it 'fails' do
           expected_error =
-            'The input "name" on DisallowNilOnInput does not allow nil values.'
+            'The input "name" on DisallowNilOnInput does not allow nil values'
 
           expect { DisallowNilOnInput.call(name: nil) }
             .to raise_error(ServiceActor::ArgumentError, expected_error)
@@ -306,8 +306,7 @@ RSpec.describe Actor do
       context 'without the output' do
         it 'fails' do
           expected_error =
-            'The output "name" on DisallowNilOnOutput does not allow nil ' \
-            'values.'
+            'The output "name" on DisallowNilOnOutput does not allow nil values'
 
           expect { DisallowNilOnOutput.call(test_without_output: true) }
             .to raise_error(ServiceActor::ArgumentError, expected_error)
