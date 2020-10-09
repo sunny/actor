@@ -3,6 +3,11 @@
 All notable changes to this project will be documented in this file. This
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## unreleased
+
+Fixes:
+- Harmonize error messages by removing trailing dots.
+
 ## v3.0.0
 
 Added:

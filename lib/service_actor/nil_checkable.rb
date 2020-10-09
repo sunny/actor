@@ -31,7 +31,7 @@ module ServiceActor
 
           raise ArgumentError,
                 "The #{origin} \"#{name}\" on #{self.class} does not allow " \
-                'nil values.'
+                'nil values'
         end
       end
 

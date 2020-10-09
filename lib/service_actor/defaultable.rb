@@ -27,7 +27,7 @@ module ServiceActor
             next
           end
 
-          raise(ArgumentError, "Input #{name} on #{self.class} is missing.")
+          raise(ArgumentError, "Input #{name} on #{self.class} is missing")
         end
 
         super
