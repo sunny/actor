@@ -5,6 +5,8 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## unreleased
 
+## v3.1.0
+
 Added:
 - Add `fail_on` to catch argument errors and turn them into actor failures.
 
