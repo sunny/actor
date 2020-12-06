@@ -17,11 +17,11 @@ module ServiceActor
       def inherited(child)
         super
 
-        child.fail_ons.append(*fail_ons)
+        child.fail_ons.push(*fail_ons)
       end
 
       def fail_on(*exceptions)
-        fail_ons.append(*exceptions)
+        fail_ons.push(*exceptions)
       end
 
       def fail_ons
