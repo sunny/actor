@@ -5,6 +5,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## unreleased
 
+Fixes:
+- Ruby 2.4 and 3 support
+
 ## v3.1.0
 
 Added:

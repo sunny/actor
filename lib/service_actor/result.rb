@@ -28,7 +28,7 @@ module ServiceActor
     end
 
     def failure?
-      super || false
+      self[:failure?] || false
     end
 
     def merge!(result)
