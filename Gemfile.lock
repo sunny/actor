@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    service_actor (3.1.0)
+    service_actor (3.1.1)
 
 GEM
   remote: https://rubygems.org/
@@ -64,9 +64,6 @@ DEPENDENCIES
   rubocop-performance
   rubocop-rspec
   service_actor!
-
-RUBY VERSION
-   ruby 2.7.2p137
 
 BUNDLED WITH
    2.1.4

@@ -421,9 +421,9 @@ interactive prompt.
 
 To release a new version, update the version number in `version.rb`, and in the
 `CHANGELOG.md`. Update the `README.md` if there are missing segments, make sure
-tests and linting are pristine by calling `rake`, then create a commit for this
-version. You can then run `rake release`, which will create a git tag, push
-using git, and push the gem to [rubygems.org](https://rubygems.org).
+tests and linting are pristine by calling `bundle && rake`, then create a commit
+for this version. You can then run `rake release`, which will assign a git tag,
+push using git, and push the gem to [rubygems.org](https://rubygems.org).
 
 ## Contributing
 
