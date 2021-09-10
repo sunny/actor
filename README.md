@@ -23,7 +23,6 @@ and controllers thin.
   - [Rollback](#rollback)
   - [Lambdas](#lambdas)
   - [Play conditions](#play-conditions)
-- [Use with Rails](#use-with-rails)
 - [Testing](#testing)
 - [Build your own actor](#build-your-own-actor)
 - [Influences](#influences)
@@ -34,11 +33,19 @@ and controllers thin.
 
 ## Installation
 
-Add these lines to your application's Gemfile:
+Add these lines to your application’s Gemfile:
 
 ```rb
 # Composable service objects
 gem 'service_actor'
+```
+
+When using Rails, you can include the
+[service_actor-rails](https://github.com/sunny/actor-rails) gem:
+
+```ruby
+# Composable service objects
+gem "service_actor-rails"
 ```
 
 ## Usage
@@ -351,11 +358,6 @@ class PlaceOrder < Actor
 end
 ```
 
-## Use with Rails
-
-The [service_actor-rails](https://github.com/sunny/actor-rails/) gem includes a
-Rails generator to create an actor and its spec.
-
 ## Testing
 
 In your application, add automated testing to your actors as you would do to any
@@ -385,7 +387,7 @@ end
 
 This gem is heavily influenced by
 [Interactor](https://github.com/collectiveidea/interactor) ♥.
-However there are a few key differences which make `actor` unique:
+Some key differences make `actor` unique:
 
 - Does not [hide errors when an actor fails inside another
   actor](https://github.com/collectiveidea/interactor/issues/170).
