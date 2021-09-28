@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'service_actor/core'
-
 # Exceptions
 require 'service_actor/error'
 require 'service_actor/failure'
@@ -33,8 +31,8 @@ module ServiceActor
       base.include(TypeCheckable)
       base.include(NilCheckable)
       base.include(Conditionable)
-      base.include(Defaultable)
       base.include(Collectionable)
+      base.include(Defaultable)
       base.include(Failable)
     end
   end
