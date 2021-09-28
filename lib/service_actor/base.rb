@@ -33,8 +33,8 @@ module ServiceActor
       base.include(TypeCheckable)
       base.include(NilCheckable)
       base.include(Conditionable)
-      base.include(Defaultable)
       base.include(Collectionable)
+      base.include(Defaultable)
       base.include(Failable)
     end
   end

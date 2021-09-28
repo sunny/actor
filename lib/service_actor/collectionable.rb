@@ -22,7 +22,8 @@ module ServiceActor
           next if options[:in].include?(result[key])
 
           raise ArgumentError,
-                "Input #{key} must be included in #{options[:in].inspect}"
+                "Input #{key} must be included in #{options[:in].inspect} " \
+                "but instead was #{result[key].inspect}"
         end
 
         super
