@@ -5,6 +5,8 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## unreleased
 
+## v3.1.2
+
 Fixes:
 - The `in:` option supports the `default:` keyword as well.
 
