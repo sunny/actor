@@ -167,7 +167,6 @@ RSpec.describe Actor do
           .to raise_error(ServiceActor::Failure, 'Ouch')
       end
 
-      # rubocop:disable RSpec/MultipleExpectations
       it 'changes the context up to the failure then calls rollbacks' do
         expect { FailPlayingActionsWithRollback.call(result) }
           .to raise_error(ServiceActor::Failure)
@@ -175,7 +174,16 @@ RSpec.describe Actor do
         expect(result.name).to eq('Jim')
         expect(result.value).to eq(0)
       end
-      # rubocop:enable RSpec/MultipleExpectations
+    end
+
+    context 'when playing several actors, one fails, one rolls back' do
+      let(:result) { PlayErrorAndCatchItInRollback.result }
+
+      it 'catches the error inside the rollback' do
+        expect(result.called).to eq(true)
+        expect(result.found_error).to eq('Found “Ouch”')
+        expect(result.some_other_key).to eq(42)
+      end
     end
 
     context 'when called with a matching condition' do
