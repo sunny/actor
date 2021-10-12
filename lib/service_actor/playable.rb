@@ -60,7 +60,7 @@ module ServiceActor
       private
 
       def play_actor(actor)
-        if actor.is_a?(Class) && actor.ancestors.include?(Actor)
+        if actor.is_a?(Class) && actor.ancestors.include?(ServiceActor::Base)
           actor = actor.new(result)
           actor._call
         else

@@ -135,6 +135,14 @@ RSpec.describe Actor do
       end
     end
 
+    context 'when playing actors that do not inherit from Actor' do
+      let(:result) { PlayActors.call }
+
+      it 'merges the result' do
+        expect(result.stripped_down_actor).to eq(true)
+      end
+    end
+
     context 'when using `play` several times' do
       let(:result) { PlayMultipleTimes.call(value: 1) }
 
