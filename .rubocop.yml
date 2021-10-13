@@ -47,3 +47,6 @@ Lint/StructNewOverride:
 
 Style/ExponentialNotation:
   Enabled: true
+
+RSpec/MultipleExpectations:
+  Enabled: false
