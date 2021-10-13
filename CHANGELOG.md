@@ -5,6 +5,10 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## unreleased
 
+Fixes:
+- The `play` method reckognizes as actors anything that inherits from
+  `ServiceActor::Core` instead of just `Actor`.
+
 ## v3.1.2
 
 Fixes:
