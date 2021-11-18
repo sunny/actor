@@ -18,7 +18,7 @@ and controllers thin.
   - [Conditions](#conditions)
   - [Allow nil](#allow-nil)
   - [Types](#types)
-  - [Result](#result)
+  - [Fail](#fail)
 - [Play actors in a sequence](#play-actors-in-a-sequence)
   - [Rollback](#rollback)
   - [Lambdas](#lambdas)
@@ -103,7 +103,7 @@ class BuildGreeting < Actor
   output :greeting
 
   def call
-    self.greeting = 'Have a wonderful day!'
+    self.greeting = "Have a wonderful day!"
   end
 end
 ```
@@ -122,8 +122,8 @@ Inputs can be marked as optional by providing a default:
 ```rb
 class BuildGreeting < Actor
   input :name
-  input :adjective, default: 'wonderful'
-  input :length_of_time, default: -> { ['day', 'week', 'month'].sample }
+  input :adjective, default: "wonderful"
+  input :length_of_time, default: -> { ["day", "week", "month"].sample }
 
   output :greeting
 
@@ -136,7 +136,7 @@ end
 This lets you call the actor without specifying those keys:
 
 ```rb
-result = BuildGreeting.call(name: 'Jim')
+result = BuildGreeting.call(name: "Jim")
 result.greeting # => "Have a wonderful week Jim!"
 ```
 
@@ -149,8 +149,7 @@ result = BuildGreeting.call
 
 ### Conditions
 
-You can ensure an input is included in a collection by using `in` (unreleased
-yet):
+You can ensure an input is included in a collection by using `in`:
 
 ```rb
 class Pay < Actor
@@ -192,12 +191,12 @@ end
 
 ### Types
 
-Sometimes it can help to have a quick way of making sure we didn't mess up our
+Sometimes it can help to have a quick way of making sure we didn’t mess up our
 inputs.
 
 For that you can use the `type` option and giving a class or an array
-of possible classes. If the input or output doesn't match is not an instance of
-these types, an error is raised.
+of possible classes. If the input or output doesn’t match these types, an
+error is raised.
 
 ```rb
 class UpdateUser < Actor
@@ -212,10 +211,9 @@ You may also use strings instead of constants, such as `type: 'User'`.
 
 When using a type condition, `allow_nil` defaults to `false`.
 
-### Result
+### Fail
 
-All actors return a successful result by default. To stop the execution and
-mark an actor as having failed, use `fail!`:
+To stop the execution and mark an actor as having failed, use `fail!`:
 
 ```rb
 class UpdateUser
@@ -225,7 +223,7 @@ class UpdateUser
   def call
     user.attributes = attributes
 
-    fail!(error: 'Invalid user') unless user.valid?
+    fail!(error: "Invalid user") unless user.valid?
 
     # …
   end
@@ -235,7 +233,8 @@ end
 This will raise an error in your app with the given data added to the result.
 
 To test for the success of your actor instead of raising an exception, use
-`.result` instead of `.call` and call `success?` or `failure?` on the result.
+`.result` instead of `.call`. You can then call `success?` or `failure?` on
+the result.
 
 For example in a Rails controller:
 
@@ -253,7 +252,7 @@ class UsersController < ApplicationController
 end
 ```
 
-Any keys you add to `fail!` will be added to the result, for example you could
+The keys you add to `fail!` will be added to the result, for example you could
 do: `fail!(error_type: "validation", error_code: "uv52", …)`.
 
 ## Play actors in a sequence
@@ -302,8 +301,8 @@ anything to clean up if they call `fail!`.
 
 ### Lambdas
 
-You can use inline actions using lambdas. Inside these lambdas, you don't have
-getters and setters but have access to the shared result:
+You can use inline actions using lambdas. Inside these lambdas you have access to
+the shared result:
 
 ```rb
 class Pay < Actor
@@ -315,15 +314,15 @@ end
 ```
 
 Like in this example, lambdas can be useful for small work or preparing the
-result for the next actors. If you want to do more work before, or after the
-whole `play`, you can also override the `call` method. For example:
+result for the next actors. If you want to do more work before, after or around
+the whole `play`, you can also override the `call` method. For example:
 
 ```rb
 class Pay < Actor
   # …
 
   def call
-    Time.with_timezone('Paris') do
+    Time.with_timezone("Paris") do
       super
     end
   end
@@ -354,6 +353,8 @@ catch the exception to treat it as an actor failure:
 class PlaceOrder < Actor
   fail_on ServiceActor::ArgumentError
 
+  input :currency, in: ["EUR", "USD"]
+
   # …
 end
 ```
@@ -368,11 +369,11 @@ make it easier for you to test your application.
 
 ## Build your own actor
 
-If you application already uses an "Actor" class, you can build your own by
-changing the gem's require statement:
+If you application already uses a class called “Actor”, you can build your own
+by changing the gem’s require statement:
 
 ```rb
-gem 'service_actor', require: 'service_actor/base'
+gem "service_actor", require: "service_actor/base"
 ```
 
 And building your own class to inherit from:
@@ -387,7 +388,7 @@ end
 
 This gem is heavily influenced by
 [Interactor](https://github.com/collectiveidea/interactor) ♥.
-Some key differences make `actor` unique:
+Some key differences make Actor unique:
 
 - Does not [hide errors when an actor fails inside another
   actor](https://github.com/collectiveidea/interactor/issues/170).
