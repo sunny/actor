@@ -10,6 +10,9 @@ gem 'rubocop', '< 1.13'
 # Here because v1.11.0 requires ruby version >= 2.5.
 gem 'rubocop-performance', '< 1.11.0'
 
+# Here because v2.3.0 requires ruby version >= 2.5.
+gem 'rubocop-rspec', '< 2.3.0'
+
 # RuboCop dependency
 # Here because v1.21.0 requires ruby version >= 2.5.
 gem 'parallel', '< 1.21'
