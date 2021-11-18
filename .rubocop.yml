@@ -1,6 +1,28 @@
 require:
   - rubocop-rspec
 
+AllCops:
+  NewCops: enable
+  SuggestExtensions: false
+
+Bundler/GemComment:
+  Enabled: true
+
+Gemspec/OrderedDependencies:
+  Enabled: false
+
+Gemspec/RequiredRubyVersion:
+  Enabled: false
+
+Layout/SpaceAroundMethodCallOperator:
+  Enabled: true
+
+Lint/RaiseException:
+  Enabled: true
+
+Lint/StructNewOverride:
+  Enabled: true
+
 Metrics/BlockLength:
   Exclude:
     - spec/**/*
@@ -11,6 +33,12 @@ Metrics/MethodLength:
   Exclude:
     - spec/**/*
     - service_actor.gemspec
+
+RSpec/NestedGroups:
+  Max: 4
+
+RSpec/MultipleExpectations:
+  Enabled: false
 
 Style/HashEachMethods:
   Enabled: true
@@ -27,26 +55,8 @@ Style/Documentation:
 Style/TrailingCommaInArguments:
   EnforcedStyleForMultiline: comma
 
-Gemspec/OrderedDependencies:
+Style/OpenStructUse:
   Enabled: false
-
-Bundler/GemComment:
-  Enabled: true
-
-RSpec/NestedGroups:
-  Max: 4
-
-Layout/SpaceAroundMethodCallOperator:
-  Enabled: true
-
-Lint/RaiseException:
-  Enabled: true
-
-Lint/StructNewOverride:
-  Enabled: true
 
 Style/ExponentialNotation:
   Enabled: true
-
-RSpec/MultipleExpectations:
-  Enabled: false

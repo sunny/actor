@@ -36,15 +36,10 @@ module ServiceActor
       end
 
       def allow_nil?(options)
-        if options.key?(:allow_nil)
-          options[:allow_nil]
-        elsif options.key?(:default) && options[:default].nil?
-          true
-        elsif options[:type]
-          false
-        else
-          true
-        end
+        return options[:allow_nil] if options.key?(:allow_nil)
+        return true if options.key?(:default) && options[:default].nil?
+
+        !options[:type]
       end
     end
   end
