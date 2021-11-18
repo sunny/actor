@@ -47,7 +47,7 @@ module ServiceActor
       to_h[name]
     end
 
-    # Redefined here to override the method on `Object`.
+    # Defined here to override the method on `Object`.
     def display
       to_h.fetch(:display)
     end

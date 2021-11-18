@@ -38,12 +38,15 @@ module ServiceActor
     # To implement in your actors.
     def rollback; end
 
+    # This method is used internally to override behavior on call. Overriding
+    # `call` instead would mean that end-users have to call `super` in their
+    # actors.
     # :nodoc:
     def _call
       call
     end
 
-    private
+    protected
 
     # Returns the current context from inside an actor.
     attr_reader :result
