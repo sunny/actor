@@ -4,7 +4,7 @@ source 'https://rubygems.org'
 
 gemspec
 
-if Gem::Version.new('2.5') < Gem::Version.new(RUBY_VERSION)
+if Gem::Version.new(RUBY_VERSION) < Gem::Version.new('2.5')
   # Here because v1.13 requires ruby version >= 2.5.
   gem 'rubocop', '< 1.13'
 
