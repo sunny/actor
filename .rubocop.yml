@@ -55,6 +55,9 @@ Style/HashTransformValues:
 Style/Documentation:
   Enabled: false
 
+Style/OpenStructUse:
+  Enabled: false
+
 Style/TrailingCommaInArguments:
   EnforcedStyleForMultiline: comma
 
