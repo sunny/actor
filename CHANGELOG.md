@@ -8,6 +8,7 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Fixes:
 - The `play` method reckognizes as actors anything that inherits from
   `ServiceActor::Core` instead of just `Actor`.
+- Remove warning when calling `#rollback`.
 
 ## v3.1.2
 
