@@ -48,7 +48,7 @@ module ServiceActor
       end
 
       def rollback
-        return unless @played
+        return unless defined?(@played)
 
         @played.each do |actor|
           next unless actor.respond_to?(:rollback)
