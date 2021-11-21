@@ -40,6 +40,9 @@ RSpec/NestedGroups:
 RSpec/MultipleExpectations:
   Enabled: false
 
+Style/AsciiComments:
+  Enabled: false
+
 Style/HashEachMethods:
   Enabled: true
 
@@ -52,11 +55,11 @@ Style/HashTransformValues:
 Style/Documentation:
   Enabled: false
 
-Style/TrailingCommaInArguments:
-  EnforcedStyleForMultiline: comma
-
 Style/OpenStructUse:
   Enabled: false
+
+Style/TrailingCommaInArguments:
+  EnforcedStyleForMultiline: comma
 
 Style/ExponentialNotation:
   Enabled: true

@@ -1,9 +1,9 @@
-name: Test & Lint
+name: Test
 
 on: [push, pull_request]
 
 jobs:
-  build:
+  test:
     name: on ruby ${{matrix.ruby}}
     runs-on: ubuntu-latest
 
@@ -22,10 +22,9 @@ jobs:
         ruby-version: ${{matrix.ruby}}
 
     - name: Install dependencies
-      run: bundle install --jobs 4 --retry 3
+      # Fallback to an update for the diffent dependecy versions when using
+      # Ruby 2.4.
+      run: bundle install --jobs 4 --retry 3 || bundle update --jobs 4 --retry 3
 
-    - name: Specs
+    - name: RSpec
       run: bin/rake spec
-
-    - name: Lint
-      run: bin/rubocop

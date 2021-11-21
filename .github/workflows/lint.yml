@@ -1,0 +1,22 @@
+name: Lint
+
+on: pull_request
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 2.7.2
+
+    - name: Install dependencies
+      run: bundle install --jobs 4 --retry 3
+
+    - name: RuboCop
+      run: bin/rubocop
