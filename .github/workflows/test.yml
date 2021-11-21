@@ -22,6 +22,8 @@ jobs:
         ruby-version: ${{matrix.ruby}}
 
     - name: Install dependencies
+      # Fallback to an update for the diffent dependecy versions when using
+      # Ruby 2.4.
       run: bundle install --jobs 4 --retry 3 || bundle update --jobs 4 --retry 3
 
     - name: RSpec
