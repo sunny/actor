@@ -60,15 +60,30 @@ module ServiceActor
       private
 
       def play_actor(actor)
-        if actor.is_a?(Class) && actor.ancestors.include?(ServiceActor::Core)
-          actor = actor.new(result)
-          actor._call
-        else
-          new_result = actor.call(result)
-          result.merge!(new_result.to_h) if new_result.respond_to?(:to_h)
-        end
+        play_service_actor(actor) ||
+          play_interactor(actor) ||
+          play_callable_actor(actor)
+      end
+
+      def play_service_actor(actor)
+        return unless actor.is_a?(Class)
+        return unless actor.ancestors.include?(ServiceActor::Core)
+
+        actor = actor.new(result)
+        actor._call
 
         (@played ||= []).unshift(actor)
+      end
+
+      def play_interactor(actor)
+        return unless actor.is_a?(Class)
+        return unless actor.ancestors.map(&:name).include?('Interactor')
+
+        result.merge!(actor.call(result).to_h)
+      end
+
+      def play_callable_actor(actor)
+        actor.call(result)
       end
     end
   end

@@ -9,5 +9,6 @@ class PlayLambdas < Actor
   play ->(result) { result.value = 3 },
        IncrementValue,
        ->(result) { result.name = "Jim number #{result.value}" },
+       ->(_) { { name: 'Does nothing' } },
        SetNameToDowncase
 end
