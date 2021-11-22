@@ -27,6 +27,9 @@ module ServiceActor
           result[name]
         end
 
+        # For avoid method redefined warning messages.
+        alias_method name, name if method_defined?(name)
+
         protected name
       end
 
