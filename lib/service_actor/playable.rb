@@ -62,7 +62,7 @@ module ServiceActor
       def play_actor(actor)
         play_service_actor(actor) ||
           play_interactor(actor) ||
-          play_callable_actor(actor)
+          actor.call(result)
       end
 
       def play_service_actor(actor)
@@ -80,10 +80,6 @@ module ServiceActor
         return unless actor.ancestors.map(&:name).include?('Interactor')
 
         result.merge!(actor.call(result).to_h)
-      end
-
-      def play_callable_actor(actor)
-        actor.call(result)
       end
     end
   end
