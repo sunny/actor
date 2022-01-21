@@ -8,7 +8,7 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## v3.1.3
 
 Fixes:
-- The `play` method reckognizes as actors anything that inherits from
+- The `play` method recognizes as actors anything that inherits from
   `ServiceActor::Core` instead of just `Actor`.
 - The `play` method does not try to merge results of lambdas returning hashes.
 - Remove warning when calling `#rollback`.
