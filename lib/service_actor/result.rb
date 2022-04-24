@@ -52,7 +52,6 @@ module ServiceActor
       to_h.fetch(:display)
     end
 
-
     def respond_to?(method_name, include_private = false)
       !!method_missing(method_name) || super
     end
