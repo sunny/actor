@@ -115,7 +115,7 @@ result = BuildGreeting.call
 result.greeting # => "Have a wonderful day!"
 ```
 
-For each output a method is generated that is in format of `{output}?` which is useful when the output is used for 
+For each output a method is generated ending with a `?`, which is useful when the output is used for 
 conditional control flow, like if-else statements.
 
 ```rb
