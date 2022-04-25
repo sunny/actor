@@ -66,7 +66,7 @@ module ServiceActor
           attribute_value = send(attribute.to_sym)
 
           # Same as ActiveSupport’s #present?
-          !(attribute_value.respond_to?(:empty?) ? !!attribute_value.empty? : !attribute_value)
+          attribute_value.respond_to?(:empty?) ? !attribute_value.empty? : !!attribute_value
         end
 
         return send(symbol)
