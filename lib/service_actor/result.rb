@@ -65,11 +65,8 @@ module ServiceActor
         define_singleton_method symbol do
           attribute_value = send(attribute.to_sym)
 
-          blank_proc = ->(value) { value.respond_to?(:empty?) ? !!value.empty? : !value }
-
-          # ActiveSupport ships with native #present?
-          # Delegate to ActiveSupport's Object#present? if ActiveSupport is present
-          attribute_value.respond_to?(:present?) ? attribute_value.present? : !blank_proc.call(attribute_value)
+          # Same as ActiveSupport’s #present?
+          attribute_value.respond_to?(:empty?) ? !attribute_value.empty? : !!value
         end
 
         return send(symbol)
