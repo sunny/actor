@@ -52,11 +52,11 @@ module ServiceActor
       to_h.fetch(:display)
     end
 
-    def respond_to?(method_name, include_private = false)
-      !!method_missing(method_name) || super
-    end
-
     private
+
+    def respond_to_missing?(method_name, include_private = false)
+      method_name.to_s.end_with?("?") || super
+    end
 
     def method_missing(symbol, *args)
       attribute = symbol.to_s.chomp("?")
