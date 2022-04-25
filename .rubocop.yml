@@ -63,3 +63,7 @@ Style/TrailingCommaInArguments:
 
 Style/ExponentialNotation:
   Enabled: true
+
+# Allow using the second parameter as a boolean.
+Style/OptionalBooleanParameter:
+  Enabled: false
