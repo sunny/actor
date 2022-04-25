@@ -8,8 +8,8 @@ RSpec.describe ServiceActor::Result do
     expect(result.respond_to?(:name?)).to eq true
   end
 
-  context "String" do
-    context "is empty" do
+  context "when input is String" do
+    context "when is empty" do
       it "returns false" do
         result = described_class.new
         result.name = ""
@@ -18,7 +18,7 @@ RSpec.describe ServiceActor::Result do
       end
     end
 
-    context "is not empty" do
+    context "when is not empty" do
       it "returns true" do
         result = described_class.new
         result.name = "Actor"
@@ -28,8 +28,8 @@ RSpec.describe ServiceActor::Result do
     end
   end
 
-  context "Array" do
-    context "is empty" do
+  context "when input is Array" do
+    context "when is empty" do
       it "returns false" do
         result = described_class.new
         result.array = []
@@ -38,7 +38,7 @@ RSpec.describe ServiceActor::Result do
       end
     end
 
-    context "is not empty" do
+    context "when is not empty" do
       it "returns true" do
         result = described_class.new
         result.array = [1, 2, 3]
@@ -48,8 +48,8 @@ RSpec.describe ServiceActor::Result do
     end
   end
 
-  context "Hash" do
-    context "is empty" do
+  context "when input is Hash" do
+    context "when empty" do
       it "returns false" do
         result = described_class.new
         result.hash = {}
@@ -58,7 +58,7 @@ RSpec.describe ServiceActor::Result do
       end
     end
 
-    context "is not empty" do
+    context "when not empty" do
       it "returns true" do
         result = described_class.new
         result.hash = { name: "Actor" }
@@ -68,7 +68,7 @@ RSpec.describe ServiceActor::Result do
     end
   end
 
-  context "NilClass" do
+  context "when input is NilClass" do
     it "returns false" do
       result = described_class.new
       result.name = nil
@@ -77,7 +77,7 @@ RSpec.describe ServiceActor::Result do
     end
   end
 
-  context "TrueClass" do
+  context "when input is TrueClass" do
     it "returns true" do
       result = described_class.new
       result.name = true
@@ -86,7 +86,7 @@ RSpec.describe ServiceActor::Result do
     end
   end
 
-  context "FalseClass" do
+  context "when input is FalseClass" do
     it "returns true" do
       result = described_class.new
       result.name = false
