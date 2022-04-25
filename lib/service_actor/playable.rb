@@ -77,7 +77,7 @@ module ServiceActor
 
       def play_interactor(actor)
         return unless actor.is_a?(Class)
-        return unless actor.ancestors.map(&:name).include?('Interactor')
+        return unless actor.ancestors.map(&:name).include?("Interactor")
 
         result.merge!(actor.call(result).to_h)
       end

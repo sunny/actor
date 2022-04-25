@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'interactor'
+require "interactor"
 
 class IncrementValueWithInteractor
   include Interactor

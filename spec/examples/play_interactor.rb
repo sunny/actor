@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative './increment_value_with_interactor'
+require_relative "./increment_value_with_interactor"
 
 class PlayInteractor < Actor
   input :value, default: 1

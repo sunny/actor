@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'ostruct'
+require "ostruct"
 
 module ServiceActor
   # Represents the context of an actor, holding the data from both its inputs

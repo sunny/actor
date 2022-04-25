@@ -7,7 +7,7 @@ module ServiceActor
   # Example:
   #
   #   class ReduceOrderAmount < Actor
-  #     input :order, type: 'Order'
+  #     input :order, type: "Order"
   #     input :amount, type: [Integer, Float]
   #     input :bonus_applied, type: [TrueClass FalseClass]
   #   end
@@ -18,11 +18,11 @@ module ServiceActor
 
     module PrependedMethods
       def _call
-        check_type_definitions(self.class.inputs, kind: 'Input')
+        check_type_definitions(self.class.inputs, kind: "Input")
 
         super
 
-        check_type_definitions(self.class.outputs, kind: 'Output')
+        check_type_definitions(self.class.outputs, kind: "Output")
       end
 
       private

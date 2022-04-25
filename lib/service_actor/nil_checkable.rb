@@ -16,11 +16,11 @@ module ServiceActor
 
     module PrependedMethods
       def _call
-        check_context_for_nil(self.class.inputs, origin: 'input')
+        check_context_for_nil(self.class.inputs, origin: "input")
 
         super
 
-        check_context_for_nil(self.class.outputs, origin: 'output')
+        check_context_for_nil(self.class.outputs, origin: "output")
       end
 
       private
@@ -31,7 +31,7 @@ module ServiceActor
 
           raise ArgumentError,
                 "The #{origin} \"#{name}\" on #{self.class} does not allow " \
-                'nil values'
+                "nil values"
         end
       end
 
