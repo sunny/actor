@@ -5,6 +5,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## unreleased
 
+## v3.1.4
+- Automatically generate "*?" methods for boolean comparison.
+
 ## v3.1.3
 
 Fixes:
