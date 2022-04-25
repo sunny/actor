@@ -32,18 +32,18 @@ RSpec.describe ServiceActor::Result do
     context "when is empty" do
       it "returns false" do
         result = described_class.new
-        result.array = []
+        result.options = []
 
-        expect(result.array?).to eq false
+        expect(result.options?).to eq false
       end
     end
 
     context "when is not empty" do
       it "returns true" do
         result = described_class.new
-        result.array = [1, 2, 3]
+        result.options = [1, 2, 3]
 
-        expect(result.array?).to eq true
+        expect(result.options?).to eq true
       end
     end
   end
@@ -52,18 +52,18 @@ RSpec.describe ServiceActor::Result do
     context "when empty" do
       it "returns false" do
         result = described_class.new
-        result.hash = {}
+        result.options = {}
 
-        expect(result.hash?).to eq false
+        expect(result.options?).to eq false
       end
     end
 
     context "when not empty" do
       it "returns true" do
         result = described_class.new
-        result.hash = { name: "Actor" }
+        result.options = { name: "Actor" }
 
-        expect(result.hash?).to eq true
+        expect(result.options?).to eq true
       end
     end
   end
