@@ -37,7 +37,7 @@ Add these lines to your application’s Gemfile:
 
 ```rb
 # Composable service objects
-gem 'service_actor'
+gem "service_actor"
 ```
 
 When using Rails, you can include the
@@ -70,8 +70,8 @@ SendNotification.call # => <ServiceActor::Result…>
 ```
 
 When called, actors return a Result. Reading and writing to this result allows
-actors to accept and return multiple arguments. Let's find out how to do that
-and then we'll see how to chain multiple actors togethor.
+actors to accept and return multiple arguments. Let’s find out how to do that
+and then we’ll see how to chain multiple actors togethor.
 
 ### Inputs
 
@@ -207,7 +207,7 @@ class UpdateUser < Actor
 end
 ```
 
-You may also use strings instead of constants, such as `type: 'User'`.
+You may also use strings instead of constants, such as `type: "User"`.
 
 When using a type condition, `allow_nil` defaults to `false`.
 

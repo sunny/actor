@@ -9,7 +9,7 @@ module ServiceActor
     module ClassMethods
       # Call an actor with a given result. Returns the result.
       #
-      #   CreateUser.call(name: 'Joe')
+      #   CreateUser.call(name: "Joe")
       def call(options = nil, **arguments)
         result = Result.to_result(options).merge!(arguments)
         new(result)._call
@@ -19,7 +19,7 @@ module ServiceActor
       # Call an actor with arguments. Returns the result and does not raise on
       # failure.
       #
-      #   CreateUser.result(name: 'Joe')
+      #   CreateUser.result(name: "Joe")
       def result(data = nil, **arguments)
         call(data, **arguments)
       rescue Failure => e

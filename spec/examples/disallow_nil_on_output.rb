@@ -6,6 +6,6 @@ class DisallowNilOnOutput < Actor
   input :test_without_output, default: false
 
   def call
-    self.name = 'Jim' unless test_without_output
+    self.name = "Jim" unless test_without_output
   end
 end

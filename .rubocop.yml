@@ -55,11 +55,18 @@ Style/HashTransformValues:
 Style/Documentation:
   Enabled: false
 
+Style/ExponentialNotation:
+  Enabled: true
+
 Style/OpenStructUse:
   Enabled: false
 
+# Allow using the second parameter as a boolean.
+Style/OptionalBooleanParameter:
+  Enabled: false
+
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
 Style/TrailingCommaInArguments:
   EnforcedStyleForMultiline: comma
-
-Style/ExponentialNotation:
-  Enabled: true
