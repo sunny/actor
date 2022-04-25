@@ -70,3 +70,6 @@ Style/StringLiterals:
 
 Style/TrailingCommaInArguments:
   EnforcedStyleForMultiline: comma
+
+Style/DoubleNegation:
+  Enabled: false
