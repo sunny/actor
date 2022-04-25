@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe Actor do
-  describe '#call' do
-    context 'when fail! is not called' do
+  describe "#call" do
+    context "when fail! is not called" do
       let(:result) { DoNothing.call }
 
       it { expect(result).to be_kind_of(ServiceActor::Result) }
@@ -10,284 +10,284 @@ RSpec.describe Actor do
       it { expect(result).not_to be_a_failure }
     end
 
-    context 'when fail! is called' do
-      it 'raises the error message' do
+    context "when fail! is called" do
+      it "raises the error message" do
         expect { FailWithError.call }
-          .to raise_error(ServiceActor::Failure, 'Ouch')
+          .to raise_error(ServiceActor::Failure, "Ouch")
       end
     end
 
-    context 'when an actor updates the context' do
-      it 'returns the context with the change' do
+    context "when an actor updates the context" do
+      it "returns the context with the change" do
         result = AddNameToContext.call
-        expect(result.name).to eq('Jim')
+        expect(result.name).to eq("Jim")
       end
     end
 
-    context 'when an actor updates the context with a hash' do
-      it 'returns the hash with the change' do
+    context "when an actor updates the context with a hash" do
+      it "returns the hash with the change" do
         result = AddHashToContext.call
-        expect(result.stuff).to eq(name: 'Jim')
+        expect(result.stuff).to eq(name: "Jim")
       end
     end
 
-    context 'when an actor uses a method named after the input' do
-      it 'returns what is in the context' do
-        result = SetNameToDowncase.call(name: 'JIM')
-        expect(result.name).to eq('jim')
+    context "when an actor uses a method named after the input" do
+      it "returns what is in the context" do
+        result = SetNameToDowncase.call(name: "JIM")
+        expect(result.name).to eq("jim")
       end
     end
 
-    context 'when given a context instead of a hash' do
-      it 'returns the same context' do
-        result = ServiceActor::Result.new(name: 'Jim')
+    context "when given a context instead of a hash" do
+      it "returns the same context" do
+        result = ServiceActor::Result.new(name: "Jim")
 
         expect(AddNameToContext.call(result)).to eq(result)
       end
 
-      it 'can update the given context' do
-        result = ServiceActor::Result.new(name: 'Jim')
+      it "can update the given context" do
+        result = ServiceActor::Result.new(name: "Jim")
 
         SetNameToDowncase.call(result)
 
-        expect(result.name).to eq('jim')
+        expect(result.name).to eq("jim")
       end
     end
 
-    context 'when an actor changes a value' do
-      it 'returns a context with the updated value' do
+    context "when an actor changes a value" do
+      it "returns a context with the updated value" do
         result = IncrementValue.call(value: 1)
         expect(result.value).to eq(2)
       end
     end
 
-    context 'when an input has a default' do
-      it 'adds it to the context' do
+    context "when an input has a default" do
+      it "adds it to the context" do
         result = AddGreetingWithDefault.call
-        expect(result.name).to eq('world')
+        expect(result.name).to eq("world")
       end
 
-      it 'can use it' do
+      it "can use it" do
         result = AddGreetingWithDefault.call
-        expect(result.greeting).to eq('Hello, world!')
+        expect(result.greeting).to eq("Hello, world!")
       end
 
-      it 'ignores values added to call' do
-        result = AddGreetingWithDefault.call(name: 'jim')
-        expect(result.name).to eq('jim')
+      it "ignores values added to call" do
+        result = AddGreetingWithDefault.call(name: "jim")
+        expect(result.name).to eq("jim")
       end
 
-      it 'ignores values already in the context' do
+      it "ignores values already in the context" do
         result = AddGreetingWithDefault.call(
-          ServiceActor::Result.new(name: 'jim'),
+          ServiceActor::Result.new(name: "jim"),
         )
-        expect(result.name).to eq('jim')
+        expect(result.name).to eq("jim")
       end
     end
 
-    context 'when an input has a lambda default' do
-      it 'adds it to the context' do
+    context "when an input has a lambda default" do
+      it "adds it to the context" do
         result = AddGreetingWithLambdaDefault.call
-        expect(result.name).to eq('world')
+        expect(result.name).to eq("world")
       end
 
-      it 'can use it' do
+      it "can use it" do
         result = AddGreetingWithLambdaDefault.call
-        expect(result.greeting).to eq('Hello, world!')
+        expect(result.greeting).to eq("Hello, world!")
       end
     end
 
-    context 'when an input has not been given' do
-      it 'raises an error' do
+    context "when an input has not been given" do
+      it "raises an error" do
         expect { SetNameToDowncase.call }
           .to raise_error(
             ServiceActor::ArgumentError,
-            'Input name on SetNameToDowncase is missing',
+            "Input name on SetNameToDowncase is missing",
           )
       end
     end
 
-    context 'when playing several actors' do
+    context "when playing several actors" do
       let(:result) { PlayActors.call(value: 1) }
 
-      it 'shares the result between actors' do
+      it "shares the result between actors" do
         expect(result.value).to eq(3)
       end
 
-      it 'calls the actors in order' do
-        expect(result.name).to eq('jim')
+      it "calls the actors in order" do
+        expect(result.name).to eq("jim")
       end
 
-      context 'when not providing arguments' do
+      context "when not providing arguments" do
         let(:result) { PlayActors.call }
 
-        it 'uses defaults from the inner actors' do
+        it "uses defaults from the inner actors" do
           expect(result.value).to eq(2)
         end
       end
     end
 
-    context 'when playing actors and lambdas' do
+    context "when playing actors and lambdas" do
       let(:result) { PlayLambdas.call }
 
-      it 'calls the actors and lambdas in order' do
-        expect(result.name).to eq('jim number 4')
+      it "calls the actors and lambdas in order" do
+        expect(result.name).to eq("jim number 4")
       end
     end
 
-    context 'when playing actors that do not inherit from Actor' do
+    context "when playing actors that do not inherit from Actor" do
       let(:result) { PlayActors.call }
 
-      it 'merges the result' do
+      it "merges the result" do
         expect(result.stripped_down_actor).to eq(true)
       end
     end
 
-    context 'when using `play` several times' do
+    context "when using `play` several times" do
       let(:result) { PlayMultipleTimes.call(value: 1) }
 
-      it 'shares the result between actors' do
+      it "shares the result between actors" do
         expect(result.value).to eq(3)
       end
 
-      it 'calls the actors in order' do
-        expect(result.name).to eq('jim')
+      it "calls the actors in order" do
+        expect(result.name).to eq("jim")
       end
     end
 
-    context 'when using `play` with conditions' do
+    context "when using `play` with conditions" do
       let(:result) { PlayMultipleTimesWithConditions.call }
 
-      it 'does not trigger actors with conditions' do
-        expect(result.name).to eq('Jim')
+      it "does not trigger actors with conditions" do
+        expect(result.name).to eq("Jim")
       end
 
-      it 'shares the result between actors' do
+      it "shares the result between actors" do
         expect(result.value).to eq(3)
       end
     end
 
-    context 'when playing several actors and one fails' do
+    context "when playing several actors and one fails" do
       let(:result) { ServiceActor::Result.new(value: 0) }
 
-      it 'raises with the message' do
+      it "raises with the message" do
         expect { FailPlayingActionsWithRollback.call(result) }
-          .to raise_error(ServiceActor::Failure, 'Ouch')
+          .to raise_error(ServiceActor::Failure, "Ouch")
       end
 
-      it 'changes the context up to the failure then calls rollbacks' do
+      it "changes the context up to the failure then calls rollbacks" do
         expect { FailPlayingActionsWithRollback.call(result) }
           .to raise_error(ServiceActor::Failure)
 
-        expect(result.name).to eq('Jim')
+        expect(result.name).to eq("Jim")
         expect(result.value).to eq(0)
       end
     end
 
-    context 'when playing several actors, one fails, one rolls back' do
+    context "when playing several actors, one fails, one rolls back" do
       let(:result) { PlayErrorAndCatchItInRollback.result }
 
-      it 'catches the error inside the rollback' do
+      it "catches the error inside the rollback" do
         expect(result.called).to eq(true)
-        expect(result.found_error).to eq('Found “Ouch”')
+        expect(result.found_error).to eq("Found “Ouch”")
         expect(result.some_other_key).to eq(42)
       end
     end
 
-    context 'when called with a matching condition' do
-      it 'suceeds' do
-        expect(SetNameWithInputCondition.call(name: 'joe').name).to eq('JOE')
+    context "when called with a matching condition" do
+      it "suceeds" do
+        expect(SetNameWithInputCondition.call(name: "joe").name).to eq("JOE")
       end
     end
 
-    context 'when called with the wrong condition' do
-      it 'suceeds' do
+    context "when called with the wrong condition" do
+      it "suceeds" do
         expected_error = 'Input name must be_lowercase but was "42"'
 
-        expect { SetNameWithInputCondition.call(name: '42') }
+        expect { SetNameWithInputCondition.call(name: "42") }
           .to raise_error(ServiceActor::ArgumentError, expected_error)
       end
     end
 
-    context 'when called with the wrong type of argument' do
+    context "when called with the wrong type of argument" do
       let(:expected_message) do
-        'Input name on SetNameToDowncase must be of type String but was ' \
+        "Input name on SetNameToDowncase must be of type String but was " \
           "#{1.class.name}"
       end
 
-      it 'raises' do
+      it "raises" do
         expect { SetNameToDowncase.call(name: 1) }
           .to raise_error(ServiceActor::ArgumentError, expected_message)
       end
     end
 
-    context 'when a type is defined but the argument is nil' do
+    context "when a type is defined but the argument is nil" do
       let(:expected_message) do
         'The input "name" on SetNameToDowncase does not allow nil values'
       end
 
-      it 'raises' do
+      it "raises" do
         expect { SetNameToDowncase.call(name: nil) }
           .to raise_error(ServiceActor::ArgumentError, expected_message)
       end
     end
 
-    context 'when called with a type as a string instead of a class' do
-      it 'succeeds' do
+    context "when called with a type as a string instead of a class" do
+      it "succeeds" do
         result = DoubleWithTypeAsString.call(value: 2.0)
         expect(result.double).to eq(4.0)
       end
 
-      it 'does not allow other types' do
+      it "does not allow other types" do
         expected_error =
-          'Input value on DoubleWithTypeAsString must be of type Integer, ' \
-          'Float but was String'
-        expect { DoubleWithTypeAsString.call(value: '2.0') }
+          "Input value on DoubleWithTypeAsString must be of type Integer, " \
+          "Float but was String"
+        expect { DoubleWithTypeAsString.call(value: "2.0") }
           .to raise_error(ServiceActor::ArgumentError, expected_error)
       end
     end
 
-    context 'when setting the wrong type of output' do
+    context "when setting the wrong type of output" do
       let(:expected_message) do
-        'Output name on SetWrongTypeOfOutput must be of type String but was ' \
+        "Output name on SetWrongTypeOfOutput must be of type String but was " \
           "#{1.class.name}"
       end
 
-      it 'raises' do
+      it "raises" do
         expect { SetWrongTypeOfOutput.call }
           .to raise_error(ServiceActor::ArgumentError, expected_message)
       end
     end
 
-    context 'when using an output called display' do
-      it 'returns it' do
-        expect(SetOutputCalledDisplay.call.display).to eq('Foobar')
+    context "when using an output called display" do
+      it "returns it" do
+        expect(SetOutputCalledDisplay.call.display).to eq("Foobar")
       end
     end
 
-    context 'when setting an unknown output' do
-      it 'raises' do
+    context "when setting an unknown output" do
+      it "raises" do
         expect { SetUnknownOutput.call }
           .to raise_error(NoMethodError, /undefined method `foobar='/)
       end
     end
 
-    context 'when reading an output' do
-      it 'succeeds' do
+    context "when reading an output" do
+      it "succeeds" do
         result = SetAndAccessOutput.result
-        expect(result.email).to eq('jim@example.org')
+        expect(result.email).to eq("jim@example.org")
       end
     end
 
-    context 'when disallowing nil on an input' do
-      context 'when given the input' do
-        it 'succeeds' do
-          expect(DisallowNilOnInput.call(name: 'Jim')).to be_a_success
+    context "when disallowing nil on an input" do
+      context "when given the input" do
+        it "succeeds" do
+          expect(DisallowNilOnInput.call(name: "Jim")).to be_a_success
         end
       end
 
-      context 'without the input' do
-        it 'fails' do
+      context "without the input" do
+        it "fails" do
           expected_error =
             'The input "name" on DisallowNilOnInput does not allow nil values'
 
@@ -297,30 +297,30 @@ RSpec.describe Actor do
       end
     end
 
-    context 'when setting a default to nil and a type on an input' do
-      context 'when given the input' do
-        it 'succeeds' do
-          expect(AllowNilOnInputWithTypeAndDefaultNil.call(name: 'Jim'))
+    context "when setting a default to nil and a type on an input" do
+      context "when given the input" do
+        it "succeeds" do
+          expect(AllowNilOnInputWithTypeAndDefaultNil.call(name: "Jim"))
             .to be_a_success
         end
       end
 
-      context 'when not given any input' do
-        it 'succeeds' do
+      context "when not given any input" do
+        it "succeeds" do
           expect(AllowNilOnInputWithTypeAndDefaultNil.call).to be_a_success
         end
       end
     end
 
-    context 'when disallowing nil on an output' do
-      context 'when set correctly' do
-        it 'succeeds' do
+    context "when disallowing nil on an output" do
+      context "when set correctly" do
+        it "succeeds" do
           expect(DisallowNilOnOutput.call).to be_a_success
         end
       end
 
-      context 'without the output' do
-        it 'fails' do
+      context "without the output" do
+        it "fails" do
           expected_error =
             'The output "name" on DisallowNilOnOutput does not allow nil values'
 
@@ -330,30 +330,30 @@ RSpec.describe Actor do
       end
     end
 
-    context 'when inheriting' do
-      it 'calls both the parent and child' do
+    context "when inheriting" do
+      it "calls both the parent and child" do
         result = InheritFromIncrementValue.call(value: 0)
         expect(result.value).to eq(2)
       end
     end
 
-    context 'when inheriting from play' do
-      it 'calls both the parent and child' do
+    context "when inheriting from play" do
+      it "calls both the parent and child" do
         result = InheritFromPlay.call(value: 0)
         expect(result.value).to eq(3)
       end
     end
 
-    context 'when using type, default, allow_nil and must' do
-      context 'when not given a value' do
-        it 'uses the default' do
+    context "when using type, default, allow_nil and must" do
+      context "when not given a value" do
+        it "uses the default" do
           result = ValidateWeekdays.call
           expect(result.weekdays).to eq([0, 1, 2, 3, 4])
         end
       end
 
-      context 'when given a nil value' do
-        it 'returns nil' do
+      context "when given a nil value" do
+        it "returns nil" do
           result = ValidateWeekdays.call(weekdays: nil)
           expect(result.weekdays).to be_nil
         end
@@ -361,43 +361,43 @@ RSpec.describe Actor do
     end
 
     context 'when using "in"' do
-      context 'when given a correct value' do
-        it 'returns the message' do
-          result = PayWithProvider.call(provider: 'PayPal')
-          expect(result.message).to eq('Money transferred to PayPal!')
+      context "when given a correct value" do
+        it "returns the message" do
+          result = PayWithProvider.call(provider: "PayPal")
+          expect(result.message).to eq("Money transferred to PayPal!")
         end
       end
 
-      context 'when given an incorrect value' do
+      context "when given an incorrect value" do
         let(:expected_alert) do
-          'Input provider must be included in ' \
+          "Input provider must be included in " \
             '["MANGOPAY", "PayPal", "Stripe"] but instead was "Paypal"'
         end
 
-        it 'fails' do
-          expect { PayWithProvider.call(provider: 'Paypal') }
+        it "fails" do
+          expect { PayWithProvider.call(provider: "Paypal") }
             .to raise_error(expected_alert)
         end
       end
 
-      context 'when it has a default' do
-        it 'uses it' do
+      context "when it has a default" do
+        it "uses it" do
           result = PayWithProvider.call
-          expect(result.message).to eq('Money transferred to Stripe!')
+          expect(result.message).to eq("Money transferred to Stripe!")
         end
       end
     end
 
-    context 'when playing interactors' do
-      it 'succeeds' do
+    context "when playing interactors" do
+      it "succeeds" do
         result = PlayInteractor.call(value: 5)
         expect(result.value).to eq(5 + 2)
       end
     end
   end
 
-  describe '#result' do
-    context 'when fail! is not called' do
+  describe "#result" do
+    context "when fail! is not called" do
       let(:result) { DoNothing.result }
 
       it { expect(result).to be_kind_of(ServiceActor::Result) }
@@ -405,41 +405,41 @@ RSpec.describe Actor do
       it { expect(result).not_to be_a_failure }
     end
 
-    context 'when fail! is called' do
+    context "when fail! is called" do
       let(:result) { FailWithError.result }
 
       it { expect(result).to be_kind_of(ServiceActor::Result) }
       it { expect(result).to be_a_failure }
       it { expect(result).not_to be_a_success }
-      it { expect(result.error).to eq('Ouch') }
+      it { expect(result.error).to eq("Ouch") }
       it { expect(result.some_other_key).to eq(42) }
     end
 
-    context 'with an argument error, caught by fail_on' do
+    context "with an argument error, caught by fail_on" do
       let(:result) { FailOnArgumentError.result(name: 42) }
       let(:expected_error_message) do
-        'Input name on FailOnArgumentError must be of type String but was ' \
-          'Integer'
+        "Input name on FailOnArgumentError must be of type String but was " \
+          "Integer"
       end
 
       it { expect(result).to be_a_failure }
       it { expect(result.error).to eq(expected_error_message) }
     end
 
-    context 'when playing several actors' do
+    context "when playing several actors" do
       let(:result) { PlayActors.result(value: 1) }
 
       it { expect(result).to be_a_success }
-      it { expect(result.name).to eq('jim') }
+      it { expect(result.name).to eq("jim") }
       it { expect(result.value).to eq(3) }
     end
 
-    context 'when playing several actors with a rollback and one fails' do
+    context "when playing several actors with a rollback and one fails" do
       let(:result) { FailPlayingActionsWithRollback.result(value: 0) }
 
       it { expect(result).to be_a_failure }
       it { expect(result).not_to be_a_success }
-      it { expect(result.name).to eq('Jim') }
+      it { expect(result.name).to eq("Jim") }
       it { expect(result.value).to eq(0) }
     end
   end

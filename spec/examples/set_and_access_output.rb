@@ -5,7 +5,7 @@ class SetAndAccessOutput < Actor
   output :email
 
   def call
-    self.nickname = 'jim'
+    self.nickname = "jim"
     self.email = "#{nickname}@example.org"
   end
 end

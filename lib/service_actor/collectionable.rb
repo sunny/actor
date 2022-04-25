@@ -7,7 +7,7 @@ module ServiceActor
   # Example:
   #
   #   class Pay < Actor
-  #     input :provider, in: ['MANGOPAY', 'PayPal', 'Stripe']
+  #     input :provider, in: ["MANGOPAY", "PayPal", "Stripe"]
   #   end
   module Collectionable
     def self.included(base)
