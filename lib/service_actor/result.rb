@@ -61,7 +61,7 @@ module ServiceActor
     def method_missing(symbol, *args)
       attribute = symbol.to_s.chomp("?")
 
-      if symbol.end_with?("?") && respond_to?(attribute)
+      if symbol.to_s.end_with?("?") && respond_to?(attribute)
         define_singleton_method symbol do
           attribute_value = send(attribute.to_sym)
 
