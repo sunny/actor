@@ -115,6 +115,19 @@ result = BuildGreeting.call
 result.greeting # => "Have a wonderful day!"
 ```
 
+For each output a method is generated ending with a `?`, which is useful when the output is used for 
+conditional control flow, like if-else statements.
+
+```rb
+if result.greeting?
+  puts "Greetings is a non empty value"
+else
+  puts "Greetings is empty"
+end
+```
+
+The generated method will return the truthy or falsey values of variables.
+
 ### Defaults
 
 Inputs can be marked as optional by providing a default:

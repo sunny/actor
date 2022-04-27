@@ -51,5 +51,28 @@ module ServiceActor
     def display
       to_h.fetch(:display)
     end
+
+    private
+
+    def respond_to_missing?(method_name, include_private = false)
+      method_name.to_s.end_with?("?") || super
+    end
+
+    def method_missing(symbol, *args)
+      attribute = symbol.to_s.chomp("?")
+
+      if symbol.to_s.end_with?("?") && respond_to?(attribute)
+        define_singleton_method symbol do
+          attribute_value = send(attribute.to_sym)
+
+          # Same as ActiveSupport’s #present?
+          attribute_value.respond_to?(:empty?) ? !attribute_value.empty? : !!attribute_value
+        end
+
+        return send(symbol)
+      end
+
+      super symbol, *args
+    end
   end
 end
