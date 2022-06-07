@@ -139,7 +139,7 @@ RSpec.describe Actor do
       let(:result) { PlayActors.call }
 
       it "merges the result" do
-        expect(result.stripped_down_actor).to eq(true)
+        expect(result.stripped_down_actor).to be(true)
       end
     end
 
@@ -188,7 +188,7 @@ RSpec.describe Actor do
       let(:result) { PlayErrorAndCatchItInRollback.result }
 
       it "catches the error inside the rollback" do
-        expect(result.called).to eq(true)
+        expect(result.called).to be(true)
         expect(result.found_error).to eq("Found “Ouch”")
         expect(result.some_other_key).to eq(42)
       end
