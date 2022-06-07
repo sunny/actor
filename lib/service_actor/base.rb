@@ -18,6 +18,7 @@ require "service_actor/conditionable"
 require "service_actor/defaultable"
 require "service_actor/collectionable"
 require "service_actor/failable"
+require "service_actor/promptable"
 
 module ServiceActor
   module Base
@@ -34,6 +35,7 @@ module ServiceActor
       base.include(Collectionable)
       base.include(Defaultable)
       base.include(Failable)
+      base.include(Promptable)
     end
   end
 end

@@ -13,6 +13,7 @@ and controllers thin.
 - [Installation](#installation)
 - [Usage](#usage)
   - [Inputs](#inputs)
+  - [User Input](#user-input)
   - [Outputs](#outputs)
   - [Defaults](#defaults)
   - [Conditions](#conditions)
@@ -91,6 +92,21 @@ You can now call your actor by providing the correct arguments:
 
 ```rb
 GreetUser.call(user: User.first)
+```
+
+#### User Inputs
+```rb
+# gem `tty-prompt` # in your Gemfile
+require "tty/prompt"
+
+class ShouldContinue < Actor
+  prompt_with TTY::Prompt.new
+  output :answer, type: String
+
+  def call
+    self.answer = prompt.ask("What is the capital of Assyria?", default: "Uh, I don't know that")
+  end
+end
 ```
 
 ### Outputs

@@ -7,6 +7,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 Features:
 - Automatically generate "*?" methods for boolean comparison.
+- `Promptable`
+  - DSL => `prompt_with`
+  - Class attribute => `prompt`
 
 ## v3.1.3
 

@@ -57,4 +57,7 @@ Gem::Specification.new do |spec|
 
   # For testing Interactor migration support
   spec.add_development_dependency "interactor"
+
+  # For testing Prompt support
+  spec.add_development_dependency "tty-prompt"
 end
