@@ -4,7 +4,7 @@ require "bundler/setup"
 require "service_actor"
 require "pry"
 
-Dir["./spec/examples/*"].each { |f| require f }
+Dir["./spec/examples/*"].sort.each { |f| require f }
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
