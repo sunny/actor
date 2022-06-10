@@ -1,4 +1,4 @@
-# Actor
+# ServiceActor
 
 ![Tests](https://github.com/sunny/actor/workflows/Tests/badge.svg)
 
