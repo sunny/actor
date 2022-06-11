@@ -5,7 +5,7 @@ RSpec.describe ServiceActor::Result do
     result = described_class.new
     result.name = "Sunny"
 
-    expect(result.respond_to?(:name?)).to eq true
+    expect(result.respond_to?(:name?)).to be true
   end
 
   context "when input is String" do
@@ -14,7 +14,7 @@ RSpec.describe ServiceActor::Result do
         result = described_class.new
         result.name = ""
 
-        expect(result.name?).to eq false
+        expect(result.name?).to be false
       end
     end
 
@@ -23,7 +23,7 @@ RSpec.describe ServiceActor::Result do
         result = described_class.new
         result.name = "Actor"
 
-        expect(result.name?).to eq true
+        expect(result.name?).to be true
       end
     end
   end
@@ -34,7 +34,7 @@ RSpec.describe ServiceActor::Result do
         result = described_class.new
         result.options = []
 
-        expect(result.options?).to eq false
+        expect(result.options?).to be false
       end
     end
 
@@ -43,7 +43,7 @@ RSpec.describe ServiceActor::Result do
         result = described_class.new
         result.options = [1, 2, 3]
 
-        expect(result.options?).to eq true
+        expect(result.options?).to be true
       end
     end
   end
@@ -54,7 +54,7 @@ RSpec.describe ServiceActor::Result do
         result = described_class.new
         result.options = {}
 
-        expect(result.options?).to eq false
+        expect(result.options?).to be false
       end
     end
 
@@ -63,7 +63,7 @@ RSpec.describe ServiceActor::Result do
         result = described_class.new
         result.options = { name: "Actor" }
 
-        expect(result.options?).to eq true
+        expect(result.options?).to be true
       end
     end
   end
@@ -73,7 +73,7 @@ RSpec.describe ServiceActor::Result do
       result = described_class.new
       result.name = nil
 
-      expect(result.name?).to eq false
+      expect(result.name?).to be false
     end
   end
 
@@ -82,7 +82,7 @@ RSpec.describe ServiceActor::Result do
       result = described_class.new
       result.name = true
 
-      expect(result.name?).to eq true
+      expect(result.name?).to be true
     end
   end
 
@@ -91,7 +91,7 @@ RSpec.describe ServiceActor::Result do
       result = described_class.new
       result.name = false
 
-      expect(result.name?).to eq false
+      expect(result.name?).to be false
     end
   end
 end

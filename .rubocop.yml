@@ -1,8 +1,10 @@
 require:
   - rubocop-rspec
 
+inherit_gem:
+  rubocop-lts: rubocop-lts.yml
+
 AllCops:
-  NewCops: enable
   SuggestExtensions: false
 
 Bundler/GemComment:
@@ -57,9 +59,6 @@ Style/Documentation:
 
 Style/ExponentialNotation:
   Enabled: true
-
-Style/OpenStructUse:
-  Enabled: false
 
 # Allow using the second parameter as a boolean.
 Style/OptionalBooleanParameter:
