@@ -33,19 +33,26 @@ and controllers thin.
 
 ## Installation
 
-Add these lines to your application’s Gemfile:
+Add the gem to your application’s Gemfile by executing:
 
-```rb
-# Composable service objects
-gem "service_actor"
+```sh
+bundle add service_actor
 ```
 
-When using Rails, you can include the
+### Extensions
+
+For **Rails generators**, you can use the
 [service_actor-rails](https://github.com/sunny/actor-rails) gem:
 
-```ruby
-# Composable service objects
-gem "service_actor-rails"
+```sh
+bundle add service_actor-rails
+```
+
+For **TTY prompts**, you can use the
+[service_actor-promptable](https://github.com/pboling/service_actor-promptable) gem:
+
+```sh
+bundle add service_actor-promptable
 ```
 
 ## Usage
@@ -69,9 +76,10 @@ Trigger them in your application with `.call`:
 SendNotification.call # => <ServiceActor::Result…>
 ```
 
-When called, actors return a Result. Reading and writing to this result allows
+When called, an actor returns a result. Reading and writing to this result allows
 actors to accept and return multiple arguments. Let’s find out how to do that
-and then we’ll see how to chain multiple actors togethor.
+and then we’ll see how to
+[chain multiple actors togethor](#play-actors-in-a-sequence).
 
 ### Inputs
 
@@ -318,7 +326,7 @@ You can use inline actions using lambdas. Inside these lambdas you have access t
 the shared result:
 
 ```rb
-class Pay < Actor
+class PayWithStripe < Actor
   play ->(result) { result.payment_provider = "stripe" },
        CreatePayment,
        ->(result) { result.user_to_notify = result.payment.user },
@@ -354,7 +362,7 @@ class PlaceOrder < Actor
 end
 ```
 
-You can use this to trigger an early success.
+This can also be used to trigger an early success.
 
 ### Fail on argument error
 
@@ -405,7 +413,7 @@ Some key differences make Actor unique:
 
 - Does not [hide errors when an actor fails inside another
   actor](https://github.com/collectiveidea/interactor/issues/170).
-- Requires you to document all arguments with `input` and `output`.
+- Requires you to document arguments with `input` and `output`.
 - Defaults to raising errors on failures: actor uses `call` and `result`
   instead of `call!` and `call`. This way, the _default_ is to raise an error
   and failures are not hidden away because you forgot to use `!`.
