@@ -27,7 +27,6 @@ and controllers thin.
 - [Build your own actor](#build-your-own-actor)
 - [Influences](#influences)
 - [Thanks](#thanks)
-- [Development](#development)
 - [Contributing](#contributing)
 - [License](#contributing)
 
@@ -123,7 +122,7 @@ result = BuildGreeting.call
 result.greeting # => "Have a wonderful day!"
 ```
 
-For each output a method is generated ending with a `?`, which is useful when the output is used for 
+For each output a method is generated ending with a `?`, which is useful when the output is used for
 conditional control flow, like if-else statements.
 
 ```rb
@@ -437,31 +436,12 @@ and feedback on this gem.
 
 Photo by [Lloyd Dirks](https://unsplash.com/photos/4SLz_RCk6kQ).
 
-## Development
-
-After checking out the repo, run `bin/setup` to install dependencies. Then, run
-`bin/rake` to run the tests and linting. You can also run `bin/console` for an
-interactive prompt.
-
-To release a new version, update the version number in `version.rb`, and in the
-`CHANGELOG.md`. Update the `README.md` if there are missing segments, make sure
-tests and linting are pristine by calling `bundle && bin/rake`, then create a
-commit for this version.
-
-You can then run `rake release`, which will assign a git tag, push using git,
-and push the gem to [rubygems.org](https://rubygems.org).
-
 ## Contributing
 
-Bug reports and pull requests are welcome
-[on GitHub](https://github.com/sunny/actor).
-
-This project is intended to be a safe, welcoming space for collaboration, and
-everyone interacting in the project’s codebase and issue tracker is expected to
-adhere to the [Contributor Covenant code of
-conduct](https://github.com/sunny/actor/blob/main/CODE_OF_CONDUCT.md).
+See
+[CONTRIBUTING.md](https://github.com/sunny/actor/blob/main/CONTRIBUTING.md).
 
 ## License
 
 The gem is available as open source under the terms of the
-[MIT License](https://opensource.org/licenses/MIT).
+[MIT License](https://choosealicense.com/licenses/mit/).
