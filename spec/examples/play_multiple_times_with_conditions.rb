@@ -11,8 +11,8 @@ class PlayMultipleTimesWithConditions < Actor
 
   play IncrementValue,
        IncrementValue,
-       if: ->(result) { result.name == "Jim" }
+       if: -> actor { actor.name == "Jim" }
 
   play FailWithError,
-       if: ->(_result) { false }
+       if: -> _ { false }
 end

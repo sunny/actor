@@ -3,11 +3,11 @@
 RSpec.describe Actor do
   describe "#call" do
     context "when fail! is not called" do
-      let(:result) { DoNothing.call }
+      let(:actor) { DoNothing.call }
 
-      it { expect(result).to be_kind_of(ServiceActor::Result) }
-      it { expect(result).to be_a_success }
-      it { expect(result).not_to be_a_failure }
+      it { expect(actor).to be_kind_of(ServiceActor::Result) }
+      it { expect(actor).to be_a_success }
+      it { expect(actor).not_to be_a_failure }
     end
 
     context "when fail! is called" do
@@ -19,81 +19,81 @@ RSpec.describe Actor do
 
     context "when an actor updates the context" do
       it "returns the context with the change" do
-        result = AddNameToContext.call
-        expect(result.name).to eq("Jim")
+        actor = AddNameToContext.call
+        expect(actor.name).to eq("Jim")
       end
     end
 
     context "when an actor updates the context with a hash" do
       it "returns the hash with the change" do
-        result = AddHashToContext.call
-        expect(result.stuff).to eq(name: "Jim")
+        actor = AddHashToContext.call
+        expect(actor.stuff).to eq(name: "Jim")
       end
     end
 
     context "when an actor uses a method named after the input" do
       it "returns what is in the context" do
-        result = SetNameToDowncase.call(name: "JIM")
-        expect(result.name).to eq("jim")
+        actor = SetNameToDowncase.call(name: "JIM")
+        expect(actor.name).to eq("jim")
       end
     end
 
     context "when given a context instead of a hash" do
       it "returns the same context" do
-        result = ServiceActor::Result.new(name: "Jim")
+        actor = ServiceActor::Result.new(name: "Jim")
 
-        expect(AddNameToContext.call(result)).to eq(result)
+        expect(AddNameToContext.call(actor)).to eq(actor)
       end
 
       it "can update the given context" do
-        result = ServiceActor::Result.new(name: "Jim")
+        actor = ServiceActor::Result.new(name: "Jim")
 
-        SetNameToDowncase.call(result)
+        SetNameToDowncase.call(actor)
 
-        expect(result.name).to eq("jim")
+        expect(actor.name).to eq("jim")
       end
     end
 
     context "when an actor changes a value" do
       it "returns a context with the updated value" do
-        result = IncrementValue.call(value: 1)
-        expect(result.value).to eq(2)
+        actor = IncrementValue.call(value: 1)
+        expect(actor.value).to eq(2)
       end
     end
 
     context "when an input has a default" do
       it "adds it to the context" do
-        result = AddGreetingWithDefault.call
-        expect(result.name).to eq("world")
+        actor = AddGreetingWithDefault.call
+        expect(actor.name).to eq("world")
       end
 
       it "can use it" do
-        result = AddGreetingWithDefault.call
-        expect(result.greeting).to eq("Hello, world!")
+        actor = AddGreetingWithDefault.call
+        expect(actor.greeting).to eq("Hello, world!")
       end
 
       it "ignores values added to call" do
-        result = AddGreetingWithDefault.call(name: "jim")
-        expect(result.name).to eq("jim")
+        actor = AddGreetingWithDefault.call(name: "jim")
+        expect(actor.name).to eq("jim")
       end
 
       it "ignores values already in the context" do
-        result = AddGreetingWithDefault.call(
+        actor = AddGreetingWithDefault.call(
           ServiceActor::Result.new(name: "jim"),
         )
-        expect(result.name).to eq("jim")
+        expect(actor.name).to eq("jim")
       end
     end
 
     context "when an input has a lambda default" do
       it "adds it to the context" do
-        result = AddGreetingWithLambdaDefault.call
-        expect(result.name).to eq("world")
+        actor = AddGreetingWithLambdaDefault.call
+        expect(actor.name).to eq("world")
       end
 
       it "can use it" do
-        result = AddGreetingWithLambdaDefault.call
-        expect(result.greeting).to eq("Hello, world!")
+        actor = AddGreetingWithLambdaDefault.call
+        expect(actor.greeting).to eq("Hello, world!")
       end
     end
 
@@ -108,89 +108,97 @@ RSpec.describe Actor do
     end
 
     context "when playing several actors" do
-      let(:result) { PlayActors.call(value: 1) }
+      let(:actor) { PlayActors.call(value: 1) }
 
       it "shares the result between actors" do
-        expect(result.value).to eq(3)
+        expect(actor.value).to eq(3)
       end
 
       it "calls the actors in order" do
-        expect(result.name).to eq("jim")
+        expect(actor.name).to eq("jim")
       end
 
       context "when not providing arguments" do
-        let(:result) { PlayActors.call }
+        let(:actor) { PlayActors.call }
 
         it "uses defaults from the inner actors" do
-          expect(result.value).to eq(2)
+          expect(actor.value).to eq(2)
         end
       end
     end
 
     context "when playing actors and lambdas" do
-      let(:result) { PlayLambdas.call }
+      let(:actor) { PlayLambdas.call }
 
       it "calls the actors and lambdas in order" do
-        expect(result.name).to eq("jim number 4")
+        expect(actor.name).to eq("jim number 4")
+      end
+    end
+
+    context "when playing actors and symbols" do
+      let(:actor) { PlayInstanceMethods.call }
+
+      it "calls the actors and symbols in order" do
+        expect(actor.name).to eq("jim number 4")
       end
     end
 
     context "when playing actors that do not inherit from Actor" do
-      let(:result) { PlayActors.call }
+      let(:actor) { PlayActors.call }
 
       it "merges the result" do
-        expect(result.stripped_down_actor).to be(true)
+        expect(actor.stripped_down_actor).to be(true)
       end
     end
 
     context "when using `play` several times" do
-      let(:result) { PlayMultipleTimes.call(value: 1) }
+      let(:actor) { PlayMultipleTimes.call(value: 1) }
 
       it "shares the result between actors" do
-        expect(result.value).to eq(3)
+        expect(actor.value).to eq(3)
       end
 
       it "calls the actors in order" do
-        expect(result.name).to eq("jim")
+        expect(actor.name).to eq("jim")
       end
     end
 
     context "when using `play` with conditions" do
-      let(:result) { PlayMultipleTimesWithConditions.call }
+      let(:actor) { PlayMultipleTimesWithConditions.call }
 
       it "does not trigger actors with conditions" do
-        expect(result.name).to eq("Jim")
+        expect(actor.name).to eq("Jim")
       end
 
       it "shares the result between actors" do
-        expect(result.value).to eq(3)
+        expect(actor.value).to eq(3)
       end
     end
 
     context "when playing several actors and one fails" do
-      let(:result) { ServiceActor::Result.new(value: 0) }
+      let(:actor) { ServiceActor::Result.new(value: 0) }
 
       it "raises with the message" do
-        expect { FailPlayingActionsWithRollback.call(result) }
+        expect { FailPlayingActionsWithRollback.call(actor) }
           .to raise_error(ServiceActor::Failure, "Ouch")
       end
 
       it "changes the context up to the failure then calls rollbacks" do
-        expect { FailPlayingActionsWithRollback.call(result) }
+        expect { FailPlayingActionsWithRollback.call(actor) }
           .to raise_error(ServiceActor::Failure)
 
-        expect(result.name).to eq("Jim")
-        expect(result.value).to eq(0)
+        expect(actor.name).to eq("Jim")
+        expect(actor.value).to eq(0)
       end
     end
 
     context "when playing several actors, one fails, one rolls back" do
-      let(:result) { PlayErrorAndCatchItInRollback.result }
+      let(:actor) { PlayErrorAndCatchItInRollback.result }
 
       it "catches the error inside the rollback" do
-        expect(result.called).to be(true)
-        expect(result.found_error).to eq("Found “Ouch”")
-        expect(result.some_other_key).to eq(42)
+        expect(actor.called).to be(true)
+        expect(actor.found_error).to eq("Found “Ouch”")
+        expect(actor.some_other_key).to eq(42)
       end
     end
 
@@ -234,8 +242,8 @@ RSpec.describe Actor do
 
     context "when called with a type as a string instead of a class" do
       it "succeeds" do
-        result = DoubleWithTypeAsString.call(value: 2.0)
-        expect(result.double).to eq(4.0)
+        actor = DoubleWithTypeAsString.call(value: 2.0)
+        expect(actor.double).to eq(4.0)
       end
 
       it "does not allow other types" do
@@ -274,8 +282,8 @@ RSpec.describe Actor do
 
     context "when reading an output" do
       it "succeeds" do
-        result = SetAndAccessOutput.result
-        expect(result.email).to eq("jim@example.org")
+        actor = SetAndAccessOutput.result
+        expect(actor.email).to eq("jim@example.org")
       end
     end
 
@@ -332,30 +340,30 @@ RSpec.describe Actor do
 
     context "when inheriting" do
       it "calls both the parent and child" do
-        result = InheritFromIncrementValue.call(value: 0)
-        expect(result.value).to eq(2)
+        actor = InheritFromIncrementValue.call(value: 0)
+        expect(actor.value).to eq(2)
       end
     end
 
     context "when inheriting from play" do
       it "calls both the parent and child" do
-        result = InheritFromPlay.call(value: 0)
-        expect(result.value).to eq(3)
+        actor = InheritFromPlay.call(value: 0)
+        expect(actor.value).to eq(3)
       end
     end
 
     context "when using type, default, allow_nil and must" do
       context "when not given a value" do
         it "uses the default" do
-          result = ValidateWeekdays.call
-          expect(result.weekdays).to eq([0, 1, 2, 3, 4])
+          actor = ValidateWeekdays.call
+          expect(actor.weekdays).to eq([0, 1, 2, 3, 4])
         end
       end
 
       context "when given a nil value" do
         it "returns nil" do
-          result = ValidateWeekdays.call(weekdays: nil)
-          expect(result.weekdays).to be_nil
+          actor = ValidateWeekdays.call(weekdays: nil)
+          expect(actor.weekdays).to be_nil
         end
       end
     end
@@ -363,8 +371,8 @@ RSpec.describe Actor do
     context 'when using "in"' do
       context "when given a correct value" do
         it "returns the message" do
-          result = PayWithProvider.call(provider: "PayPal")
-          expect(result.message).to eq("Money transferred to PayPal!")
+          actor = PayWithProvider.call(provider: "PayPal")
+          expect(actor.message).to eq("Money transferred to PayPal!")
         end
       end
 
@@ -382,65 +390,65 @@ RSpec.describe Actor do
 
       context "when it has a default" do
         it "uses it" do
-          result = PayWithProvider.call
-          expect(result.message).to eq("Money transferred to Stripe!")
+          actor = PayWithProvider.call
+          expect(actor.message).to eq("Money transferred to Stripe!")
         end
       end
     end
 
     context "when playing interactors" do
       it "succeeds" do
-        result = PlayInteractor.call(value: 5)
-        expect(result.value).to eq(5 + 2)
+        actor = PlayInteractor.call(value: 5)
+        expect(actor.value).to eq(5 + 2)
       end
     end
   end
 
   describe "#result" do
     context "when fail! is not called" do
-      let(:result) { DoNothing.result }
+      let(:actor) { DoNothing.result }
 
-      it { expect(result).to be_kind_of(ServiceActor::Result) }
-      it { expect(result).to be_a_success }
-      it { expect(result).not_to be_a_failure }
+      it { expect(actor).to be_kind_of(ServiceActor::Result) }
+      it { expect(actor).to be_a_success }
+      it { expect(actor).not_to be_a_failure }
     end
 
     context "when fail! is called" do
-      let(:result) { FailWithError.result }
+      let(:actor) { FailWithError.result }
 
-      it { expect(result).to be_kind_of(ServiceActor::Result) }
-      it { expect(result).to be_a_failure }
-      it { expect(result).not_to be_a_success }
-      it { expect(result.error).to eq("Ouch") }
-      it { expect(result.some_other_key).to eq(42) }
+      it { expect(actor).to be_kind_of(ServiceActor::Result) }
+      it { expect(actor).to be_a_failure }
+      it { expect(actor).not_to be_a_success }
+      it { expect(actor.error).to eq("Ouch") }
+      it { expect(actor.some_other_key).to eq(42) }
     end
 
     context "with an argument error, caught by fail_on" do
-      let(:result) { FailOnArgumentError.result(name: 42) }
+      let(:actor) { FailOnArgumentError.result(name: 42) }
       let(:expected_error_message) do
         "Input name on FailOnArgumentError must be of type String but was " \
           "Integer"
       end
 
-      it { expect(result).to be_a_failure }
-      it { expect(result.error).to eq(expected_error_message) }
+      it { expect(actor).to be_a_failure }
+      it { expect(actor.error).to eq(expected_error_message) }
     end
 
     context "when playing several actors" do
-      let(:result) { PlayActors.result(value: 1) }
+      let(:actor) { PlayActors.result(value: 1) }
 
-      it { expect(result).to be_a_success }
-      it { expect(result.name).to eq("jim") }
-      it { expect(result.value).to eq(3) }
+      it { expect(actor).to be_a_success }
+      it { expect(actor.name).to eq("jim") }
+      it { expect(actor.value).to eq(3) }
     end
 
     context "when playing several actors with a rollback and one fails" do
-      let(:result) { FailPlayingActionsWithRollback.result(value: 0) }
+      let(:actor) { FailPlayingActionsWithRollback.result(value: 0) }
 
-      it { expect(result).to be_a_failure }
-      it { expect(result).not_to be_a_success }
-      it { expect(result.name).to eq("Jim") }
-      it { expect(result.value).to eq(0) }
+      it { expect(actor).to be_a_failure }
+      it { expect(actor).not_to be_a_success }
+      it { expect(actor.name).to eq("Jim") }
+      it { expect(actor.value).to eq(0) }
     end
   end
 end

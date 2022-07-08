@@ -21,7 +21,7 @@ and controllers thin.
   - [Fail](#fail)
 - [Play actors in a sequence](#play-actors-in-a-sequence)
   - [Rollback](#rollback)
-  - [Lambdas](#lambdas)
+  - [Inline actors](#inline-actors)
   - [Play conditions](#play-conditions)
 - [Testing](#testing)
 - [Build your own actor](#build-your-own-actor)
@@ -118,22 +118,20 @@ end
 The result you get from calling an actor will include the outputs you set:
 
 ```rb
-result = BuildGreeting.call
-result.greeting # => "Have a wonderful day!"
+actor = BuildGreeting.call
+actor.greeting # => "Have a wonderful day!"
 ```
 
-For each output a method is generated ending with a `?`, which is useful when the output is used for
-conditional control flow, like if-else statements.
+For every output there is also a boolean method ending with `?` to test its
+presence:
 
 ```rb
-if result.greeting?
-  puts "Greetings is a non empty value"
+if actor.greeting?
+  puts "Greetings is truthy"
 else
-  puts "Greetings is empty"
+  puts "Greetings is falsey"
 end
 ```
-
-The generated method will return the truthy or falsey values of variables.
 
 ### Defaults
 
@@ -156,14 +154,14 @@ end
 This lets you call the actor without specifying those keys:
 
 ```rb
-result = BuildGreeting.call(name: "Jim")
-result.greeting # => "Have a wonderful week Jim!"
+actor = BuildGreeting.call(name: "Jim")
+actor.greeting # => "Have a wonderful week Jim!"
 ```
 
 If an input does not have a default, it will raise a error:
 
 ```rb
-result = BuildGreeting.call
+BuildGreeting.call
 => ServiceActor::ArgumentError: Input name on BuildGreeting is missing.
 ```
 
@@ -188,7 +186,7 @@ You can also add custom conditions with the name of your choice by using `must`:
 class UpdateAdminUser < Actor
   input :user,
         must: {
-          be_an_admin: ->(user) { user.admin? }
+          be_an_admin: -> user { user.admin? }
         }
 
   # …
@@ -262,11 +260,11 @@ For example in a Rails controller:
 # app/controllers/users_controller.rb
 class UsersController < ApplicationController
   def create
-    result = UpdateUser.result(user: user, attributes: user_attributes)
-    if result.success?
-      redirect_to result.user
+    actor = UpdateUser.result(user: user, attributes: user_attributes)
+    if actor.success?
+      redirect_to actor.user
     else
-      render :new, notice: result.error
+      render :new, notice: actor.error
     end
   end
 end
@@ -283,7 +281,7 @@ actor can use `play` to call other actors:
 ```rb
 class PlaceOrder < Actor
   play CreateOrder,
-       Pay,
+       PayOrder,
        SendOrderConfirmation,
        NotifyAdmins
 end
@@ -319,26 +317,51 @@ Rollback is only called on the _previous_ actors in `play` and is not called on
 the failing actor itself. Actors should be kept to a single purpose and not have
 anything to clean up if they call `fail!`.
 
-### Lambdas
+### Inline actors
 
-You can use inline actions using lambdas. Inside these lambdas you have access to
-the shared result:
+For small work or preparing the result set for the next actors, you can create
+inline actors by using lambdas. Each lambda has access to the shared result. For
+example:
 
 ```rb
-class PayWithStripe < Actor
-  play ->(result) { result.payment_provider = "stripe" },
+class PayOrder < Actor
+  input :order
+
+  play -> actor { actor.order.currency ||= "EUR" },
        CreatePayment,
-       ->(result) { result.user_to_notify = result.payment.user },
-       SendNotification
+       UpdateOrderBalance,
+       -> actor { Logger.info("Order #{actor.order.id} paid") }
 end
 ```
 
-Like in this example, lambdas can be useful for small work or preparing the
-result for the next actors. If you want to do more work before, after or around
-the whole `play`, you can also override the `call` method. For example:
+You can also call instance methods. For example:
 
 ```rb
-class Pay < Actor
+class PayOrder < Actor
+  input :order
+
+  play :assign_default_currency,
+       CreatePayment,
+       UpdateOrderBalance,
+       :log_payment
+
+  private
+
+  def assign_default_currency
+    order.currency ||= "EUR"
+  end
+
+  def log_payment
+    Logger.info("Order #{order.id} paid")
+  end
+end
+```
+
+If you want to do work around the whole actor, you can also override the `call`
+method. For example:
+
+```rb
+class PayOrder < Actor
   # …
 
   def call
@@ -357,11 +380,9 @@ Actors in a play can be called conditionally:
 class PlaceOrder < Actor
   play CreateOrder,
        Pay
-  play NotifyAdmins, if: ->(result) { result.order.amount > 42 }
+  play NotifyAdmins, if: -> actor { actor.order.amount > 42 }
 end
 ```
-
-This can also be used to trigger an early success.
 
 ### Fail on argument error
 
@@ -421,7 +442,8 @@ Some key differences make Actor unique:
   `context.foo = `, `fail!` vs `context.fail!`.
 - Shorter setup syntax: inherit from `< Actor` vs having to `include Interactor`
   and `include Interactor::Organizer`.
-- Organizers allow lambdas, being called multiple times, and having conditions.
+- Organizers allow lambdas, instance methods, being called multiple times,
+  and having conditions.
 - Allows early success with conditions inside organizers.
 - No `before`, `after` and `around` hooks, prefer using `play` with lambdas or
   overriding `call`.
@@ -433,6 +455,9 @@ migration.
 
 Thank you to @nicoolas25, @AnneSottise & @williampollet for the early thoughts
 and feedback on this gem.
+
+Thank you to the wonderful
+[contributors](https://github.com/sunny/actor/graphs/contributors).
 
 Photo by [Lloyd Dirks](https://unsplash.com/photos/4SLz_RCk6kQ).
 

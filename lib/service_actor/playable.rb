@@ -2,7 +2,7 @@
 
 module ServiceActor
   # Play class method to call a series of actors with the same result. On
-  # failure, calls rollback on any actor that succeeded.
+  # failure, calls rollback on actors that succeeded.
   #
   #   class CreateUser < Actor
   #     play SaveUser,
@@ -16,14 +16,6 @@ module ServiceActor
     end
 
     module ClassMethods
-      def inherited(child)
-        super
-
-        play_actors.each do |actor|
-          child.play_actors << actor
-        end
-      end
-
       def play(*actors, **options)
         actors.each do |actor|
           play_actors.push({ actor: actor, **options })
@@ -32,6 +24,14 @@ module ServiceActor
 
       def play_actors
         @play_actors ||= []
+      end
+
+      def inherited(child)
+        super
+
+        play_actors.each do |actor|
+          child.play_actors << actor
+        end
       end
     end
 
@@ -61,6 +61,7 @@ module ServiceActor
 
       def play_actor(actor)
         play_service_actor(actor) ||
+          play_symbol(actor) ||
           play_interactor(actor) ||
           actor.call(result)
       end
@@ -73,6 +74,14 @@ module ServiceActor
         actor._call
 
         (@played ||= []).unshift(actor)
+      end
+
+      def play_symbol(actor)
+        return unless actor.is_a?(Symbol)
+
+        send(actor)
+
+        true
       end
 
       def play_interactor(actor)
