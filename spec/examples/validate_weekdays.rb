@@ -8,7 +8,9 @@ class ValidateWeekdays < Actor
         allow_nil: true,
         default: DEFAULT_WEEKDAYS,
         must: {
-          be_valid: ->(v) { v.nil? || v.all? { |num| (0..6).include?(num) } }
+          be_valid: lambda do |numbers|
+            numbers.nil? || numbers.all? { |number| (0..6).include?(number) }
+          end
         }
 
   def call; end

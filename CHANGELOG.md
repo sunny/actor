@@ -6,7 +6,8 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## unreleased
 
 Features:
-- Automatically generate "*?" methods for boolean comparison.
+- The `play` method accepts instance methods as symbols.
+- Add `*?` methods to results for boolean comparison.
 
 ## v3.1.3
 

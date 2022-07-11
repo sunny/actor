@@ -72,3 +72,9 @@ Style/TrailingCommaInArguments:
 
 Style/DoubleNegation:
   Enabled: false
+
+Style/StabbyLambdaParentheses:
+  EnforcedStyle: require_no_parentheses
+
+Layout/SpaceInLambdaLiteral:
+  EnforcedStyle: require_space

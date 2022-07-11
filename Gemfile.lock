@@ -58,7 +58,7 @@ GEM
     rubocop-ruby2_4 (1.0.3)
       rubocop (= 1.12.1)
     ruby-progressbar (1.11.0)
-    unicode-display_width (2.1.0)
+    unicode-display_width (2.2.0)
 
 PLATFORMS
   ruby
@@ -75,4 +75,4 @@ DEPENDENCIES
   service_actor!
 
 BUNDLED WITH
-   2.3.15
+   2.3.17

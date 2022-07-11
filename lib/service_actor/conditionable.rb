@@ -11,7 +11,7 @@ module ServiceActor
   #   class Pay < Actor
   #     input :provider,
   #           must: {
-  #             exist: ->(provider) { PROVIDERS.include?(provider) }
+  #             exist: -> provider { PROVIDERS.include?(provider) },
   #           }
   #   end
   module Conditionable

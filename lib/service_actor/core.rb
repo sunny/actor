@@ -10,8 +10,8 @@ module ServiceActor
       # Call an actor with a given result. Returns the result.
       #
       #   CreateUser.call(name: "Joe")
-      def call(options = nil, **arguments)
-        result = Result.to_result(options).merge!(arguments)
+      def call(result = nil, **arguments)
+        result = Result.to_result(result).merge!(arguments)
         new(result)._call
         result
       end
@@ -20,8 +20,8 @@ module ServiceActor
       # failure.
       #
       #   CreateUser.result(name: "Joe")
-      def result(data = nil, **arguments)
-        call(data, **arguments)
+      def result(result = nil, **arguments)
+        call(result, **arguments)
       rescue Failure => e
         e.result
       end
