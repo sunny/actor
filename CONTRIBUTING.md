@@ -34,7 +34,12 @@ On a pull request, you can add an entry to the
 To release a new version, update the version number in `version.rb`, and in the
 `CHANGELOG.md`. Update the `README.md` if there are missing segments, make sure
 tests and linting are pristine by calling `bundle && bin/rake`, then create a
-commit for this version.
+commit for this version, for example with:
+
+```sh
+git add .
+git commit -m v`ruby -rservice_actor/version -e "puts ServiceActor::VERSION"`
+```
 
 You can then run `rake release`, which will assign a git tag, push using git,
 and push the gem to [rubygems.org](https://rubygems.org).

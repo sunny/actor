@@ -5,6 +5,8 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## unreleased
 
+## v3.2.0
+
 Features:
 - The `play` method accepts instance methods as symbols.
 - Add `*?` methods to results for boolean comparison.
