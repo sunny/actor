@@ -5,6 +5,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## unreleased
 
+Features:
+- Allow using actors as defaults, which can help with dependency injection.
+
 Fixes:
 - The `if:` condition on a `play` is called only once, instead of once per
   actor.

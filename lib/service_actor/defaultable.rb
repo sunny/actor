@@ -22,7 +22,7 @@ module ServiceActor
 
           if input.key?(:default)
             default = input[:default]
-            default = default.call if default.respond_to?(:call)
+            default = default.call if default.is_a?(Proc)
             result[name] = default
             next
           end
