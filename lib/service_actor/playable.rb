@@ -17,9 +17,7 @@ module ServiceActor
 
     module ClassMethods
       def play(*actors, **options)
-        actors.each do |actor|
-          play_actors.push({ actor: actor, **options })
-        end
+        play_actors.push(actors: actors, **options)
       end
 
       def play_actors
@@ -29,9 +27,7 @@ module ServiceActor
       def inherited(child)
         super
 
-        play_actors.each do |actor|
-          child.play_actors << actor
-        end
+        child.play_actors.concat(play_actors)
       end
     end
 
@@ -40,7 +36,7 @@ module ServiceActor
         self.class.play_actors.each do |options|
           next if options[:if] && !options[:if].call(result)
 
-          play_actor(options[:actor])
+          options[:actors].each { |actor| play_actor(actor) }
         end
       rescue Failure
         rollback
@@ -48,9 +44,9 @@ module ServiceActor
       end
 
       def rollback
-        return unless defined?(@played)
+        return unless defined?(@played_actors)
 
-        @played.each do |actor|
+        @played_actors.each do |actor|
           next unless actor.respond_to?(:rollback)
 
           actor.rollback
@@ -61,7 +57,7 @@ module ServiceActor
 
       def play_actor(actor)
         play_service_actor(actor) ||
-          play_symbol(actor) ||
+          play_method(actor) ||
           play_interactor(actor) ||
           actor.call(result)
       end
@@ -73,10 +69,10 @@ module ServiceActor
         actor = actor.new(result)
         actor._call
 
-        (@played ||= []).unshift(actor)
+        (@played_actors ||= []).unshift(actor)
       end
 
-      def play_symbol(actor)
+      def play_method(actor)
         return unless actor.is_a?(Symbol)
 
         send(actor)
