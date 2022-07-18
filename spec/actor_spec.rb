@@ -175,6 +175,22 @@ RSpec.describe Actor do
       end
     end
 
+    context "when using `play` with evaluated conditions" do
+      let(:actor) do
+        PlayMultipleTimesWithEvaluatedConditions.call(callable: callable)
+      end
+      let(:callable) { -> {} }
+
+      before do
+        allow(callable).to receive(:call).and_return(true)
+      end
+
+      it "does not evaluate conditions multiple times" do
+        expect(actor.value).to eq(4)
+        expect(callable).to have_received(:call).once
+      end
+    end
+
     context "when playing several actors and one fails" do
       let(:actor) { ServiceActor::Result.new(value: 0) }
 
