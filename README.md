@@ -15,8 +15,8 @@ and controllers thin.
   - [Inputs](#inputs)
   - [Outputs](#outputs)
   - [Defaults](#defaults)
-  - [Conditions](#conditions)
   - [Allow nil](#allow-nil)
+  - [Conditions](#conditions)
   - [Types](#types)
   - [Fail](#fail)
 - [Play actors in a sequence](#play-actors-in-a-sequence)
@@ -24,8 +24,7 @@ and controllers thin.
   - [Inline actors](#inline-actors)
   - [Play conditions](#play-conditions)
 - [Testing](#testing)
-- [Build your own actor](#build-your-own-actor)
-- [Influences](#influences)
+- [FAQ](#faq)
 - [Thanks](#thanks)
 - [Contributing](#contributing)
 - [License](#contributing)
@@ -120,22 +119,12 @@ The result you get from calling an actor will include the outputs you set:
 ```rb
 actor = BuildGreeting.call
 actor.greeting # => "Have a wonderful day!"
-```
-
-For every output there is also a boolean method ending with `?` to test its
-presence:
-
-```rb
-if actor.greeting?
-  puts "Greetings is truthy"
-else
-  puts "Greetings is falsey"
-end
+actor.greeting? # => true
 ```
 
 ### Defaults
 
-Inputs can be marked as optional by providing a default:
+Inputs can become optional if you provide a default:
 
 ```rb
 class BuildGreeting < Actor
@@ -149,20 +138,21 @@ class BuildGreeting < Actor
     self.greeting = "Have a #{adjective} #{length_of_time} #{name}!"
   end
 end
-```
 
-This lets you call the actor without specifying those keys:
-
-```rb
 actor = BuildGreeting.call(name: "Jim")
 actor.greeting # => "Have a wonderful week Jim!"
 ```
 
-If an input does not have a default, it will raise a error:
+### Allow nil
+
+By default inputs accept `nil` values. To raise an error instead:
 
 ```rb
-BuildGreeting.call
-=> ServiceActor::ArgumentError: Input name on BuildGreeting is missing.
+class UpdateUser < Actor
+  input :user, allow_nil: false
+
+  # …
+end
 ```
 
 ### Conditions
@@ -180,7 +170,7 @@ end
 This raises an argument error if the input does not match one of the given
 values.
 
-You can also add custom conditions with the name of your choice by using `must`:
+Declare custom conditions with the name of your choice by using `must`:
 
 ```rb
 class UpdateAdminUser < Actor
@@ -193,19 +183,8 @@ class UpdateAdminUser < Actor
 end
 ```
 
-This raises an argument error if the given lambda returns a falsey value.
-
-### Allow nil
-
-By default inputs accept `nil` values. To raise an error instead:
-
-```rb
-class UpdateUser < Actor
-  input :user, allow_nil: false
-
-  # …
-end
-```
+This will raise an argument error if any of the given lambdas returns a falsey
+value.
 
 ### Types
 
@@ -248,7 +227,8 @@ class UpdateUser
 end
 ```
 
-This will raise an error in your app with the given data added to the result.
+This will raise an error in your application with the given data added to the
+result.
 
 To test for the success of your actor instead of raising an exception, use
 `.result` instead of `.call`. You can then call `success?` or `failure?` on
@@ -270,9 +250,6 @@ class UsersController < ApplicationController
 end
 ```
 
-The keys you add to `fail!` will be added to the result, for example you could
-do: `fail!(error_type: "validation", error_code: "uv52", …)`.
-
 ## Play actors in a sequence
 
 To help you create actors that are small, single-responsibility actions, an
@@ -287,13 +264,13 @@ class PlaceOrder < Actor
 end
 ```
 
-This creates a `call` method that will call every actor along the way. Inputs
-and outputs will go from one actor to the next, all sharing the same result set
-until it is finally returned.
+Calling this actor will now call every actor along the way. Inputs and outputs
+will go from one actor to the next, all sharing the same result set until it is
+finally returned.
 
 ### Rollback
 
-When using `play`, when an actor calls `fail!`, the following actors will not be
+When using `play`, if an actor calls `fail!`, the following actors will not be
 called.
 
 Instead, all the actors that succeeded will have their `rollback` method called
@@ -384,22 +361,6 @@ class PlaceOrder < Actor
 end
 ```
 
-### Fail on argument error
-
-By default, errors on inputs will raise an error, even when using `.result`
-instead of `.call`. If instead you want to mark the actor as failed, you can
-catch the exception to treat it as an actor failure:
-
-```rb
-class PlaceOrder < Actor
-  fail_on ServiceActor::ArgumentError
-
-  input :currency, in: ["EUR", "USD"]
-
-  # …
-end
-```
-
 ## Testing
 
 In your application, add automated testing to your actors as you would do to any
@@ -408,56 +369,21 @@ other part of your applications.
 You will find that cutting your business logic into single purpose actors will
 make it easier for you to test your application.
 
-## Build your own actor
+## FAQ
 
-If you application already uses a class called “Actor”, you can build your own
-by changing the gem’s require statement:
-
-```rb
-gem "service_actor", require: "service_actor/base"
-```
-
-And building your own class to inherit from:
-
-```rb
-class ApplicationActor
-  include ServiceActor::Base
-end
-```
-
-## Influences
-
-This gem is heavily influenced by
-[Interactor](https://github.com/collectiveidea/interactor) ♥.
-Some key differences make Actor unique:
-
-- Does not [hide errors when an actor fails inside another
-  actor](https://github.com/collectiveidea/interactor/issues/170).
-- Requires you to document arguments with `input` and `output`.
-- Defaults to raising errors on failures: actor uses `call` and `result`
-  instead of `call!` and `call`. This way, the _default_ is to raise an error
-  and failures are not hidden away because you forgot to use `!`.
-- Allows defaults, type checking, requirements and conditions on inputs.
-- Delegates methods on the context: `foo` vs `context.foo`, `self.foo =` vs
-  `context.foo = `, `fail!` vs `context.fail!`.
-- Shorter setup syntax: inherit from `< Actor` vs having to `include Interactor`
-  and `include Interactor::Organizer`.
-- Organizers allow lambdas, instance methods, being called multiple times,
-  and having conditions.
-- Allows early success with conditions inside organizers.
-- No `before`, `after` and `around` hooks, prefer using `play` with lambdas or
-  overriding `call`.
-
-Actor supports mixing actors & interactors when using `play` for a smooth
-migration.
+Howtos and frequently asked questions can be found on the
+[wiki](https://github.com/sunny/actor/wiki).
 
 ## Thanks
 
-Thank you to @nicoolas25, @AnneSottise & @williampollet for the early thoughts
-and feedback on this gem.
+This gem is influenced & compatible with
+[Interactor](https://github.com/sunny/actor/wiki/Interactor).
 
 Thank you to the wonderful
 [contributors](https://github.com/sunny/actor/graphs/contributors).
+
+Thank you to @nicoolas25, @AnneSottise & @williampollet for the early thoughts
+and feedback on this gem.
 
 Photo by [Lloyd Dirks](https://unsplash.com/photos/4SLz_RCk6kQ).
 
