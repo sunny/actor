@@ -124,7 +124,7 @@ actor.greeting? # => true
 
 ### Defaults
 
-Inputs can become optional if you provide a default:
+Inputs can be optional by providing a default:
 
 ```rb
 class BuildGreeting < Actor
@@ -376,7 +376,7 @@ Howtos and frequently asked questions can be found on the
 
 ## Thanks
 
-This gem is influenced & compatible with
+This gem is influenced by (and compatible with)
 [Interactor](https://github.com/sunny/actor/wiki/Interactor).
 
 Thank you to the wonderful
