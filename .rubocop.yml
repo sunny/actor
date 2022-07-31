@@ -1,11 +1,16 @@
 require:
   - rubocop-rspec
+  - rubocop-rake
+  - rubocop-performance
 
 inherit_gem:
   rubocop-lts: rubocop-lts.yml
 
 AllCops:
-  SuggestExtensions: false
+  Exclude:
+    - bin/rake
+    - bin/rspec
+    - bin/rubocop
 
 Bundler/GemComment:
   Enabled: true
