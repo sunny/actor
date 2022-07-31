@@ -54,6 +54,9 @@ Gem::Specification.new do |spec|
   # Add performance linting
   spec.add_development_dependency "rubocop-performance"
 
+  # Add Rakefile linting
+  spec.add_development_dependency "rubocop-rake"
+
   # Formatter for GitHub’s code scanning
   spec.add_development_dependency "code-scanning-rubocop"
 
