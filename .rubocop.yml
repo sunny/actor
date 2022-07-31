@@ -51,7 +51,7 @@ Style/AsciiComments:
   Enabled: false
 
 Style/ClassAndModuleChildren:
-  Enabled: false
+  EnforcedStyle: compact
 
 Style/HashEachMethods:
   Enabled: true
