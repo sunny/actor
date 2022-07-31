@@ -38,7 +38,7 @@ commit for this version, for example with:
 
 ```sh
 git add .
-git commit -m v`ruby -rservice_actor/version -e "puts ServiceActor::VERSION"`
+git commit -m "v`ruby -rservice_actor/version -e "puts ServiceActor::VERSION"` 🎉"
 ```
 
 You can then run `rake release`, which will assign a git tag, push using git,
