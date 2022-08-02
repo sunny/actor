@@ -1,37 +1,36 @@
 # frozen_string_literal: true
 
-module ServiceActor
-  # Adds the `default:` option to inputs. Accepts regular values and lambdas.
-  # If no default is set and the value has not been given, raises an error.
-  #
-  # Example:
-  #
-  #   class MultiplyThing < Actor
-  #     input :counter, default: 1
-  #     input :multiplier, default: -> { rand(1..10) }
-  #   end
-  module Defaultable
-    def self.included(base)
-      base.prepend(PrependedMethods)
-    end
+# Adds the `default:` option to inputs. Accepts regular values and lambdas.
+# If no default is set and the value has not been given, raises an error.
+#
+# Example:
+#
+#   class MultiplyThing < Actor
+#     input :counter, default: 1
+#     input :multiplier, default: -> { rand(1..10) }
+#   end
+module ServiceActor::Defaultable
+  def self.included(base)
+    base.prepend(PrependedMethods)
+  end
 
-    module PrependedMethods
-      def _call
-        self.class.inputs.each do |name, input|
-          next if result.key?(name)
+  module PrependedMethods
+    def _call
+      self.class.inputs.each do |name, input|
+        next if result.key?(name)
 
-          if input.key?(:default)
-            default = input[:default]
-            default = default.call if default.is_a?(Proc)
-            result[name] = default
-            next
-          end
-
-          raise(ArgumentError, "Input #{name} on #{self.class} is missing")
+        if input.key?(:default)
+          default = input[:default]
+          default = default.call if default.is_a?(Proc)
+          result[name] = default
+          next
         end
 
-        super
+        raise ServiceActor::ArgumentError,
+              "Input #{name} on #{self.class} is missing"
       end
+
+      super
     end
   end
 end

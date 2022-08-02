@@ -4,7 +4,10 @@ require "bundler/setup"
 require "service_actor"
 require "pry"
 
-Dir["./spec/examples/*"].sort.each { |f| require f }
+# Autoload examples
+loader = Zeitwerk::Loader.new
+loader.push_dir(File.expand_path("examples", __dir__))
+loader.setup
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "./increment_value"
-require_relative "./set_name_to_downcase"
-
 class PlayInstanceMethods < Actor
   output :value, type: Integer
   output :name, type: String

@@ -1,59 +1,57 @@
 # frozen_string_literal: true
 
-module ServiceActor
-  # DSL to document the accepted attributes.
-  #
-  #   class CreateUser < Actor
-  #     input :name
-  #     output :name
-  #   end
-  module Attributable
-    def self.included(base)
-      base.extend(ClassMethods)
+# DSL to document the accepted attributes.
+#
+#   class CreateUser < Actor
+#     input :name
+#     output :name
+#   end
+module ServiceActor::Attributable
+  def self.included(base)
+    base.extend(ClassMethods)
+  end
+
+  module ClassMethods
+    def inherited(child)
+      super
+
+      child.inputs.merge!(inputs)
+      child.outputs.merge!(outputs)
     end
 
-    module ClassMethods
-      def inherited(child)
-        super
+    def input(name, **arguments)
+      inputs[name] = arguments
 
-        child.inputs.merge!(inputs)
-        child.outputs.merge!(outputs)
+      define_method(name) do
+        result[name]
       end
 
-      def input(name, **arguments)
-        inputs[name] = arguments
+      # For avoid method redefined warning messages.
+      alias_method name, name if method_defined?(name)
 
-        define_method(name) do
-          result[name]
-        end
+      protected name
+    end
 
-        # For avoid method redefined warning messages.
-        alias_method name, name if method_defined?(name)
+    def inputs
+      @inputs ||= {}
+    end
 
-        protected name
+    def output(name, **arguments)
+      outputs[name] = arguments
+
+      define_method(name) do
+        result[name]
       end
 
-      def inputs
-        @inputs ||= {}
+      define_method("#{name}=") do |value|
+        result[name] = value
       end
 
-      def output(name, **arguments)
-        outputs[name] = arguments
+      protected name, "#{name}="
+    end
 
-        define_method(name) do
-          result[name]
-        end
-
-        define_method("#{name}=") do |value|
-          result[name] = value
-        end
-
-        protected name, "#{name}="
-      end
-
-      def outputs
-        @outputs ||= {}
-      end
+    def outputs
+      @outputs ||= {}
     end
   end
 end

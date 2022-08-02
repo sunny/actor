@@ -1,91 +1,89 @@
 # frozen_string_literal: true
 
-module ServiceActor
-  # Play class method to call a series of actors with the same result. On
-  # failure, calls rollback on actors that succeeded.
-  #
-  #   class CreateUser < Actor
-  #     play SaveUser,
-  #          CreateSettings,
-  #          SendWelcomeEmail
-  #   end
-  module Playable
-    def self.included(base)
-      base.extend(ClassMethods)
-      base.prepend(PrependedMethods)
+# Play class method to call a series of actors with the same result. On failure,
+# calls rollback on actors that succeeded.
+#
+#   class CreateUser < Actor
+#     play SaveUser,
+#          CreateSettings,
+#          SendWelcomeEmail
+#   end
+module ServiceActor::Playable
+  def self.included(base)
+    base.extend(ClassMethods)
+    base.prepend(PrependedMethods)
+  end
+
+  module ClassMethods
+    def play(*actors, **options)
+      play_actors.push(actors: actors, **options)
     end
 
-    module ClassMethods
-      def play(*actors, **options)
-        play_actors.push(actors: actors, **options)
+    def play_actors
+      @play_actors ||= []
+    end
+
+    def inherited(child)
+      super
+
+      child.play_actors.concat(play_actors)
+    end
+  end
+
+  module PrependedMethods
+    def call
+      self.class.play_actors.each do |options|
+        next if options[:if] && !options[:if].call(result)
+
+        options[:actors].each { |actor| play_actor(actor) }
       end
+    rescue ServiceActor::Failure
+      rollback
+      raise
+    end
 
-      def play_actors
-        @play_actors ||= []
-      end
+    def rollback
+      return unless defined?(@played_actors)
 
-      def inherited(child)
-        super
+      @played_actors.each do |actor|
+        next unless actor.respond_to?(:rollback)
 
-        child.play_actors.concat(play_actors)
+        actor.rollback
       end
     end
 
-    module PrependedMethods
-      def call
-        self.class.play_actors.each do |options|
-          next if options[:if] && !options[:if].call(result)
+    private
 
-          options[:actors].each { |actor| play_actor(actor) }
-        end
-      rescue Failure
-        rollback
-        raise
-      end
+    def play_actor(actor)
+      play_service_actor(actor) ||
+        play_method(actor) ||
+        play_interactor(actor) ||
+        actor.call(result)
+    end
 
-      def rollback
-        return unless defined?(@played_actors)
+    def play_service_actor(actor)
+      return unless actor.is_a?(Class)
+      return unless actor.ancestors.include?(ServiceActor::Core)
 
-        @played_actors.each do |actor|
-          next unless actor.respond_to?(:rollback)
+      actor = actor.new(result)
+      actor._call
 
-          actor.rollback
-        end
-      end
+      (@played_actors ||= []).unshift(actor)
+    end
 
-      private
+    def play_method(actor)
+      return unless actor.is_a?(Symbol)
 
-      def play_actor(actor)
-        play_service_actor(actor) ||
-          play_method(actor) ||
-          play_interactor(actor) ||
-          actor.call(result)
-      end
+      send(actor)
 
-      def play_service_actor(actor)
-        return unless actor.is_a?(Class)
-        return unless actor.ancestors.include?(ServiceActor::Core)
+      true
+    end
 
-        actor = actor.new(result)
-        actor._call
+    def play_interactor(actor)
+      return unless actor.is_a?(Class)
+      return unless actor.ancestors.map(&:name).include?("Interactor")
 
-        (@played_actors ||= []).unshift(actor)
-      end
-
-      def play_method(actor)
-        return unless actor.is_a?(Symbol)
-
-        send(actor)
-
-        true
-      end
-
-      def play_interactor(actor)
-        return unless actor.is_a?(Class)
-        return unless actor.ancestors.map(&:name).include?("Interactor")
-
-        result.merge!(actor.call(result).to_h)
-      end
+      result.merge!(actor.call(result).to_h)
     end
   end
 end

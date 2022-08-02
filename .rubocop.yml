@@ -50,6 +50,9 @@ RSpec/MultipleExpectations:
 Style/AsciiComments:
   Enabled: false
 
+Style/ClassAndModuleChildren:
+  EnforcedStyle: compact
+
 Style/HashEachMethods:
   Enabled: true
 
