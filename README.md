@@ -213,7 +213,7 @@ When using a type condition, `allow_nil` defaults to `false`.
 To stop the execution and mark an actor as having failed, use `fail!`:
 
 ```rb
-class UpdateUser
+class UpdateUser < Actor
   input :user
   input :attributes
 
