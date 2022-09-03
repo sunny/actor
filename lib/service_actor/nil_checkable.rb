@@ -28,9 +28,7 @@ module ServiceActor::NilCheckable
       definitions.each do |name, options|
         next if !result[name].nil? || allow_nil?(options)
 
-        raise ServiceActor::ArgumentError,
-              "The #{origin} \"#{name}\" on #{self.class} does not allow " \
-              "nil values"
+        raise ServiceActor::ArgumentError, error_text_with(origin, name)
       end
     end
 
@@ -39,6 +37,10 @@ module ServiceActor::NilCheckable
       return true if options.key?(:default) && options[:default].nil?
 
       !options[:type]
+    end
+
+    def error_text_with(origin, name)
+      "The #{origin} \"#{name}\" on #{self.class} does not allow nil values"
     end
   end
 end

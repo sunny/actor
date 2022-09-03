@@ -27,12 +27,17 @@ module ServiceActor::Conditionable
           value = result[key]
           next if check.call(value)
 
-          raise ServiceActor::ArgumentError,
-                "Input #{key} must #{name} but was #{value.inspect}"
+          raise ServiceActor::ArgumentError, error_text_with(key, name, value)
         end
       end
 
       super
+    end
+
+    private
+
+    def error_text_with(key, name, value)
+      "Input #{key} must #{name} but was #{value.inspect}"
     end
   end
 end

@@ -34,9 +34,7 @@ module ServiceActor::TypeCheckable
         types = types_for_definition(type_definition)
         next if types.any? { |type| value.is_a?(type) }
 
-        raise ServiceActor::ArgumentError,
-              "#{kind} #{key} on #{self.class} must be of type " \
-              "#{types.join(', ')} but was #{value.class}"
+        raise ServiceActor::ArgumentError, error_text_with(kind, key, types, value)
       end
     end
 
@@ -44,6 +42,11 @@ module ServiceActor::TypeCheckable
       Array(type_definition).map do |name|
         name.is_a?(String) ? Object.const_get(name) : name
       end
+    end
+
+    def error_text_with(kind, key, types, value)
+      "#{kind} #{key} on #{self.class} must be of type " \
+      "#{types.join(', ')} but was #{value.class}"
     end
   end
 end

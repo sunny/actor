@@ -20,12 +20,17 @@ module ServiceActor::Collectionable
 
         next if options[:in].include?(result[key])
 
-        raise ArgumentError,
-              "Input #{key} must be included in #{options[:in].inspect} " \
-              "but instead was #{result[key].inspect}"
+        raise ArgumentError, error_text_with(key, options, result)
       end
 
       super
+    end
+
+    private
+
+    def error_text_with(key, options, result)
+      "Input #{key} must be included in #{options[:in].inspect} " \
+      "but instead was #{result[key].inspect}"
     end
   end
 end

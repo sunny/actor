@@ -26,11 +26,16 @@ module ServiceActor::Defaultable
           next
         end
 
-        raise ServiceActor::ArgumentError,
-              "Input #{name} on #{self.class} is missing"
+        raise ServiceActor::ArgumentError, error_text_with(name)
       end
 
       super
+    end
+
+    private
+
+    def error_text_with(name)
+      "Input #{name} on #{self.class} is missing"
     end
   end
 end
