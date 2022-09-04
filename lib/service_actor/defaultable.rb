@@ -32,11 +32,5 @@ module ServiceActor::Defaultable
 
       super
     end
-
-    # private
-
-    # def error_text_with(name)
-    #   "Input #{name} on #{self.class} is missing"
-    # end
   end
 end
