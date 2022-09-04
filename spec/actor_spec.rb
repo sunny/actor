@@ -233,6 +233,21 @@ RSpec.describe Actor do
       end
     end
 
+    context "when called with a matching condition (advanced)" do
+      it "suceeds" do
+        expect(SetNameWithInputConditionAdvanced.call(name: "joe").name).to eq("JOE")
+      end
+    end
+
+    context "when called with the wrong condition (advanced)" do
+      it "suceeds" do
+        expected_error = 'Failed to apply `be_lowercase`'
+
+        expect { SetNameWithInputConditionAdvanced.call(name: "42") }
+          .to raise_error(ServiceActor::ArgumentError, expected_error)
+      end
+    end
+
     context "when called with the wrong type of argument" do
       let(:expected_message) do
         "Input name on SetNameToDowncase must be of type String but was " \
