@@ -483,6 +483,15 @@ RSpec.describe Actor do
             expect(actor.message).to eq("Money transferred to Stripe!")
           end
         end
+
+        context "when it has a default but no value" do # rubocop:disable RSpec/NestedGroups
+          expected_error = "Input `provider` is required"
+
+          it "fails" do
+            expect { PayWithProviderAdvancedButNoDefaultValue.call }
+              .to raise_error(expected_error)
+          end
+        end
       end
     end
 
