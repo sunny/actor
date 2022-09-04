@@ -20,7 +20,7 @@ module ServiceActor::Collectionable
 
         next if options[:in].include?(result[key])
 
-        raise ArgumentError,
+        raise ServiceActor::ArgumentError,
               "Input #{key} must be included in #{options[:in].inspect} " \
               "but instead was #{result[key].inspect}"
       end

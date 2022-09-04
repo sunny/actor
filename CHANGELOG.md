@@ -5,6 +5,10 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## unreleased
 
+Fixes:
+- The “Input … must be included in …” error message is now correctly raised as a
+  `ServiceActor::ArgumentError` instead of an `ArgumentError`.
+
 ## v3.3.0
 
 Features:
