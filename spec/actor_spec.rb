@@ -219,32 +219,38 @@ RSpec.describe Actor do
     end
 
     context "when called with a matching condition" do
-      it "suceeds" do
-        expect(SetNameWithInputCondition.call(name: "joe").name).to eq("JOE")
+      context "when normal mode" do
+        it "suceeds" do
+          expect(SetNameWithInputCondition.call(name: "joe").name).to eq("JOE")
+        end
+      end
+
+      context "when advanced mode" do
+        it "suceeds" do
+          expect(SetNameWithInputConditionAdvanced.call(name: "joe").name).to eq("JOE")
+        end
       end
     end
 
     context "when called with the wrong condition" do
-      it "suceeds" do
-        expected_error = 'Input name must be_lowercase but was "42"'
+      context "when normal mode" do
+        it "raises" do
+          expected_error = 'Input name must be_lowercase but was "42"'
 
-        expect { SetNameWithInputCondition.call(name: "42") }
-          .to raise_error(ServiceActor::ArgumentError, expected_error)
+          expect { SetNameWithInputCondition.call(name: "42") }
+            .to raise_error(ServiceActor::ArgumentError, expected_error)
+        end
       end
-    end
 
-    context "when called with a matching condition (advanced)" do
-      it "suceeds" do
-        expect(SetNameWithInputConditionAdvanced.call(name: "joe").name).to eq("JOE")
-      end
-    end
+      context "when advanced mode" do
+        context "when called with the wrong condition" do # rubocop:disable RSpec/NestedGroups
+          it "raises" do
+            expected_error = "Failed to apply `be_lowercase`"
 
-    context "when called with the wrong condition (advanced)" do
-      it "suceeds" do
-        expected_error = 'Failed to apply `be_lowercase`'
-
-        expect { SetNameWithInputConditionAdvanced.call(name: "42") }
-          .to raise_error(ServiceActor::ArgumentError, expected_error)
+            expect { SetNameWithInputConditionAdvanced.call(name: "42") }
+              .to raise_error(ServiceActor::ArgumentError, expected_error)
+          end
+        end
       end
     end
 
@@ -277,24 +283,48 @@ RSpec.describe Actor do
         expect(actor.double).to eq(4.0)
       end
 
-      it "does not allow other types" do
-        expected_error =
-          "Input value on DoubleWithTypeAsString must be of type Integer, " \
-          "Float but was String"
-        expect { DoubleWithTypeAsString.call(value: "2.0") }
-          .to raise_error(ServiceActor::ArgumentError, expected_error)
+      context "when normal mode" do
+        it "does not allow other types" do
+          expected_error =
+            "Input value on DoubleWithTypeAsString must be of type Integer, " \
+            "Float but was String"
+          expect { DoubleWithTypeAsString.call(value: "2.0") }
+            .to raise_error(ServiceActor::ArgumentError, expected_error)
+        end
+      end
+
+      context "when advanced mode" do
+        it "does not allow other types" do
+          expected_error =
+            "Wrong type `String` for `value`. Expected: `Integer, Float`"
+          expect { DoubleWithTypeAsStringAdvanced.call(value: "2.0") }
+            .to raise_error(ServiceActor::ArgumentError, expected_error)
+        end
       end
     end
 
     context "when setting the wrong type of output" do
-      let(:expected_message) do
-        "Output name on SetWrongTypeOfOutput must be of type String but was " \
-          "#{1.class.name}"
+      context "when normal mode" do
+        let(:expected_message) do
+          "Output name on SetWrongTypeOfOutput must be of type String but was " \
+            "#{1.class.name}"
+        end
+
+        it "raises" do
+          expect { SetWrongTypeOfOutput.call }
+            .to raise_error(ServiceActor::ArgumentError, expected_message)
+        end
       end
 
-      it "raises" do
-        expect { SetWrongTypeOfOutput.call }
-          .to raise_error(ServiceActor::ArgumentError, expected_message)
+      context "when advanced mode" do
+        let(:expected_message) do
+          "Wrong type `Integer` for `name`. Expected: `String`"
+        end
+
+        it "raises" do
+          expect { SetWrongTypeOfOutputAdvanced.call }
+            .to raise_error(ServiceActor::ArgumentError, expected_message)
+        end
       end
     end
 
@@ -400,56 +430,58 @@ RSpec.describe Actor do
     end
 
     context 'when using "inclusion"' do
-      context "when given a correct value" do
-        it "returns the message" do
-          actor = PayWithProvider.call(provider: "PayPal")
-          expect(actor.message).to eq("Money transferred to PayPal!")
+      context "when normal mode" do
+        context "when given a correct value" do # rubocop:disable RSpec/NestedGroups
+          it "returns the message" do
+            actor = PayWithProvider.call(provider: "PayPal")
+            expect(actor.message).to eq("Money transferred to PayPal!")
+          end
+        end
+
+        context "when given an incorrect value" do # rubocop:disable RSpec/NestedGroups
+          let(:expected_alert) do
+            "Input provider must be included in " \
+              '["MANGOPAY", "PayPal", "Stripe"] but instead was "Paypal"'
+          end
+
+          it "fails" do
+            expect { PayWithProvider.call(provider: "Paypal") }
+              .to raise_error(expected_alert)
+          end
+        end
+
+        context "when it has a default" do # rubocop:disable RSpec/NestedGroups
+          it "uses it" do
+            actor = PayWithProvider.call
+            expect(actor.message).to eq("Money transferred to Stripe!")
+          end
         end
       end
 
-      context "when given an incorrect value" do
-        let(:expected_alert) do
-          "Input provider must be included in " \
-            '["MANGOPAY", "PayPal", "Stripe"] but instead was "Paypal"'
+      context "when advanced mode" do
+        context "when given a correct value" do # rubocop:disable RSpec/NestedGroups
+          it "returns the message" do
+            actor = PayWithProviderAdvanced.call(provider: "PayPal")
+            expect(actor.message).to eq("Money transferred to PayPal!")
+          end
         end
 
-        it "fails" do
-          expect { PayWithProvider.call(provider: "Paypal") }
-            .to raise_error(expected_alert)
-        end
-      end
+        context "when given an incorrect value" do # rubocop:disable RSpec/NestedGroups
+          let(:expected_alert) do
+            "Payment system \"Paypal\" is not supported"
+          end
 
-      context "when it has a default" do
-        it "uses it" do
-          actor = PayWithProvider.call
-          expect(actor.message).to eq("Money transferred to Stripe!")
-        end
-      end
-    end
-
-    context 'when using "inclusion" (advanced)' do
-      context "when given a correct value" do
-        it "returns the message" do
-          actor = PayWithProviderAdvanced.call(provider: "PayPal")
-          expect(actor.message).to eq("Money transferred to PayPal!")
-        end
-      end
-
-      context "when given an incorrect value" do
-        let(:expected_alert) do
-          "Payment system \"Paypal\" is not supported"
+          it "fails" do
+            expect { PayWithProviderAdvanced.call(provider: "Paypal") }
+              .to raise_error(expected_alert)
+          end
         end
 
-        it "fails" do
-          expect { PayWithProviderAdvanced.call(provider: "Paypal") }
-            .to raise_error(expected_alert)
-        end
-      end
-
-      context "when it has a default" do
-        it "uses it" do
-          actor = PayWithProviderAdvanced.call
-          expect(actor.message).to eq("Money transferred to Stripe!")
+        context "when it has a default" do # rubocop:disable RSpec/NestedGroups
+          it "uses it" do
+            actor = PayWithProviderAdvanced.call
+            expect(actor.message).to eq("Money transferred to Stripe!")
+          end
         end
       end
     end
