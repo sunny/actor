@@ -8,6 +8,22 @@
 #     input :name, allow_nil: false
 #     output :user, allow_nil: false
 #   end
+#
+#   class CreateUser < Actor
+#     input :name,
+#           allow_nil: {
+#             message: (lambda do |_origin, _input_key, _class_name|
+#               "The value `#{input_key}` cannot be empty"
+#             end)
+#           }
+#
+#   output :user,
+#          allow_nil: {
+#            message: (lambda do |_origin, _input_key, _class_name|
+#              "The value `#{input_key}` cannot be empty"
+#            end)
+#          }
+#   end
 module ServiceActor::NilCheckable
   def self.included(base)
     base.prepend(PrependedMethods)
