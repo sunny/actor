@@ -5,6 +5,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## unreleased
 
+Features:
+- Rename the `in:` option to `inclusion:`.
+
 ## v3.3.0
 
 Features:

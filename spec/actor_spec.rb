@@ -384,6 +384,34 @@ RSpec.describe Actor do
       end
     end
 
+    context 'when using "inclusion"' do
+      context "when given a correct value" do
+        it "returns the message" do
+          actor = PayWithProviderInclusion.call(provider: "PayPal")
+          expect(actor.message).to eq("Money transferred to PayPal!")
+        end
+      end
+
+      context "when given an incorrect value" do
+        let(:expected_alert) do
+          "Input provider must be included in " \
+            '["MANGOPAY", "PayPal", "Stripe"] but instead was "Paypal"'
+        end
+
+        it "fails" do
+          expect { PayWithProviderInclusion.call(provider: "Paypal") }
+            .to raise_error(expected_alert)
+        end
+      end
+
+      context "when it has a default" do
+        it "uses it" do
+          actor = PayWithProviderInclusion.call
+          expect(actor.message).to eq("Money transferred to Stripe!")
+        end
+      end
+    end
+
     context 'when using "in"' do
       context "when given a correct value" do
         it "returns the message" do
