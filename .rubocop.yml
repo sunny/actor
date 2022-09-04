@@ -21,6 +21,9 @@ Gemspec/OrderedDependencies:
 Gemspec/RequiredRubyVersion:
   Enabled: false
 
+Layout/LineLength:
+  Max: 80
+
 Layout/SpaceAroundMethodCallOperator:
   Enabled: true
 
