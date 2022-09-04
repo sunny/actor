@@ -400,7 +400,7 @@ RSpec.describe Actor do
 
         it "fails" do
           expect { PayWithProvider.call(provider: "Paypal") }
-            .to raise_error(expected_alert)
+            .to raise_error(ServiceActor::ArgumentError, expected_alert)
         end
       end
 
