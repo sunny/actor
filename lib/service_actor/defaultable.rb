@@ -9,28 +9,71 @@
 #     input :counter, default: 1
 #     input :multiplier, default: -> { rand(1..10) }
 #   end
+#
+#   class MultiplyThing < Actor
+#     input :counter,
+#           default: {
+#             value: 1,
+#             message: (lambda do |input_key, _service_name|
+#               "Input `#{input_key}` is required"
+#             end)
+#           }
+
+#     input :multiplier,
+#           default: {
+#             value: -> { rand(1..10) },
+#             message: (lambda do |input_key, _service_name|
+#               "Input `#{input_key}` is required"
+#             end)
+#           }
+# end
 module ServiceActor::Defaultable
   def self.included(base)
     base.prepend(PrependedMethods)
   end
 
   module PrependedMethods
-    def _call
-      self.class.inputs.each do |name, input|
-        next if result.key?(name)
+    def _call # rubocop:disable Metrics/MethodLength
+      self.class.inputs.each do |key, input|
+        next if result.key?(key)
 
-        if input.key?(:default)
-          default = input[:default]
-          default = default.call if default.is_a?(Proc)
-          result[name] = default
-          next
+        unless input.key?(:default)
+          raise ServiceActor::ArgumentError,
+                "Input #{key} on #{self.class} is missing"
         end
 
-        raise ServiceActor::ArgumentError,
-              "Input #{name} on #{self.class} is missing"
+        default = input[:default]
+
+        if default.is_a?(Hash)
+          default_for_advanced_mode_with(result, key, default)
+        else
+          default_for_normal_mode_with(result, key, default)
+        end
+
+        next
       end
 
       super
+    end
+
+    private
+
+    def default_for_normal_mode_with(result, key, default)
+      default = default.call if default.is_a?(Proc)
+      result[key] = default
+    end
+
+    def default_for_advanced_mode_with(result, key, content)
+      default, message = content.values_at(:value, :message)
+
+      unless default
+        raise ServiceActor::ArgumentError, message.call(key, self.class)
+      end
+
+      default = default.call if default.is_a?(Proc)
+      result[key] = default
+
+      message.call(key, self.class)
     end
   end
 end
