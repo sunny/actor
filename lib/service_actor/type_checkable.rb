@@ -8,7 +8,18 @@
 #   class ReduceOrderAmount < Actor
 #     input :order, type: "Order"
 #     input :amount, type: [Integer, Float]
-#     input :bonus_applied, type: [TrueClass FalseClass]
+#     input :bonus_applied, type: [TrueClass, FalseClass]
+#   end
+#
+#   class ReduceOrderAmount < Actor
+#     input :bonus_applied,
+#           type: {
+#             class_name: [TrueClass, FalseClass],
+#             message: (lambda do |_kind, input_key, _service_name, expected_type_names, actual_type_name|
+#               "Wrong type `#{actual_type_name}` for `#{input_key}`. " \
+#               "Expected: `#{expected_type_names}`"
+#             end)
+#           }
 #   end
 module ServiceActor::TypeCheckable
   def self.included(base)
@@ -26,17 +37,26 @@ module ServiceActor::TypeCheckable
 
     private
 
-    def check_type_definitions(definitions, kind:)
+    def check_type_definitions(definitions, kind:) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
       definitions.each do |key, options|
         type_definition = options[:type] || next
         value = result[key] || next
 
-        types = types_for_definition(type_definition)
+        if type_definition.is_a?(Hash) # advanced mode
+          type_definition, message = type_definition.values_at(:class_name, :message)
+          types = types_for_definition(type_definition)
+          error_text = message.call(
+            kind, key, self.class, types.join(", "), value.class
+          )
+        else
+          types = types_for_definition(type_definition)
+          error_text = "#{kind} #{key} on #{self.class} must be of type " \
+                       "#{types.join(', ')} but was #{value.class}"
+        end
+
         next if types.any? { |type| value.is_a?(type) }
 
-        raise ServiceActor::ArgumentError,
-              "#{kind} #{key} on #{self.class} must be of type " \
-              "#{types.join(', ')} but was #{value.class}"
+        raise ServiceActor::ArgumentError, error_text
       end
     end
 
@@ -45,10 +65,5 @@ module ServiceActor::TypeCheckable
         name.is_a?(String) ? Object.const_get(name) : name
       end
     end
-
-    # def error_text_with(kind, key, types, value)
-    #   "#{kind} #{key} on #{self.class} must be of type " \
-    #   "#{types.join(', ')} but was #{value.class}"
-    # end
   end
 end
