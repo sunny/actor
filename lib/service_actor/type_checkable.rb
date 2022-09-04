@@ -43,7 +43,8 @@ module ServiceActor::TypeCheckable
         value = result[key] || next
 
         if type_definition.is_a?(Hash) # advanced mode
-          type_definition, message = type_definition.values_at(:class_name, :message)
+          type_definition, message =
+            type_definition.values_at(:class_name, :message)
           types = types_for_definition(type_definition)
           error_text = message.call(
             kind, key, self.class, types.join(", "), value.class
