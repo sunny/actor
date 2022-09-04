@@ -38,7 +38,7 @@ module ServiceActor::Conditionable
         options[:must].each do |name, content|
           value = result[key]
 
-          if content.is_a?(Hash)
+          if content.is_a?(Hash) # advanced mode
             check, message = content.values_at(:state, :message)
             error_text = message.call(key, name, value)
           else
