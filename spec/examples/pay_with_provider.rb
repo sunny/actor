@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class PayWithProvider < Actor
-  input :provider, in: %w[MANGOPAY PayPal Stripe], default: "Stripe"
+  input :provider, inclusion: %w[MANGOPAY PayPal Stripe], default: "Stripe"
   output :message, type: String
 
   def call
