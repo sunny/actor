@@ -5,7 +5,7 @@ class SetWrongTypeOfOutputAdvanced < Actor
   output :name,
          type: {
            class_name: String,
-           message: (lambda do |_kind, input_key, _service_name, expected_type_names, actual_type_name|
+           message: (lambda do |_kind, input_key, _service_name, actual_type_name, expected_type_names|
              "Wrong type `#{actual_type_name}` for `#{input_key}`. " \
              "Expected: `#{expected_type_names}`"
            end)

@@ -15,7 +15,7 @@
 #     input :bonus_applied,
 #           type: {
 #             class_name: [TrueClass, FalseClass],
-#             message: (lambda do |_kind, input_key, _service_name, expected_type_names, actual_type_name|
+#             message: (lambda do |_kind, input_key, _service_name, actual_type_name, expected_type_names|
 #               "Wrong type `#{actual_type_name}` for `#{input_key}`. " \
 #               "Expected: `#{expected_type_names}`"
 #             end)
@@ -42,24 +42,22 @@ module ServiceActor::TypeCheckable
         type_definition = options[:type] || next
         value = result[key] || next
 
-        # FIXME: The `prototype_3_with` method needs to be renamed.
-        types, message = prototype_3_with(
-          type_definition,
+        base_arguments = {
           kind: kind,
           input_key: key,
           service_name: self.class,
-          actual_type_name: value.class,
-        )
+          actual_type_name: value.class
+        }
+
+        # FIXME: The `prototype_3_with` method needs to be renamed.
+        types, message = prototype_3_with(type_definition, **base_arguments)
 
         next if types.any? { |type| value.is_a?(type) }
 
         raise_error_with(
           message,
-          kind: kind,
-          input_key: key,
-          service_name: self.class,
+          **base_arguments,
           expected_type_names: types.join(", "),
-          actual_type_name: value.class,
         )
       end
     end

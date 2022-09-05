@@ -13,7 +13,7 @@
 #     input :provider,
 #           inclusion: {
 #             in: ["MANGOPAY", "PayPal", "Stripe"],
-#             message: (lambda do |_input_key, _inclusion_in, value|
+#             message: (lambda do |_input_key, value, _inclusion_in|
 #               "Payment system \"#{value}\" is not supported"
 #             end)
 #           }
@@ -29,21 +29,21 @@ module ServiceActor::Collectionable
         value = result[key]
         inclusion = options[:inclusion]
 
-        # FIXME: The `prototype_1_with` method needs to be renamed.
-        inclusion_in, message = prototype_1_with(
-          inclusion,
+        base_arguments = {
           input_key: key,
-          value: value,
-        )
+          value: value
+        }
+
+        # FIXME: The `prototype_1_with` method needs to be renamed.
+        inclusion_in, message = prototype_1_with(inclusion, **base_arguments)
 
         next if inclusion_in.nil?
         next if inclusion_in.include?(value)
 
         raise_error_with(
           message,
-          input_key: key,
+          **base_arguments,
           inclusion_in: inclusion_in,
-          value: value,
         )
       end
 

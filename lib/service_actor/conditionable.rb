@@ -38,22 +38,18 @@ module ServiceActor::Conditionable
         options[:must].each do |check_name, check|
           value = result[key]
 
-          # FIXME: The `prototype_2_with` method needs to be renamed.
-          check, message = prototype_2_with(
-            check,
+          base_arguments = {
             input_key: key,
             check_name: check_name,
-            value: value,
-          )
+            value: value
+          }
+
+          # FIXME: The `prototype_2_with` method needs to be renamed.
+          check, message = prototype_2_with(check, **base_arguments)
 
           next if check.call(value)
 
-          raise_error_with(
-            message,
-            input_key: key,
-            check_name: check_name,
-            value: value,
-          )
+          raise_error_with(message, **base_arguments)
         end
       end
 
