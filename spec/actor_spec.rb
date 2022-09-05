@@ -244,7 +244,7 @@ RSpec.describe Actor do
       end
 
       context "when advanced mode" do
-        context "when called with the wrong condition" do # rubocop:disable RSpec/NestedGroups
+        context "when called with the wrong condition" do
           it "raises" do
             expected_error = "Failed to apply `be_lowercase`"
 
@@ -350,19 +350,38 @@ RSpec.describe Actor do
     end
 
     context "when disallowing nil on an input" do
-      context "when given the input" do
-        it "succeeds" do
-          expect(DisallowNilOnInput.call(name: "Jim")).to be_a_success
+      context "when normal mode" do
+        context "when given the input" do
+          it "succeeds" do
+            expect(DisallowNilOnInput.call(name: "Jim")).to be_a_success
+          end
+        end
+
+        context "without the input" do
+          it "fails" do
+            expected_error =
+              'The input "name" on DisallowNilOnInput does not allow nil values'
+
+            expect { DisallowNilOnInput.call(name: nil) }
+              .to raise_error(ServiceActor::ArgumentError, expected_error)
+          end
         end
       end
 
-      context "without the input" do
-        it "fails" do
-          expected_error =
-            'The input "name" on DisallowNilOnInput does not allow nil values'
+      context "when advanced mode" do
+        context "when given the input" do
+          it "succeeds" do
+            expect(DisallowNilOnInputAdvanced.call(name: "Jim")).to be_a_success
+          end
+        end
 
-          expect { DisallowNilOnInput.call(name: nil) }
-            .to raise_error(ServiceActor::ArgumentError, expected_error)
+        context "without the input" do
+          it "fails" do
+            expected_error = "The value `name` cannot be empty"
+
+            expect { DisallowNilOnInputAdvanced.call(name: nil) }
+              .to raise_error(ServiceActor::ArgumentError, expected_error)
+          end
         end
       end
     end
@@ -432,14 +451,14 @@ RSpec.describe Actor do
 
     context 'when using "inclusion"' do
       context "when normal mode" do
-        context "when given a correct value" do # rubocop:disable RSpec/NestedGroups
+        context "when given a correct value" do
           it "returns the message" do
             actor = PayWithProvider.call(provider: "PayPal")
             expect(actor.message).to eq("Money transferred to PayPal!")
           end
         end
 
-        context "when given an incorrect value" do # rubocop:disable RSpec/NestedGroups
+        context "when given an incorrect value" do
           let(:expected_alert) do
             "Input provider must be included in " \
               '["MANGOPAY", "PayPal", "Stripe"] but instead was "Paypal"'
@@ -451,7 +470,7 @@ RSpec.describe Actor do
           end
         end
 
-        context "when it has a default" do # rubocop:disable RSpec/NestedGroups
+        context "when it has a default" do
           it "uses it" do
             actor = PayWithProvider.call
             expect(actor.message).to eq("Money transferred to Stripe!")
@@ -460,14 +479,14 @@ RSpec.describe Actor do
       end
 
       context "when advanced mode" do
-        context "when given a correct value" do # rubocop:disable RSpec/NestedGroups
+        context "when given a correct value" do
           it "returns the message" do
             actor = PayWithProviderAdvanced.call(provider: "PayPal")
             expect(actor.message).to eq("Money transferred to PayPal!")
           end
         end
 
-        context "when given an incorrect value" do # rubocop:disable RSpec/NestedGroups
+        context "when given an incorrect value" do
           let(:expected_alert) do
             "Payment system \"Paypal\" is not supported"
           end
@@ -478,14 +497,14 @@ RSpec.describe Actor do
           end
         end
 
-        context "when it has a default" do # rubocop:disable RSpec/NestedGroups
+        context "when it has a default" do
           it "uses it" do
             actor = PayWithProviderAdvanced.call
             expect(actor.message).to eq("Money transferred to Stripe!")
           end
         end
 
-        context "when it has a default but no value" do # rubocop:disable RSpec/NestedGroups
+        context "when it has a default but no value" do
           expected_error = "Input `provider` is required"
 
           it "fails" do
