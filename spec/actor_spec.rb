@@ -227,7 +227,8 @@ RSpec.describe Actor do
 
       context "when advanced mode" do
         it "suceeds" do
-          expect(SetNameWithInputConditionAdvanced.call(name: "joe").name).to eq("JOE")
+          expect(SetNameWithInputConditionAdvanced.call(name: "joe").name)
+            .to eq("JOE")
         end
       end
     end
@@ -306,8 +307,8 @@ RSpec.describe Actor do
     context "when setting the wrong type of output" do
       context "when normal mode" do
         let(:expected_message) do
-          "Output name on SetWrongTypeOfOutput must be of type String but was " \
-            "#{1.class.name}"
+          "Output name on SetWrongTypeOfOutput must be of type String but " \
+            "was #{1.class.name}"
         end
 
         it "raises" do

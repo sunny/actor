@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class DoubleWithTypeAsStringAdvanced < Actor
+  # rubocop:disable Layout/LineLength
   input :value,
         type: {
           class_name: [Integer, "Float"],
@@ -9,6 +10,7 @@ class DoubleWithTypeAsStringAdvanced < Actor
             "Expected: `#{expected_type_names}`"
           end)
         }
+  # rubocop:enable Layout/LineLength
 
   output :double
 
