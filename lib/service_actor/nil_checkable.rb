@@ -11,18 +11,16 @@
 #
 #   class CreateUser < Actor
 #     input :name,
-#           allow_nil: {
-#             message: (lambda do |_origin, _input_key, _class_name|
-#               "The value `#{input_key}` cannot be empty"
-#             end)
-#           }
+#           allow_nil: false,
+#           allow_nil_message: (lambda do |_origin, _input_key, _service_name|
+#             "The value `#{input_key}` cannot be empty"
+#           end)
 #
-#   output :user,
-#          allow_nil: {
-#            message: (lambda do |_origin, _input_key, _class_name|
+#     output :user,
+#            allow_nil: false,
+#            allow_nil_message: (lambda do |_origin, _input_key, _service_name|
 #              "The value `#{input_key}` cannot be empty"
 #            end)
-#          }
 #   end
 module ServiceActor::NilCheckable
   def self.included(base)
@@ -41,12 +39,21 @@ module ServiceActor::NilCheckable
     private
 
     def check_context_for_nil(definitions, origin:)
-      definitions.each do |name, options|
-        next if !result[name].nil? || allow_nil?(options)
+      definitions.each do |key, options|
+        next if !result[key].nil? || allow_nil?(options)
 
-        raise ServiceActor::ArgumentError,
-              "The #{origin} \"#{name}\" on #{self.class} does not allow " \
-              "nil values"
+        message = "The #{origin} \"#{key}\" on #{self.class} does not allow " \
+                  "nil values"
+
+        message = options[:allow_nil_message] if allow_nil_message?(options)
+
+        error_text = if message.is_a?(Proc)
+                       message.call(origin, key, self.class)
+                     else
+                       message
+                     end
+
+        raise ServiceActor::ArgumentError, error_text
       end
     end
 
@@ -55,6 +62,12 @@ module ServiceActor::NilCheckable
       return true if options.key?(:default) && options[:default].nil?
 
       !options[:type]
+    end
+
+    def allow_nil_message?(options)
+      return options[:allow_nil_message] if options.key?(:allow_nil_message)
+
+      false
     end
   end
 end
