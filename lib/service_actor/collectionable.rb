@@ -30,16 +30,21 @@ module ServiceActor::Collectionable
 
         if inclusion.is_a?(Hash) # advanced mode
           inclusion_in, message = inclusion.values_at(:in, :message)
-          error_text = message.call(key, inclusion, result[key])
         else
           inclusion_in = inclusion
-          error_text = "Input #{key} must be included " \
-                       "in #{inclusion.inspect} but instead " \
-                       "was #{result[key].inspect}"
+          message = "Input #{key} must be included " \
+                    "in #{inclusion.inspect} but instead " \
+                    "was #{result[key].inspect}"
         end
 
         next if inclusion_in.nil?
         next if inclusion_in.include?(result[key])
+
+        error_text = if message.is_a?(Proc)
+                       message.call(key, inclusion, result[key])
+                     else
+                       message
+                     end
 
         raise ArgumentError, error_text
       end

@@ -31,7 +31,7 @@ module ServiceActor::Conditionable
   end
 
   module PrependedMethods
-    def _call # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
+    def _call # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/PerceivedComplexity
       self.class.inputs.each do |key, options|
         next unless options[:must]
 
@@ -40,13 +40,18 @@ module ServiceActor::Conditionable
 
           if content.is_a?(Hash) # advanced mode
             check, message = content.values_at(:state, :message)
-            error_text = message.call(key, name, value)
           else
             check = content
-            error_text = "Input #{key} must #{name} but was #{value.inspect}"
+            message = "Input #{key} must #{name} but was #{value.inspect}"
           end
 
           next if check.call(value)
+
+          error_text = if message.is_a?(Proc)
+                         message.call(key, name, value)
+                       else
+                         message
+                       end
 
           raise ServiceActor::ArgumentError, error_text
         end
