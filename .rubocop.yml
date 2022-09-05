@@ -45,7 +45,7 @@ Metrics/MethodLength:
     - service_actor.gemspec
 
 RSpec/NestedGroups:
-  Max: 4
+  Max: 5
 
 RSpec/MultipleExpectations:
   Enabled: false
