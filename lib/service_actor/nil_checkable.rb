@@ -47,13 +47,12 @@ module ServiceActor::NilCheckable
 
         message = options[:allow_nil_message] if allow_nil_message?(options)
 
-        error_text = if message.is_a?(Proc)
-                       message.call(origin, key, self.class)
-                     else
-                       message
-                     end
-
-        raise ServiceActor::ArgumentError, error_text
+        raise_error_with(
+          message,
+          origin: origin,
+          input_key: key,
+          service_name: self.class,
+        )
       end
     end
 

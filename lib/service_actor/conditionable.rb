@@ -19,7 +19,7 @@
 #           must: {
 #             exist: {
 #               state: -> provider { PROVIDERS.include?(provider) },
-#               message: (lambda do |_input_key, _must_key, value|
+#               message: (lambda do |_input_key, _check_name, value|
 #                 "The specified provider \"#{value}\" was not found."
 #               end)
 #             }
@@ -31,14 +31,14 @@ module ServiceActor::Conditionable
   end
 
   module PrependedMethods
-    def _call # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/PerceivedComplexity
+    def _call # rubocop:disable Metrics/MethodLength
       self.class.inputs.each do |key, options|
         next unless options[:must]
 
-        options[:must].each do |name, content|
+        options[:must].each do |check_name, content|
           value = result[key]
 
-          message = "Input #{key} must #{name} but was #{value.inspect}"
+          message = "Input #{key} must #{check_name} but was #{value.inspect}"
 
           if content.is_a?(Hash) # advanced mode
             check, message = content.values_at(:state, :message)
@@ -48,13 +48,12 @@ module ServiceActor::Conditionable
 
           next if check.call(value)
 
-          error_text = if message.is_a?(Proc)
-                         message.call(key, name, value)
-                       else
-                         message
-                       end
-
-          raise ServiceActor::ArgumentError, error_text
+          raise_error_with(
+            message,
+            input_key: key,
+            check_name: check_name,
+            value: value,
+          )
         end
       end
 

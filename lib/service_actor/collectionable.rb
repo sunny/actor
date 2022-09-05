@@ -13,7 +13,7 @@
 #     input :provider,
 #           inclusion: {
 #             in: ["MANGOPAY", "PayPal", "Stripe"],
-#             message: (lambda do |_input_key, _in, value|
+#             message: (lambda do |_input_key, _inclusion_in, value|
 #               "Payment system \"#{value}\" is not supported"
 #             end)
 #           }
@@ -41,13 +41,12 @@ module ServiceActor::Collectionable
         next if inclusion_in.nil?
         next if inclusion_in.include?(result[key])
 
-        error_text = if message.is_a?(Proc)
-                       message.call(key, inclusion, result[key])
-                     else
-                       message
-                     end
-
-        raise ArgumentError, error_text
+        raise_error_with(
+          message,
+          input_key: key,
+          inclusion_in: inclusion_in,
+          value: result[key],
+        )
       end
 
       super

@@ -37,8 +37,7 @@ module ServiceActor::TypeCheckable
 
     private
 
-    # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
-    def check_type_definitions(definitions, kind:)
+    def check_type_definitions(definitions, kind:) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
       definitions.each do |key, options|
         type_definition = options[:type] || next
         value = result[key] || next
@@ -55,17 +54,16 @@ module ServiceActor::TypeCheckable
 
         next if types.any? { |type| value.is_a?(type) }
 
-        error_text =
-          if message.is_a?(Proc)
-            message.call(kind, key, self.class, types.join(", "), value.class)
-          else
-            message
-          end
-
-        raise ServiceActor::ArgumentError, error_text
+        raise_error_with(
+          message,
+          kind: kind,
+          input_key: key,
+          service_name: self.class,
+          expected_type_names: types.join(", "),
+          actual_type_name: value.class,
+        )
       end
     end
-    # rubocop:enable Metrics/MethodLength, Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
 
     def types_for_definition(type_definition)
       Array(type_definition).map do |name|

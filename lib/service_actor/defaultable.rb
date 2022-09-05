@@ -38,8 +38,7 @@ module ServiceActor::Defaultable
         next if result.key?(key)
 
         unless input.key?(:default)
-          raise ServiceActor::ArgumentError,
-                "Input #{key} on #{self.class} is missing"
+          raise_error_with("Input #{key} on #{self.class} is missing")
         end
 
         default = input[:default]
@@ -67,7 +66,7 @@ module ServiceActor::Defaultable
       default, message = content.values_at(:value, :message)
 
       unless default
-        raise ServiceActor::ArgumentError, message.call(key, self.class)
+        raise_error_with(message, input_key: key, service_name: self.class)
       end
 
       default = default.call if default.is_a?(Proc)

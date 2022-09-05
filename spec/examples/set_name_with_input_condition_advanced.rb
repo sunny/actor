@@ -6,8 +6,8 @@ class SetNameWithInputConditionAdvanced < Actor
         must: {
           be_lowercase: {
             state: -> name { name =~ /\A[a-z]+\z/ },
-            message: (lambda do |_input_key, must_key, _value|
-              "Failed to apply `#{must_key}`"
+            message: (lambda do |_input_key, check_name, _value|
+              "Failed to apply `#{check_name}`"
             end)
           }
         }

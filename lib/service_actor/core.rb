@@ -54,4 +54,10 @@ module ServiceActor::Core
   def fail!(**arguments)
     result.fail!(**arguments)
   end
+
+  def raise_error_with(message, **arguments)
+    raise ServiceActor::ArgumentError, message unless message.is_a?(Proc)
+
+    raise ServiceActor::ArgumentError, message.call(*arguments.values)
+  end
 end
