@@ -24,32 +24,48 @@ module ServiceActor::Collectionable
   end
 
   module PrependedMethods
-    def _call # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
+    def _call # rubocop:disable Metrics/MethodLength
       self.class.inputs.each do |key, options|
+        value = result[key]
         inclusion = options[:inclusion]
 
-        message = "Input #{key} must be included " \
-                  "in #{inclusion.inspect} but instead " \
-                  "was #{result[key].inspect}"
-
-        if inclusion.is_a?(Hash) # advanced mode
-          inclusion_in, message = inclusion.values_at(:in, :message)
-        else
-          inclusion_in = inclusion
-        end
+        # FIXME: The `prototype_1_with` method needs to be renamed.
+        inclusion_in, message = prototype_1_with(
+          inclusion,
+          input_key: key,
+          value: value,
+        )
 
         next if inclusion_in.nil?
-        next if inclusion_in.include?(result[key])
+        next if inclusion_in.include?(value)
 
         raise_error_with(
           message,
           input_key: key,
           inclusion_in: inclusion_in,
-          value: result[key],
+          value: value,
         )
       end
 
       super
+    end
+
+    private
+
+    def prototype_1_with(inclusion, input_key:, value:)
+      if inclusion.is_a?(Hash) # advanced mode
+        inclusion_in, message = inclusion.values_at(:in, :message)
+      else
+        inclusion_in = inclusion
+        message = "Input #{input_key} must be included " \
+                  "in #{inclusion_in.inspect} but instead " \
+                  "was #{value.inspect}"
+      end
+
+      [
+        inclusion_in,
+        message
+      ]
     end
   end
 end

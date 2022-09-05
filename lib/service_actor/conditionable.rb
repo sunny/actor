@@ -35,16 +35,16 @@ module ServiceActor::Conditionable
       self.class.inputs.each do |key, options|
         next unless options[:must]
 
-        options[:must].each do |check_name, content|
+        options[:must].each do |check_name, check|
           value = result[key]
 
-          message = "Input #{key} must #{check_name} but was #{value.inspect}"
-
-          if content.is_a?(Hash) # advanced mode
-            check, message = content.values_at(:state, :message)
-          else
-            check = content
-          end
+          # FIXME: The `prototype_2_with` method needs to be renamed.
+          check, message = prototype_2_with(
+            check,
+            input_key: key,
+            check_name: check_name,
+            value: value,
+          )
 
           next if check.call(value)
 
@@ -58,6 +58,22 @@ module ServiceActor::Conditionable
       end
 
       super
+    end
+
+    private
+
+    def prototype_2_with(check, input_key:, check_name:, value:)
+      if check.is_a?(Hash) # advanced mode
+        check, message = check.values_at(:state, :message)
+      else
+        message =
+          "Input #{input_key} must #{check_name} but was #{value.inspect}"
+      end
+
+      [
+        check,
+        message
+      ]
     end
   end
 end
