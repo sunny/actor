@@ -28,13 +28,14 @@ module ServiceActor::Collectionable
       self.class.inputs.each do |key, options|
         inclusion = options[:inclusion]
 
+        message = "Input #{key} must be included " \
+                  "in #{inclusion.inspect} but instead " \
+                  "was #{result[key].inspect}"
+
         if inclusion.is_a?(Hash) # advanced mode
           inclusion_in, message = inclusion.values_at(:in, :message)
         else
           inclusion_in = inclusion
-          message = "Input #{key} must be included " \
-                    "in #{inclusion.inspect} but instead " \
-                    "was #{result[key].inspect}"
         end
 
         next if inclusion_in.nil?

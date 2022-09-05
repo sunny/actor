@@ -43,25 +43,24 @@ module ServiceActor::TypeCheckable
         type_definition = options[:type] || next
         value = result[key] || next
 
+        message = "#{kind} #{key} on #{self.class} must be of type " \
+                  "#{types.join(', ')} but was #{value.class}"
+
         if type_definition.is_a?(Hash) # advanced mode
           type_definition, message =
             type_definition.values_at(:class_name, :message)
-          types = types_for_definition(type_definition)
-        else
-          types = types_for_definition(type_definition)
-          message = "#{kind} #{key} on #{self.class} must be of type " \
-                    "#{types.join(', ')} but was #{value.class}"
         end
+
+        types = types_for_definition(type_definition)
 
         next if types.any? { |type| value.is_a?(type) }
 
-        error_text = if message.is_a?(Proc)
-                       message.call(
-                         kind, key, self.class, types.join(", "), value.class
-                       )
-                     else
-                       message
-                     end
+        error_text =
+          if message.is_a?(Proc)
+            message.call(kind, key, self.class, types.join(", "), value.class)
+          else
+            message
+          end
 
         raise ServiceActor::ArgumentError, error_text
       end

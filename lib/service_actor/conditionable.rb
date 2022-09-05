@@ -38,11 +38,12 @@ module ServiceActor::Conditionable
         options[:must].each do |name, content|
           value = result[key]
 
+          message = "Input #{key} must #{name} but was #{value.inspect}"
+
           if content.is_a?(Hash) # advanced mode
             check, message = content.values_at(:state, :message)
           else
             check = content
-            message = "Input #{key} must #{name} but was #{value.inspect}"
           end
 
           next if check.call(value)
