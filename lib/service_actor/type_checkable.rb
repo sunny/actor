@@ -64,6 +64,7 @@ module ServiceActor::TypeCheckable
       end
     end
 
+    # FIXME: The `prototype_3_with` method needs to be renamed.
     def prototype_3_with( # rubocop:disable Metrics/MethodLength
       type_definition,
       kind:,

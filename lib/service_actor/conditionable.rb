@@ -62,6 +62,7 @@ module ServiceActor::Conditionable
 
     private
 
+    # FIXME: The `prototype_2_with` method needs to be renamed.
     def prototype_2_with(check, input_key:, check_name:, value:)
       if check.is_a?(Hash) # advanced mode
         check, message = check.values_at(:state, :message)
