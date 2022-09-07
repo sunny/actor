@@ -49,8 +49,7 @@ module ServiceActor::TypeCheckable
           actual_type_name: value.class
         }
 
-        # FIXME: The `prototype_3_with` method needs to be renamed.
-        types, message = prototype_3_with(type_definition, **base_arguments)
+        types, message = define_types_with(type_definition, **base_arguments)
 
         next if types.any? { |type| value.is_a?(type) }
 
@@ -62,8 +61,7 @@ module ServiceActor::TypeCheckable
       end
     end
 
-    # FIXME: The `prototype_3_with` method needs to be renamed.
-    def prototype_3_with( # rubocop:disable Metrics/MethodLength
+    def define_types_with( # rubocop:disable Metrics/MethodLength
       type_definition,
       kind:,
       input_key:,

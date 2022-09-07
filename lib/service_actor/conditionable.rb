@@ -44,8 +44,7 @@ module ServiceActor::Conditionable
             value: value
           }
 
-          # FIXME: The `prototype_2_with` method needs to be renamed.
-          check, message = prototype_2_with(check, **base_arguments)
+          check, message = define_check_with(check, **base_arguments)
 
           next if check.call(value)
 
@@ -58,8 +57,7 @@ module ServiceActor::Conditionable
 
     private
 
-    # FIXME: The `prototype_2_with` method needs to be renamed.
-    def prototype_2_with(check, input_key:, check_name:, value:)
+    def define_check_with(check, input_key:, check_name:, value:)
       if check.is_a?(Hash) # advanced mode
         check, message = check.values_at(:state, :message)
       else

@@ -34,8 +34,8 @@ module ServiceActor::Collectionable
           value: value
         }
 
-        # FIXME: The `prototype_1_with` method needs to be renamed.
-        inclusion_in, message = prototype_1_with(inclusion, **base_arguments)
+        inclusion_in, message =
+          define_inclusion_with(inclusion, **base_arguments)
 
         next if inclusion_in.nil?
         next if inclusion_in.include?(value)
@@ -52,8 +52,7 @@ module ServiceActor::Collectionable
 
     private
 
-    # FIXME: The `prototype_1_with` method needs to be renamed.
-    def prototype_1_with(inclusion, input_key:, value:)
+    def define_inclusion_with(inclusion, input_key:, value:)
       if inclusion.is_a?(Hash) # advanced mode
         inclusion_in, message = inclusion.values_at(:in, :message)
       else
