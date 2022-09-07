@@ -10,15 +10,12 @@
 #     input :amount, type: [Integer, Float]
 #     input :bonus_applied, type: [TrueClass, FalseClass]
 #   end
-
+#
 #   class ReduceOrderAmount < Actor
 #     input :bonus_applied,
 #           type: {
 #             class_name: [TrueClass, FalseClass],
-#             message: (lambda do
-#               |_kind, input_key, _service_name,
-#                actual_type_name, expected_type_names|
-
+#             message: (lambda do |_kind, input_key, _service_name, actual_type_name, expected_type_names| # rubocop:disable Layout/LineLength
 #               "Wrong type `#{actual_type_name}` for `#{input_key}`. " \
 #               "Expected: `#{expected_type_names}`"
 #             end)
