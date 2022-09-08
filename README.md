@@ -251,12 +251,10 @@ class UsersController < ApplicationController
 end
 ```
 
-### Advanced mode
+### Custom input errors
 
-If you need to prepare custom error messages, you can use "advanced mode".
-
-This mode is enabled automatically when using `Hash` as the passed value.
-An example of using this approach:
+Use a `Hash` with `is:` and `message:` keys to prepare custom
+error messages on inputs. For example:
 
 ```rb
 class UpdateAdminUser < Actor
