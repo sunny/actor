@@ -19,7 +19,7 @@ and controllers thin.
   - [Conditions](#conditions)
   - [Types](#types)
   - [Fail](#fail)
-  - [Advanced mode](#advanced-mode)
+  - [Custom input errors](#custom-input-errors)
 - [Play actors in a sequence](#play-actors-in-a-sequence)
   - [Rollback](#rollback)
   - [Inline actors](#inline-actors)
