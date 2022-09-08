@@ -19,6 +19,7 @@ and controllers thin.
   - [Conditions](#conditions)
   - [Types](#types)
   - [Fail](#fail)
+  - [Advanced mode](#advanced-mode)
 - [Play actors in a sequence](#play-actors-in-a-sequence)
   - [Rollback](#rollback)
   - [Inline actors](#inline-actors)
@@ -247,6 +248,43 @@ class UsersController < ApplicationController
       render :new, notice: actor.error
     end
   end
+end
+```
+
+### Advanced mode
+
+If you need to prepare custom error messages, you can use "advanced mode".
+
+This mode is enabled automatically when using `Hash` as the passed value.
+An example of using this approach:
+
+```rb
+class UpdateAdminUser < Actor
+  input :user,
+        must: {
+          be_an_admin: {
+            is: -> user { user.admin? },
+            message: "The user is not an administrator"
+          }
+        }
+
+  # ...
+end
+```
+
+You can also use incoming arguments when shaping your error text:
+
+```rb
+class UpdateUser < Actor
+  input :user,
+        allow_nil: {
+          is: false,
+          message: (lambda do |_origin, input_key, _service_name|
+            "The value `#{input_key}` cannot be empty"
+          end)
+        }
+
+  # ...
 end
 ```
 
