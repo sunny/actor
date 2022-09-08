@@ -288,6 +288,84 @@ class UpdateUser < Actor
 end
 ```
 
+<details>
+  <summary>Display full examples with all arguments</summary>
+
+  #### Inclusion
+
+  ```ruby
+  class Pay < Actor
+    input :provider,
+          inclusion: {
+            in: ["MANGOPAY", "PayPal", "Stripe"],
+            message: (lambda do |_input_key, value, _inclusion_in|
+              "Payment system \"#{value}\" is not supported"
+            end)
+          }
+  end
+  ```
+
+  #### Must
+
+  ```ruby
+  class Pay < Actor
+    input :provider,
+          must: {
+            exist: {
+              is: -> provider { PROVIDERS.include?(provider) },
+              message: (lambda do |_input_key, _check_name, value|
+                "The specified provider \"#{value}\" was not found."
+              end)
+            }
+          }
+  end
+  ```
+
+  #### Default
+
+  ```ruby
+  class MultiplyThing < Actor
+    input :multiplier,
+          default: {
+            is: -> { rand(1..10) },
+            message: (lambda do |input_key, _service_name|
+              "Input `#{input_key}` is required"
+            end)
+          }
+  end
+  ```
+
+  #### Type
+
+  ```ruby
+  class ReduceOrderAmount < Actor
+    input :bonus_applied,
+          type: {
+            is: [TrueClass, FalseClass],
+            message: (lambda do |_kind, input_key, _service_name, actual_type_name, expected_type_names|
+              "Wrong type `#{actual_type_name}` for `#{input_key}`. " \
+              "Expected: `#{expected_type_names}`"
+            end)
+          }
+  end
+  ```
+
+  #### Allow nil
+
+  ```ruby
+  class CreateUser < Actor
+    input :name,
+          allow_nil: {
+            is: false,
+            message: (lambda do |_origin, _input_key, _service_name|
+              "The value `#{input_key}` cannot be empty"
+            end)
+          }
+  end
+  ```
+
+</details>
+
 ## Play actors in a sequence
 
 To help you create actors that are small, single-responsibility actions, an
