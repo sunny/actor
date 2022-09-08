@@ -17,7 +17,7 @@
 #               "The value `#{input_key}` cannot be empty"
 #             end)
 #           }
-
+#
 #     output :user,
 #             allow_nil: {
 #               is: false,
