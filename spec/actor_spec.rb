@@ -244,13 +244,11 @@ RSpec.describe Actor do
       end
 
       context "when advanced mode" do
-        context "when called with the wrong condition" do
-          it "raises" do
-            expected_error = "Failed to apply `be_lowercase`"
+        it "raises" do
+          expected_error = "Failed to apply `be_lowercase`"
 
-            expect { SetNameWithInputConditionAdvanced.call(name: "42") }
-              .to raise_error(ServiceActor::ArgumentError, expected_error)
-          end
+          expect { SetNameWithInputConditionAdvanced.call(name: "42") }
+            .to raise_error(ServiceActor::ArgumentError, expected_error)
         end
       end
     end
@@ -453,6 +451,63 @@ RSpec.describe Actor do
       context "when normal mode" do
         context "when given a correct value" do
           it "returns the message" do
+            actor = PayWithProviderInclusion.call(provider: "PayPal")
+            expect(actor.message).to eq("Money transferred to PayPal!")
+          end
+        end
+
+        context "when given an incorrect value" do
+          let(:expected_alert) do
+            "Input provider must be included in " \
+              '["MANGOPAY", "PayPal", "Stripe"] but instead was "Paypal"'
+          end
+
+          it "fails" do
+            expect { PayWithProviderInclusion.call(provider: "Paypal") }
+              .to raise_error(expected_alert)
+          end
+        end
+
+        context "when it has a default" do
+          it "uses it" do
+            actor = PayWithProviderInclusion.call
+            expect(actor.message).to eq("Money transferred to Stripe!")
+          end
+        end
+      end
+
+      context "when advanced mode" do
+        context "when given a correct value" do
+          it "returns the message" do
+            actor = PayWithProviderInclusionAdvanced.call(provider: "PayPal")
+            expect(actor.message).to eq("Money transferred to PayPal!")
+          end
+        end
+
+        context "when given an incorrect value" do
+          let(:expected_alert) do
+            "Payment system \"Paypal\" is not supported"
+          end
+
+          it "fails" do
+            expect { PayWithProviderInclusionAdvanced.call(provider: "Paypal") }
+              .to raise_error(expected_alert)
+          end
+        end
+
+        context "when it has a default" do
+          it "uses it" do
+            actor = PayWithProviderInclusionAdvanced.call
+            expect(actor.message).to eq("Money transferred to Stripe!")
+          end
+        end
+      end
+    end
+
+    context 'when using "in"' do
+      context "when normal mode" do
+        context "when given a correct value" do
+          it "returns the message" do
             actor = PayWithProvider.call(provider: "PayPal")
             expect(actor.message).to eq("Money transferred to PayPal!")
           end
@@ -466,7 +521,7 @@ RSpec.describe Actor do
 
           it "fails" do
             expect { PayWithProvider.call(provider: "Paypal") }
-              .to raise_error(expected_alert)
+              .to raise_error(ServiceActor::ArgumentError, expected_alert)
           end
         end
 
@@ -493,7 +548,7 @@ RSpec.describe Actor do
 
           it "fails" do
             expect { PayWithProviderAdvanced.call(provider: "Paypal") }
-              .to raise_error(expected_alert)
+              .to raise_error(ServiceActor::ArgumentError, expected_alert)
           end
         end
 
@@ -501,15 +556,6 @@ RSpec.describe Actor do
           it "uses it" do
             actor = PayWithProviderAdvanced.call
             expect(actor.message).to eq("Money transferred to Stripe!")
-          end
-        end
-
-        context "when it has a default but no value" do
-          expected_error = "Input `provider` is required"
-
-          it "fails" do
-            expect { PayWithProviderAdvancedButNoDefaultValue.call }
-              .to raise_error(expected_error)
           end
         end
       end

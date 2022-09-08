@@ -27,7 +27,9 @@ module ServiceActor::Collectionable
     def _call # rubocop:disable Metrics/MethodLength
       self.class.inputs.each do |key, options|
         value = result[key]
-        inclusion = options[:inclusion]
+
+        # DEPRECATED: `in` is deprecated in favor of `inclusion`.
+        inclusion = options[:inclusion] || options[:in]
 
         base_arguments = {
           input_key: key,
