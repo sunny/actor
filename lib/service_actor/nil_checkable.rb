@@ -86,18 +86,5 @@ module ServiceActor::NilCheckable
 
       !options[:type]
     end
-
-    # def allow_nil?(options)
-    #   return options[:allow_nil] if options.key?(:allow_nil)
-    #   return true if options.key?(:default) && options[:default].nil?
-
-    #   !options[:type]
-    # end
-
-    # def allow_nil_message?(options)
-    #   return !!options[:allow_nil_message] if options.key?(:allow_nil_message)
-
-    #   false
-    # end
   end
 end
