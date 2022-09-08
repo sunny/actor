@@ -48,8 +48,6 @@ module ServiceActor::Defaultable
         else
           default_for_normal_mode_with(result, key, default)
         end
-
-        next
       end
 
       super
