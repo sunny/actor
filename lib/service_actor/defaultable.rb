@@ -14,9 +14,7 @@
 #     input :counter,
 #           default: {
 #             is: 1,
-#             message: (lambda do |input_key, _service_name|
-#               "Input `#{input_key}` is required"
-#             end)
+#             message: "Counter is required"
 #           }
 #
 #     input :multiplier,
