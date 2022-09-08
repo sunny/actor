@@ -157,11 +157,11 @@ end
 
 ### Conditions
 
-You can ensure an input is included in a collection by using `in`:
+You can ensure an input is included in a collection by using `inclusion`:
 
 ```rb
 class Pay < Actor
-  input :currency, in: %w[EUR USD]
+  input :currency, inclusion: %w[EUR USD]
 
   # …
 end

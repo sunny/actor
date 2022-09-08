@@ -6,7 +6,7 @@
 # Example:
 #
 #   class Pay < Actor
-#     input :provider, in: ["MANGOPAY", "PayPal", "Stripe"]
+#     input :provider, inclusion: ["MANGOPAY", "PayPal", "Stripe"]
 #   end
 module ServiceActor::Collectionable
   def self.included(base)
@@ -16,12 +16,14 @@ module ServiceActor::Collectionable
   module PrependedMethods
     def _call
       self.class.inputs.each do |key, options|
-        next unless options[:in]
+        # DEPRECATED: `in` is deprecated in favor of `inclusion`.
+        inclusion = options[:inclusion] || options[:in]
+        next unless inclusion
 
-        next if options[:in].include?(result[key])
+        next if inclusion.include?(result[key])
 
         raise ServiceActor::ArgumentError,
-              "Input #{key} must be included in #{options[:in].inspect} " \
+              "Input #{key} must be included in #{inclusion.inspect} " \
               "but instead was #{result[key].inspect}"
       end
 
