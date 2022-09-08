@@ -18,7 +18,7 @@
 #               "Input `#{input_key}` is required"
 #             end)
 #           }
-
+#
 #     input :multiplier,
 #           default: {
 #             is: -> { rand(1..10) },
