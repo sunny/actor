@@ -12,6 +12,9 @@
 #   end
 #
 #   class ReduceOrderAmount < Actor
+#     input :order, type: { is: Order, message: "Order is required" }
+#     input :amount, type: { is: Integer, message: "Incorrect amount" }
+#
 #     input :bonus_applied,
 #           type: {
 #             is: [TrueClass, FalseClass],

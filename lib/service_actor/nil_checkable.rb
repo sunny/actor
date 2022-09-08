@@ -18,6 +18,8 @@
 #             end)
 #           }
 #
+#     input :phone, allow_nil: { is: false, message: "Phone must be present" }
+#
 #     output :user,
 #             allow_nil: {
 #               is: false,
