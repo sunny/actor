@@ -18,7 +18,7 @@
 #     input :provider,
 #           must: {
 #             exist: {
-#               state: -> provider { PROVIDERS.include?(provider) },
+#               is: -> provider { PROVIDERS.include?(provider) },
 #               message: (lambda do |_input_key, _check_name, value|
 #                 "The specified provider \"#{value}\" was not found."
 #               end)
@@ -59,7 +59,7 @@ module ServiceActor::Conditionable
 
     def define_check_with(check, input_key:, check_name:, value:)
       if check.is_a?(Hash) # advanced mode
-        check, message = check.values_at(:state, :message)
+        check, message = check.values_at(:is, :message)
       else
         message =
           "Input #{input_key} must #{check_name} but was #{value.inspect}"

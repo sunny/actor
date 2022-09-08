@@ -14,7 +14,7 @@
 #   class ReduceOrderAmount < Actor
 #     input :bonus_applied,
 #           type: {
-#             class_name: [TrueClass, FalseClass],
+#             is: [TrueClass, FalseClass],
 #             message: (lambda do |_kind, input_key, _service_name, actual_type_name, expected_type_names| # rubocop:disable Layout/LineLength
 #               "Wrong type `#{actual_type_name}` for `#{input_key}`. " \
 #               "Expected: `#{expected_type_names}`"
@@ -70,7 +70,7 @@ module ServiceActor::TypeCheckable
     ) # do
       if type_definition.is_a?(Hash) # advanced mode
         type_definition, message =
-          type_definition.values_at(:class_name, :message)
+          type_definition.values_at(:is, :message)
         types = types_for_definition(type_definition)
       else
         types = types_for_definition(type_definition)

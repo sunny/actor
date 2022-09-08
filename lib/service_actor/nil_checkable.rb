@@ -11,16 +11,20 @@
 #
 #   class CreateUser < Actor
 #     input :name,
-#           allow_nil: false,
-#           allow_nil_message: (lambda do |_origin, _input_key, _service_name|
-#             "The value `#{input_key}` cannot be empty"
-#           end)
-#
+#           allow_nil: {
+#             is: false,
+#             message: (lambda do |_origin, _input_key, _service_name|
+#               "The value `#{input_key}` cannot be empty"
+#             end)
+#           }
+
 #     output :user,
-#            allow_nil: false,
-#            allow_nil_message: (lambda do |_origin, _input_key, _service_name|
-#              "The value `#{input_key}` cannot be empty"
-#            end)
+#             allow_nil: {
+#               is: false,
+#               message: (lambda do |_origin, _input_key, _service_name|
+#                 "The value `#{input_key}` cannot be empty"
+#               end)
+#             }
 #   end
 module ServiceActor::NilCheckable
   def self.included(base)
@@ -38,35 +42,62 @@ module ServiceActor::NilCheckable
 
     private
 
-    def check_context_for_nil(definitions, origin:)
+    def check_context_for_nil(definitions, origin:) # rubocop:disable Metrics/MethodLength
       definitions.each do |key, options|
-        next if !result[key].nil? || allow_nil?(options)
+        value = result[key]
 
-        message = "The #{origin} \"#{key}\" on #{self.class} does not allow " \
-                  "nil values"
+        next unless value.nil?
 
-        message = options[:allow_nil_message] if allow_nil_message?(options)
-
-        raise_error_with(
-          message,
+        base_arguments = {
           origin: origin,
           input_key: key,
-          service_name: self.class,
+          service_name: self.class
+        }
+
+        allow_nil, message = define_allow_nil_with(
+          options[:allow_nil],
+          **base_arguments,
         )
+
+        next if allow_nil?(allow_nil, options)
+
+        raise_error_with(message, **base_arguments)
       end
     end
 
-    def allow_nil?(options)
-      return options[:allow_nil] if options.key?(:allow_nil)
+    def define_allow_nil_with(allow_nil, origin:, input_key:, service_name:)
+      if allow_nil.is_a?(Hash) # advanced mode
+        allow_nil, message = allow_nil.values_at(:is, :message)
+      else
+        message =
+          "The #{origin} \"#{input_key}\" on #{service_name} does not allow " \
+          "nil values"
+      end
+
+      [
+        allow_nil,
+        message
+      ]
+    end
+
+    def allow_nil?(allow_nil, options)
+      return allow_nil unless allow_nil.nil?
       return true if options.key?(:default) && options[:default].nil?
 
       !options[:type]
     end
 
-    def allow_nil_message?(options)
-      return !!options[:allow_nil_message] if options.key?(:allow_nil_message)
+    # def allow_nil?(options)
+    #   return options[:allow_nil] if options.key?(:allow_nil)
+    #   return true if options.key?(:default) && options[:default].nil?
 
-      false
-    end
+    #   !options[:type]
+    # end
+
+    # def allow_nil_message?(options)
+    #   return !!options[:allow_nil_message] if options.key?(:allow_nil_message)
+
+    #   false
+    # end
   end
 end

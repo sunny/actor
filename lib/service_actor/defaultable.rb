@@ -13,7 +13,7 @@
 #   class MultiplyThing < Actor
 #     input :counter,
 #           default: {
-#             value: 1,
+#             is: 1,
 #             message: (lambda do |input_key, _service_name|
 #               "Input `#{input_key}` is required"
 #             end)
@@ -21,12 +21,12 @@
 
 #     input :multiplier,
 #           default: {
-#             value: -> { rand(1..10) },
+#             is: -> { rand(1..10) },
 #             message: (lambda do |input_key, _service_name|
 #               "Input `#{input_key}` is required"
 #             end)
 #           }
-# end
+#   end
 module ServiceActor::Defaultable
   def self.included(base)
     base.prepend(PrependedMethods)
@@ -63,7 +63,7 @@ module ServiceActor::Defaultable
     end
 
     def default_for_advanced_mode_with(result, key, content)
-      default, message = content.values_at(:value, :message)
+      default, message = content.values_at(:is, :message)
 
       unless default
         raise_error_with(message, input_key: key, service_name: self.class)
