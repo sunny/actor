@@ -30,6 +30,15 @@ module ServiceActor::TypeCheckable
   end
 
   module PrependedMethods
+    DEFAULT_MESSAGE = lambda do
+      |kind, input_key, service_name, actual_type_name, expected_type_names|
+
+      "#{kind} #{input_key} on #{service_name} must be of type " \
+      "#{expected_type_names} but was #{actual_type_name}"
+    end
+
+    private_constant :DEFAULT_MESSAGE
+
     def _call
       check_type_definitions(self.class.inputs, kind: "Input")
 
@@ -52,7 +61,7 @@ module ServiceActor::TypeCheckable
           actual_type_name: value.class
         }
 
-        types, message = define_types_with(type_definition, **base_arguments)
+        types, message = define_types_with(type_definition)
 
         next if types.any? { |type| value.is_a?(type) }
 
@@ -64,22 +73,15 @@ module ServiceActor::TypeCheckable
       end
     end
 
-    def define_types_with( # rubocop:disable Metrics/MethodLength
-      type_definition,
-      kind:,
-      input_key:,
-      service_name:,
-      actual_type_name:
-    ) # do
+    def define_types_with(type_definition)
+      message = DEFAULT_MESSAGE
+
       if type_definition.is_a?(Hash) # advanced mode
         type_definition, message =
           type_definition.values_at(:is, :message)
-        types = types_for_definition(type_definition)
-      else
-        types = types_for_definition(type_definition)
-        message = "#{kind} #{input_key} on #{service_name} must be of type " \
-                  "#{types.join(', ')} but was #{actual_type_name}"
       end
+
+      types = types_for_definition(type_definition)
 
       [
         types,

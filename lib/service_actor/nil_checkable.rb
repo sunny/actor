@@ -34,6 +34,13 @@ module ServiceActor::NilCheckable
   end
 
   module PrependedMethods
+    DEFAULT_MESSAGE = lambda do |origin, input_key, service_name|
+      "The #{origin} \"#{input_key}\" on #{service_name} does not allow " \
+      "nil values"
+    end
+
+    private_constant :DEFAULT_MESSAGE
+
     def _call
       check_context_for_nil(self.class.inputs, origin: "input")
 
@@ -44,7 +51,7 @@ module ServiceActor::NilCheckable
 
     private
 
-    def check_context_for_nil(definitions, origin:) # rubocop:disable Metrics/MethodLength
+    def check_context_for_nil(definitions, origin:)
       definitions.each do |key, options|
         value = result[key]
 
@@ -56,10 +63,7 @@ module ServiceActor::NilCheckable
           service_name: self.class
         }
 
-        allow_nil, message = define_allow_nil_with(
-          options[:allow_nil],
-          **base_arguments,
-        )
+        allow_nil, message = define_allow_nil_from(options[:allow_nil])
 
         next if allow_nil?(allow_nil, options)
 
@@ -67,13 +71,11 @@ module ServiceActor::NilCheckable
       end
     end
 
-    def define_allow_nil_with(allow_nil, origin:, input_key:, service_name:)
+    def define_allow_nil_from(allow_nil)
+      message = DEFAULT_MESSAGE
+
       if allow_nil.is_a?(Hash) # advanced mode
         allow_nil, message = allow_nil.values_at(:is, :message)
-      else
-        message =
-          "The #{origin} \"#{input_key}\" on #{service_name} does not allow " \
-          "nil values"
       end
 
       [

@@ -24,6 +24,14 @@ module ServiceActor::Collectionable
   end
 
   module PrependedMethods
+    DEFAULT_MESSAGE = lambda do |input_key, value, inclusion_in|
+      "Input #{input_key} must be included " \
+      "in #{inclusion_in.inspect} but instead " \
+      "was #{value.inspect}"
+    end
+
+    private_constant :DEFAULT_MESSAGE
+
     def _call # rubocop:disable Metrics/MethodLength
       self.class.inputs.each do |key, options|
         value = result[key]
@@ -36,8 +44,7 @@ module ServiceActor::Collectionable
           value: value
         }
 
-        inclusion_in, message =
-          define_inclusion_with(inclusion, **base_arguments)
+        inclusion_in, message = define_inclusion_from(inclusion)
 
         next if inclusion_in.nil?
         next if inclusion_in.include?(value)
@@ -54,14 +61,13 @@ module ServiceActor::Collectionable
 
     private
 
-    def define_inclusion_with(inclusion, input_key:, value:)
+    def define_inclusion_from(inclusion)
+      message = DEFAULT_MESSAGE
+
       if inclusion.is_a?(Hash) # advanced mode
         inclusion_in, message = inclusion.values_at(:in, :message)
       else
         inclusion_in = inclusion
-        message = "Input #{input_key} must be included " \
-                  "in #{inclusion_in.inspect} but instead " \
-                  "was #{value.inspect}"
       end
 
       [

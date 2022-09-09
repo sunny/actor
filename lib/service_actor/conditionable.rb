@@ -31,6 +31,12 @@ module ServiceActor::Conditionable
   end
 
   module PrependedMethods
+    DEFAULT_MESSAGE = lambda do |input_key, check_name, value|
+      "Input #{input_key} must #{check_name} but was #{value.inspect}"
+    end
+
+    private_constant :DEFAULT_MESSAGE
+
     def _call # rubocop:disable Metrics/MethodLength
       self.class.inputs.each do |key, options|
         next unless options[:must]
@@ -44,7 +50,7 @@ module ServiceActor::Conditionable
             value: value
           }
 
-          check, message = define_check_with(check, **base_arguments)
+          check, message = define_check_from(check)
 
           next if check.call(value)
 
@@ -57,13 +63,11 @@ module ServiceActor::Conditionable
 
     private
 
-    def define_check_with(check, input_key:, check_name:, value:)
-      if check.is_a?(Hash) # advanced mode
-        check, message = check.values_at(:is, :message)
-      else
-        message =
-          "Input #{input_key} must #{check_name} but was #{value.inspect}"
-      end
+    def define_check_from(check)
+      message = DEFAULT_MESSAGE
+
+      # advanced mode
+      check, message = check.values_at(:is, :message) if check.is_a?(Hash)
 
       [
         check,
