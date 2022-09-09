@@ -21,7 +21,7 @@ module ServiceActor::Core
     #   CreateUser.result(name: "Joe")
     def result(result = nil, **arguments)
       call(result, **arguments)
-    rescue ServiceActor::Failure => e
+    rescue failure_class => e
       e.result
     end
   end
@@ -52,6 +52,6 @@ module ServiceActor::Core
 
   # Can be called from inside an actor to stop execution and mark as failed.
   def fail!(**arguments)
-    result.fail!(**arguments)
+    result.fail!(self.class.failure_class, **arguments)
   end
 end

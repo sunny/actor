@@ -22,7 +22,7 @@ module ServiceActor::Collectionable
 
         next if inclusion.include?(result[key])
 
-        raise ServiceActor::ArgumentError,
+        raise self.class.argument_error_class,
               "Input #{key} must be included in #{inclusion.inspect} " \
               "but instead was #{result[key].inspect}"
       end

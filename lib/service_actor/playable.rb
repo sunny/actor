@@ -37,7 +37,7 @@ module ServiceActor::Playable
 
         options[:actors].each { |actor| play_actor(actor) }
       end
-    rescue ServiceActor::Failure
+    rescue self.class.failure_class
       rollback
       raise
     end

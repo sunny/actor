@@ -26,7 +26,7 @@ module ServiceActor::Defaultable
           next
         end
 
-        raise ServiceActor::ArgumentError,
+        raise self.class.argument_error_class,
               "Input #{name} on #{self.class} is missing"
       end
 

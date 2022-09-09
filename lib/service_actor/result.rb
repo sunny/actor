@@ -15,11 +15,11 @@ class ServiceActor::Result < OpenStruct
     "<#{self.class.name} #{to_h}>"
   end
 
-  def fail!(result = {})
+  def fail!(failure_class, result = {})
     merge!(result)
     merge!(failure?: true)
 
-    raise ServiceActor::Failure, self
+    raise failure_class, self
   end
 
   def success?

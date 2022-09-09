@@ -28,7 +28,7 @@ module ServiceActor::NilCheckable
       definitions.each do |name, options|
         next if !result[name].nil? || allow_nil?(options)
 
-        raise ServiceActor::ArgumentError,
+        raise self.class.argument_error_class,
               "The #{origin} \"#{name}\" on #{self.class} does not allow " \
               "nil values"
       end
