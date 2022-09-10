@@ -74,19 +74,16 @@ module ServiceActor::TypeCheckable
     end
 
     def define_types_with(type_definition)
-      message = DEFAULT_MESSAGE
-
-      if type_definition.is_a?(Hash) # advanced mode
+      if type_definition.is_a?(Hash)
         type_definition, message =
           type_definition.values_at(:is, :message)
+      else
+        message = DEFAULT_MESSAGE
       end
 
       types = types_for_definition(type_definition)
 
-      [
-        types,
-        message
-      ]
+      [types, message]
     end
 
     def types_for_definition(type_definition)
