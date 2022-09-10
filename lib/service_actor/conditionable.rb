@@ -48,7 +48,12 @@ module ServiceActor::Conditionable
 
           next if check.call(value)
 
-          raise_error_with(message, **base_arguments)
+          raise_error_with(
+            message,
+            input_key: key,
+            check_name: check_name,
+            value: value,
+          )
         end
       end
 
