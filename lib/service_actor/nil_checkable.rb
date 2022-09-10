@@ -57,17 +57,16 @@ module ServiceActor::NilCheckable
 
         next unless value.nil?
 
-        base_arguments = {
-          origin: origin,
-          input_key: key,
-          service_name: self.class
-        }
-
         allow_nil, message = define_allow_nil_from(options[:allow_nil])
 
         next if allow_nil?(allow_nil, options)
 
-        raise_error_with(message, **base_arguments)
+        raise_error_with(
+          message,
+          origin: origin,
+          input_key: key,
+          service_name: self.class,
+        )
       end
     end
 

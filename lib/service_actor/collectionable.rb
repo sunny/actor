@@ -13,7 +13,7 @@
 #     input :provider,
 #           inclusion: {
 #             in: ["MANGOPAY", "PayPal", "Stripe"],
-#             message: (lambda do |_input_key, value, _inclusion_in|
+#             message: (lambda do |_input_key, _inclusion_in, value|
 #               "Payment system \"#{value}\" is not supported"
 #             end)
 #           }
@@ -24,7 +24,7 @@ module ServiceActor::Collectionable
   end
 
   module PrependedMethods
-    DEFAULT_MESSAGE = lambda do |input_key, value, inclusion_in|
+    DEFAULT_MESSAGE = lambda do |input_key, inclusion_in, value|
       "Input #{input_key} must be included " \
       "in #{inclusion_in.inspect} but instead " \
       "was #{value.inspect}"
@@ -39,11 +39,6 @@ module ServiceActor::Collectionable
         # DEPRECATED: `in` is deprecated in favor of `inclusion`.
         inclusion = options[:inclusion] || options[:in]
 
-        base_arguments = {
-          input_key: key,
-          value: value
-        }
-
         inclusion_in, message = define_inclusion_from(inclusion)
 
         next if inclusion_in.nil?
@@ -51,8 +46,9 @@ module ServiceActor::Collectionable
 
         raise_error_with(
           message,
-          **base_arguments,
+          input_key: key,
           inclusion_in: inclusion_in,
+          value: value,
         )
       end
 
