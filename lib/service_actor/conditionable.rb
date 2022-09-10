@@ -64,15 +64,11 @@ module ServiceActor::Conditionable
     private
 
     def define_check_from(check)
-      message = DEFAULT_MESSAGE
-
-      # advanced mode
-      check, message = check.values_at(:is, :message) if check.is_a?(Hash)
-
-      [
-        check,
-        message
-      ]
+      if check.is_a?(Hash)
+        check.values_at(:is, :message)
+      else
+        [check, DEFAULT_MESSAGE]
+      end
     end
   end
 end
