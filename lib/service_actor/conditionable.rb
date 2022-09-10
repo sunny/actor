@@ -44,12 +44,6 @@ module ServiceActor::Conditionable
         options[:must].each do |check_name, check|
           value = result[key]
 
-          base_arguments = {
-            input_key: key,
-            check_name: check_name,
-            value: value
-          }
-
           check, message = define_check_from(check)
 
           next if check.call(value)
