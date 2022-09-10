@@ -13,7 +13,7 @@
 #     input :provider,
 #           inclusion: {
 #             in: ["MANGOPAY", "PayPal", "Stripe"],
-#             message: (lambda do |_input_key, _inclusion_in, value|
+#             message: (lambda do |_input_key:, _inclusion_in_, value:|
 #               "Payment system \"#{value}\" is not supported"
 #             end)
 #           }
@@ -24,7 +24,7 @@ module ServiceActor::Collectionable
   end
 
   module PrependedMethods
-    DEFAULT_MESSAGE = lambda do |input_key, inclusion_in, value|
+    DEFAULT_MESSAGE = lambda do |input_key:, inclusion_in:, value:|
       "Input #{input_key} must be included " \
       "in #{inclusion_in.inspect} but instead " \
       "was #{value.inspect}"

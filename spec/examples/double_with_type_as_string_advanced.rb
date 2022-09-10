@@ -5,7 +5,7 @@ class DoubleWithTypeAsStringAdvanced < Actor
   input :value,
         type: {
           is: [Integer, "Float"],
-          message: (lambda do |_kind, input_key, _service_name, expected_type_names, actual_type_name|
+          message: (lambda do |input_key:, expected_type_names:, actual_type_name:, **|
             "Wrong type `#{actual_type_name}` for `#{input_key}`. " \
             "Expected: `#{expected_type_names}`"
           end)

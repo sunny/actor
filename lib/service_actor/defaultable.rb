@@ -20,7 +20,7 @@
 #     input :multiplier,
 #           default: {
 #             is: -> { rand(1..10) },
-#             message: (lambda do |input_key, _service_name|
+#             message: (lambda do |input_key:, _service_name:|
 #               "Input `#{input_key}` is required"
 #             end)
 #           }

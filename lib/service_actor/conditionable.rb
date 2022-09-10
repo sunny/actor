@@ -19,7 +19,7 @@
 #           must: {
 #             exist: {
 #               is: -> provider { PROVIDERS.include?(provider) },
-#               message: (lambda do |_input_key, _check_name, value|
+#               message: (lambda do |_input_key:, _check_name:, value:|
 #                 "The specified provider \"#{value}\" was not found."
 #               end)
 #             }
@@ -31,7 +31,7 @@ module ServiceActor::Conditionable
   end
 
   module PrependedMethods
-    DEFAULT_MESSAGE = lambda do |input_key, check_name, value|
+    DEFAULT_MESSAGE = lambda do |input_key:, check_name:, value:|
       "Input #{input_key} must #{check_name} but was #{value.inspect}"
     end
 

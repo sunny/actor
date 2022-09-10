@@ -13,7 +13,7 @@
 #     input :name,
 #           allow_nil: {
 #             is: false,
-#             message: (lambda do |_origin, input_key, _service_name|
+#             message: (lambda do |_origin:, input_key:, _service_name:|
 #               "The value `#{input_key}` cannot be empty"
 #             end)
 #           }
@@ -23,7 +23,7 @@
 #     output :user,
 #             allow_nil: {
 #               is: false,
-#               message: (lambda do |_origin, input_key, _service_name|
+#               message: (lambda do |_origin:, input_key:, _service_name:|
 #                 "The value `#{input_key}` cannot be empty"
 #               end)
 #             }
@@ -34,7 +34,7 @@ module ServiceActor::NilCheckable
   end
 
   module PrependedMethods
-    DEFAULT_MESSAGE = lambda do |origin, input_key, service_name|
+    DEFAULT_MESSAGE = lambda do |origin:, input_key:, service_name:|
       "The #{origin} \"#{input_key}\" on #{service_name} does not allow " \
       "nil values"
     end

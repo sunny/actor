@@ -277,7 +277,7 @@ class UpdateUser < Actor
   input :user,
         allow_nil: {
           is: false,
-          message: (lambda do |_origin, input_key, _service_name|
+          message: (lambda do |_origin:, input_key:, _service_name:|
             "The value `#{input_key}` cannot be empty"
           end)
         }
@@ -296,7 +296,7 @@ end
     input :provider,
           inclusion: {
             in: ["MANGOPAY", "PayPal", "Stripe"],
-            message: (lambda do |_input_key, _inclusion_in, value|
+            message: (lambda do |_input_key:, _inclusion_in:, value:|
               "Payment system \"#{value}\" is not supported"
             end)
           }
@@ -311,7 +311,7 @@ end
           must: {
             exist: {
               is: -> provider { PROVIDERS.include?(provider) },
-              message: (lambda do |_input_key, _check_name, value|
+              message: (lambda do |_input_key:, _check_name:, value:|
                 "The specified provider \"#{value}\" was not found."
               end)
             }
@@ -326,7 +326,7 @@ end
     input :multiplier,
           default: {
             is: -> { rand(1..10) },
-            message: (lambda do |input_key, _service_name|
+            message: (lambda do |input_key:, _service_name:|
               "Input `#{input_key}` is required"
             end)
           }
@@ -340,7 +340,7 @@ end
     input :bonus_applied,
           type: {
             is: [TrueClass, FalseClass],
-            message: (lambda do |_kind, input_key, _service_name, expected_type_names, actual_type_name|
+            message: (lambda do |_kind:, input_key:, _service_name:, expected_type_names:, actual_type_name:|
               "Wrong type `#{actual_type_name}` for `#{input_key}`. " \
               "Expected: `#{expected_type_names}`"
             end)
@@ -355,7 +355,7 @@ end
     input :name,
           allow_nil: {
             is: false,
-            message: (lambda do |_origin, _input_key, _service_name|
+            message: (lambda do |_origin:, input_key:, _service_name:|
               "The value `#{input_key}` cannot be empty"
             end)
           }
