@@ -62,18 +62,11 @@ module ServiceActor::Collectionable
     private
 
     def define_inclusion_from(inclusion)
-      message = DEFAULT_MESSAGE
-
-      if inclusion.is_a?(Hash) # advanced mode
-        inclusion_in, message = inclusion.values_at(:in, :message)
+      if inclusion.is_a?(Hash)
+        inclusion.values_at(:in, :message)
       else
-        inclusion_in = inclusion
+        [inclusion, DEFAULT_MESSAGE]
       end
-
-      [
-        inclusion_in,
-        message
-      ]
     end
   end
 end
