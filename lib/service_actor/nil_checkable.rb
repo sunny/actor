@@ -72,16 +72,11 @@ module ServiceActor::NilCheckable
     end
 
     def define_allow_nil_from(allow_nil)
-      message = DEFAULT_MESSAGE
-
-      if allow_nil.is_a?(Hash) # advanced mode
-        allow_nil, message = allow_nil.values_at(:is, :message)
+      if allow_nil.is_a?(Hash)
+        allow_nil.values_at(:is, :message)
+      else
+        [allow_nil, DEFAULT_MESSAGE]
       end
-
-      [
-        allow_nil,
-        message
-      ]
     end
 
     def allow_nil?(allow_nil, options)
