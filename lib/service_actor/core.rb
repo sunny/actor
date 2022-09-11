@@ -58,7 +58,7 @@ module ServiceActor::Core
   private
 
   # Raises an error depending on the mode
-  def raise_error_with(message, arguments = {})
+  def raise_error_with(message, **arguments)
     message = message.call(**arguments) if message.is_a?(Proc)
 
     raise ServiceActor::ArgumentError, message
