@@ -18,7 +18,7 @@
 #     input :bonus_applied,
 #           type: {
 #             is: [TrueClass, FalseClass],
-#             message: (lambda do |_kind:, input_key:, _service_name:, expected_type_names:, actual_type_name:| # rubocop:disable Layout/LineLength
+#             message: (lambda do |kind:, input_key:, service_name:, expected_type_names:, actual_type_name:| # rubocop:disable Layout/LineLength
 #               "Wrong type `#{actual_type_name}` for `#{input_key}`. " \
 #               "Expected: `#{expected_type_names}`"
 #             end)
