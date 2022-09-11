@@ -10,7 +10,7 @@ class PayWithProviderAdvancedButNoDefaultValue < Actor
         },
         default: {
           # value: "Stripe",
-          message: (lambda do |input_key:, _service_name:|
+          message: (lambda do |input_key:, **|
             "Input `#{input_key}` is required"
           end)
         }
