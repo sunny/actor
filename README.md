@@ -277,7 +277,7 @@ class UpdateUser < Actor
   input :user,
         allow_nil: {
           is: false,
-          message: (lambda do |origin:, input_key:, service_name:|
+          message: (lambda do |origin:, input_key:, actor:|
             "The value `#{input_key}` cannot be empty"
           end)
         }
@@ -326,7 +326,7 @@ end
     input :multiplier,
           default: {
             is: -> { rand(1..10) },
-            message: (lambda do |input_key:, service_name:|
+            message: (lambda do |input_key:, actor:|
               "Input `#{input_key}` is required"
             end)
           }
@@ -340,7 +340,7 @@ end
     input :bonus_applied,
           type: {
             is: [TrueClass, FalseClass],
-            message: (lambda do |kind:, input_key:, service_name:, expected_type:, given_type:|
+            message: (lambda do |kind:, input_key:, actor:, expected_type:, given_type:|
               "Wrong type `#{given_type}` for `#{input_key}`. " \
               "Expected: `#{expected_type}`"
             end)
@@ -355,7 +355,7 @@ end
     input :name,
           allow_nil: {
             is: false,
-            message: (lambda do |origin:, input_key:, service_name:|
+            message: (lambda do |origin:, input_key:, actor:|
               "The value `#{input_key}` cannot be empty"
             end)
           }

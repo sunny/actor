@@ -18,7 +18,7 @@
 #     input :bonus_applied,
 #           type: {
 #             is: [TrueClass, FalseClass],
-#             message: (lambda do |kind:, input_key:, service_name:, expected_type:, given_type:| # rubocop:disable Layout/LineLength
+#             message: (lambda do |kind:, input_key:, actor:, expected_type:, given_type:| # rubocop:disable Layout/LineLength
 #               "Wrong type `#{given_type}` for `#{input_key}`. " \
 #               "Expected: `#{expected_type}`"
 #             end)
@@ -31,9 +31,9 @@ module ServiceActor::TypeCheckable
 
   module PrependedMethods
     DEFAULT_MESSAGE = lambda do
-      |kind:, input_key:, service_name:, expected_type:, given_type:|
+      |kind:, input_key:, actor:, expected_type:, given_type:|
 
-      "#{kind} #{input_key} on #{service_name} must be of type " \
+      "#{kind} #{input_key} on #{actor} must be of type " \
       "#{expected_type} but was #{given_type}"
     end
 
@@ -62,7 +62,7 @@ module ServiceActor::TypeCheckable
           message,
           kind: kind,
           input_key: key,
-          service_name: self.class,
+          actor: self.class,
           expected_type: types.join(", "),
           given_type: value.class,
         )

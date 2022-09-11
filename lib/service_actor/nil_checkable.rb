@@ -13,7 +13,7 @@
 #     input :name,
 #           allow_nil: {
 #             is: false,
-#             message: (lambda do |origin:, input_key:, service_name:|
+#             message: (lambda do |origin:, input_key:, actor:|
 #               "The value `#{input_key}` cannot be empty"
 #             end)
 #           }
@@ -23,7 +23,7 @@
 #     output :user,
 #             allow_nil: {
 #               is: false,
-#               message: (lambda do |origin:, input_key:, service_name:|
+#               message: (lambda do |origin:, input_key:, actor:|
 #                 "The value `#{input_key}` cannot be empty"
 #               end)
 #             }
@@ -34,8 +34,8 @@ module ServiceActor::NilCheckable
   end
 
   module PrependedMethods
-    DEFAULT_MESSAGE = lambda do |origin:, input_key:, service_name:|
-      "The #{origin} \"#{input_key}\" on #{service_name} does not allow " \
+    DEFAULT_MESSAGE = lambda do |origin:, input_key:, actor:|
+      "The #{origin} \"#{input_key}\" on #{actor} does not allow " \
       "nil values"
     end
 
@@ -65,7 +65,7 @@ module ServiceActor::NilCheckable
           message,
           origin: origin,
           input_key: key,
-          service_name: self.class,
+          actor: self.class,
         )
       end
     end

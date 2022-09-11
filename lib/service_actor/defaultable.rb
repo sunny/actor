@@ -20,7 +20,7 @@
 #     input :multiplier,
 #           default: {
 #             is: -> { rand(1..10) },
-#             message: (lambda do |input_key:, service_name:|
+#             message: (lambda do |input_key:, actor:|
 #               "Input `#{input_key}` is required"
 #             end)
 #           }
@@ -62,7 +62,7 @@ module ServiceActor::Defaultable
       default, message = content.values_at(:is, :message)
 
       unless default
-        raise_error_with(message, input_key: key, service_name: self.class)
+        raise_error_with(message, input_key: key, actor: self.class)
       end
 
       default = default.call if default.is_a?(Proc)
