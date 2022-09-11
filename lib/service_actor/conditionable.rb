@@ -19,7 +19,7 @@
 #           must: {
 #             exist: {
 #               is: -> provider { PROVIDERS.include?(provider) },
-#               message: (lambda do |input_key:, check_name:, value:|
+#               message: (lambda do |input_key:, check_name:, actor:, value:|
 #                 "The specified provider \"#{value}\" was not found."
 #               end)
 #             }
