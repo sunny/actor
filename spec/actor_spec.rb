@@ -236,7 +236,8 @@ RSpec.describe Actor do
     context "when called with the wrong condition" do
       context "when normal mode" do
         it "raises" do
-          expected_error = 'Input name must be_lowercase but was "42"'
+          expected_error = "The name input on SetNameWithInputCondition " \
+                            "must be_lowercase but was \"42\""
 
           expect { SetNameWithInputCondition.call(name: "42") }
             .to raise_error(ServiceActor::ArgumentError, expected_error)
@@ -458,7 +459,7 @@ RSpec.describe Actor do
 
         context "when given an incorrect value" do
           let(:expected_alert) do
-            "The input provider must be included in " \
+            "The provider input must be included in " \
               '["MANGOPAY", "PayPal", "Stripe"] on PayWithProviderInclusion ' \
                 'instead of "Paypal"'
           end
@@ -516,7 +517,7 @@ RSpec.describe Actor do
 
         context "when given an incorrect value" do
           let(:expected_alert) do
-            "The input provider must be included in " \
+            "The provider input must be included in " \
               '["MANGOPAY", "PayPal", "Stripe"] on PayWithProvider ' \
                 'instead of "Paypal"'
           end
