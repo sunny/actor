@@ -13,7 +13,7 @@
 #     input :provider,
 #           inclusion: {
 #             in: ["MANGOPAY", "PayPal", "Stripe"],
-#             message: (lambda do |_input_key:, _inclusion_in:, value:|
+#             message: (lambda do |input_key:, inclusion_in:, value:|
 #               "Payment system \"#{value}\" is not supported"
 #             end)
 #           }
