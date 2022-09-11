@@ -458,8 +458,9 @@ RSpec.describe Actor do
 
         context "when given an incorrect value" do
           let(:expected_alert) do
-            "Input provider must be included in " \
-              '["MANGOPAY", "PayPal", "Stripe"] but instead was "Paypal"'
+            "The input provider must be included in " \
+              '["MANGOPAY", "PayPal", "Stripe"] on PayWithProviderInclusion ' \
+                'instead of "Paypal"'
           end
 
           it "fails" do
@@ -515,8 +516,9 @@ RSpec.describe Actor do
 
         context "when given an incorrect value" do
           let(:expected_alert) do
-            "Input provider must be included in " \
-              '["MANGOPAY", "PayPal", "Stripe"] but instead was "Paypal"'
+            "The input provider must be included in " \
+              '["MANGOPAY", "PayPal", "Stripe"] on PayWithProvider ' \
+                'instead of "Paypal"'
           end
 
           it "fails" do

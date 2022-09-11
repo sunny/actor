@@ -13,7 +13,7 @@
 #     input :provider,
 #           inclusion: {
 #             in: ["MANGOPAY", "PayPal", "Stripe"],
-#             message: (lambda do |input_key:, inclusion_in:, value:|
+#             message: (lambda do |input_key:, actor:, inclusion_in:, value:|
 #               "Payment system \"#{value}\" is not supported"
 #             end)
 #           }
@@ -24,10 +24,10 @@ module ServiceActor::Collectionable
   end
 
   module PrependedMethods
-    DEFAULT_MESSAGE = lambda do |input_key:, inclusion_in:, value:|
-      "Input #{input_key} must be included " \
-      "in #{inclusion_in.inspect} but instead " \
-      "was #{value.inspect}"
+    DEFAULT_MESSAGE = lambda do |input_key:, actor:, inclusion_in:, value:|
+      "The input #{input_key} must be included " \
+      "in #{inclusion_in.inspect} on #{actor} " \
+      "instead of #{value.inspect}"
     end
 
     private_constant :DEFAULT_MESSAGE
@@ -47,6 +47,7 @@ module ServiceActor::Collectionable
         raise_error_with(
           message,
           input_key: key,
+          actor: self.class,
           inclusion_in: inclusion_in,
           value: value,
         )
