@@ -340,7 +340,7 @@ end
     input :bonus_applied,
           type: {
             is: [TrueClass, FalseClass],
-            message: (lambda do |kind:, input_key:, actor:, expected_type:, given_type:|
+            message: (lambda do |origin:, input_key:, actor:, expected_type:, given_type:|
               "Wrong type `#{given_type}` for `#{input_key}`. " \
               "Expected: `#{expected_type}`"
             end)

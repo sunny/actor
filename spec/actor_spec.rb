@@ -102,7 +102,7 @@ RSpec.describe Actor do
         expect { SetNameToDowncase.call }
           .to raise_error(
             ServiceActor::ArgumentError,
-            "Input name on SetNameToDowncase is missing",
+            "The name input on SetNameToDowncase is missing",
           )
       end
     end
@@ -256,7 +256,7 @@ RSpec.describe Actor do
 
     context "when called with the wrong type of argument" do
       let(:expected_message) do
-        "Input name on SetNameToDowncase must be of type String but was " \
+        "The name input on SetNameToDowncase must be of type String but was " \
           "#{1.class.name}"
       end
 
@@ -268,7 +268,7 @@ RSpec.describe Actor do
 
     context "when a type is defined but the argument is nil" do
       let(:expected_message) do
-        'The input "name" on SetNameToDowncase does not allow nil values'
+        'The "name" input on SetNameToDowncase does not allow nil values'
       end
 
       it "raises" do
@@ -286,7 +286,7 @@ RSpec.describe Actor do
       context "when normal mode" do
         it "does not allow other types" do
           expected_error =
-            "Input value on DoubleWithTypeAsString must be of type Integer, " \
+            "The value input on DoubleWithTypeAsString must be of type Integer, " \
             "Float but was String"
           expect { DoubleWithTypeAsString.call(value: "2.0") }
             .to raise_error(ServiceActor::ArgumentError, expected_error)
@@ -306,7 +306,7 @@ RSpec.describe Actor do
     context "when setting the wrong type of output" do
       context "when normal mode" do
         let(:expected_message) do
-          "Output name on SetWrongTypeOfOutput must be of type String but " \
+          "The name output on SetWrongTypeOfOutput must be of type String but " \
             "was #{1.class.name}"
         end
 
@@ -359,7 +359,7 @@ RSpec.describe Actor do
         context "without the input" do
           it "fails" do
             expected_error =
-              'The input "name" on DisallowNilOnInput does not allow nil values'
+              'The "name" input on DisallowNilOnInput does not allow nil values'
 
             expect { DisallowNilOnInput.call(name: nil) }
               .to raise_error(ServiceActor::ArgumentError, expected_error)
@@ -410,7 +410,7 @@ RSpec.describe Actor do
       context "without the output" do
         it "fails" do
           expected_error =
-            'The output "name" on DisallowNilOnOutput does not allow nil values'
+            'The "name" output on DisallowNilOnOutput does not allow nil values'
 
           expect { DisallowNilOnOutput.call(test_without_output: true) }
             .to raise_error(ServiceActor::ArgumentError, expected_error)
@@ -594,7 +594,7 @@ RSpec.describe Actor do
     context "with an argument error, caught by fail_on" do
       let(:actor) { FailOnArgumentError.result(name: 42) }
       let(:expected_error_message) do
-        "Input name on FailOnArgumentError must be of type String but was " \
+        "The name input on FailOnArgumentError must be of type String but was " \
           "Integer"
       end
 

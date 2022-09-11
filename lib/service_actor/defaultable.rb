@@ -36,7 +36,7 @@ module ServiceActor::Defaultable
         next if result.key?(key)
 
         unless input.key?(:default)
-          raise_error_with("Input #{key} on #{self.class} is missing")
+          raise_error_with("The #{key} input on #{self.class} is missing")
         end
 
         default = input[:default]

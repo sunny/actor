@@ -18,7 +18,7 @@
 #     input :bonus_applied,
 #           type: {
 #             is: [TrueClass, FalseClass],
-#             message: (lambda do |kind:, input_key:, actor:, expected_type:, given_type:| # rubocop:disable Layout/LineLength
+#             message: (lambda do |origin:, input_key:, actor:, expected_type:, given_type:| # rubocop:disable Layout/LineLength
 #               "Wrong type `#{given_type}` for `#{input_key}`. " \
 #               "Expected: `#{expected_type}`"
 #             end)
@@ -31,25 +31,25 @@ module ServiceActor::TypeCheckable
 
   module PrependedMethods
     DEFAULT_MESSAGE = lambda do
-      |kind:, input_key:, actor:, expected_type:, given_type:|
+      |origin:, input_key:, actor:, expected_type:, given_type:|
 
-      "#{kind} #{input_key} on #{actor} must be of type " \
+      "The #{input_key} #{origin} on #{actor} must be of type " \
       "#{expected_type} but was #{given_type}"
     end
 
     private_constant :DEFAULT_MESSAGE
 
     def _call
-      check_type_definitions(self.class.inputs, kind: "Input")
+      check_type_definitions(self.class.inputs, origin: "input")
 
       super
 
-      check_type_definitions(self.class.outputs, kind: "Output")
+      check_type_definitions(self.class.outputs, origin: "output")
     end
 
     private
 
-    def check_type_definitions(definitions, kind:) # rubocop:disable Metrics/MethodLength
+    def check_type_definitions(definitions, origin:) # rubocop:disable Metrics/MethodLength
       definitions.each do |key, options|
         type_definition = options[:type] || next
         value = result[key] || next
@@ -60,7 +60,7 @@ module ServiceActor::TypeCheckable
 
         raise_error_with(
           message,
-          kind: kind,
+          origin: origin,
           input_key: key,
           actor: self.class,
           expected_type: types.join(", "),
