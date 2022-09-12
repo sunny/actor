@@ -33,8 +33,8 @@ module ServiceActor::TypeCheckable
     DEFAULT_MESSAGE = lambda do
       |origin:, input_key:, actor:, expected_type:, given_type:|
 
-      "The #{input_key} #{origin} on #{actor} must be of type " \
-      "#{expected_type} but was #{given_type}"
+      "The \"#{input_key}\" #{origin} on \"#{actor}\" must be of type " \
+      "\"#{expected_type}\" but was \"#{given_type}\""
     end
 
     private_constant :DEFAULT_MESSAGE

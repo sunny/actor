@@ -35,7 +35,7 @@ module ServiceActor::NilCheckable
 
   module PrependedMethods
     DEFAULT_MESSAGE = lambda do |origin:, input_key:, actor:|
-      "The \"#{input_key}\" #{origin} on #{actor} does not allow " \
+      "The \"#{input_key}\" #{origin} on \"#{actor}\" does not allow " \
       "nil values"
     end
 

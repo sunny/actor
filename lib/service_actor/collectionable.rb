@@ -25,8 +25,8 @@ module ServiceActor::Collectionable
 
   module PrependedMethods
     DEFAULT_MESSAGE = lambda do |input_key:, actor:, inclusion_in:, value:|
-      "The #{input_key} input must be included " \
-      "in #{inclusion_in.inspect} on #{actor} " \
+      "The \"#{input_key}\" input must be included " \
+      "in #{inclusion_in.inspect} on \"#{actor}\" " \
       "instead of #{value.inspect}"
     end
 

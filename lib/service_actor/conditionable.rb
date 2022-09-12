@@ -32,7 +32,7 @@ module ServiceActor::Conditionable
 
   module PrependedMethods
     DEFAULT_MESSAGE = lambda do |input_key:, check_name:, actor:, value:|
-      "The #{input_key} input on #{actor} must #{check_name} " \
+      "The \"#{input_key}\" input on \"#{actor}\" must \"#{check_name}\" " \
         "but was #{value.inspect}"
     end
 
