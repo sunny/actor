@@ -21,7 +21,7 @@
 #           default: {
 #             is: -> { rand(1..10) },
 #             message: (lambda do |input_key:, actor:|
-#               "Input `#{input_key}` is required"
+#               "Input \"#{input_key}\" is required"
 #             end)
 #           }
 #   end

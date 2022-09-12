@@ -14,7 +14,7 @@
 #           allow_nil: {
 #             is: false,
 #             message: (lambda do |origin:, input_key:, actor:|
-#               "The value `#{input_key}` cannot be empty"
+#               "The value \"#{input_key}\" cannot be empty"
 #             end)
 #           }
 #
@@ -24,7 +24,7 @@
 #             allow_nil: {
 #               is: false,
 #               message: (lambda do |origin:, input_key:, actor:|
-#                 "The value `#{input_key}` cannot be empty"
+#                 "The value \"#{input_key}\" cannot be empty"
 #               end)
 #             }
 #   end

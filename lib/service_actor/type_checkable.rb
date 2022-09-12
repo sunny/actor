@@ -19,8 +19,8 @@
 #           type: {
 #             is: [TrueClass, FalseClass],
 #             message: (lambda do |origin:, input_key:, actor:, expected_type:, given_type:| # rubocop:disable Layout/LineLength
-#               "Wrong type `#{given_type}` for `#{input_key}`. " \
-#               "Expected: `#{expected_type}`"
+#               "Wrong type \"#{given_type}\" for \"#{input_key}\". " \
+#               "Expected: \"#{expected_type}\""
 #             end)
 #           }
 #   end

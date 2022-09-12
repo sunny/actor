@@ -278,7 +278,7 @@ class UpdateUser < Actor
         allow_nil: {
           is: false,
           message: (lambda do |origin:, input_key:, actor:|
-            "The value `#{input_key}` cannot be empty"
+            "The value \"#{input_key}\" cannot be empty"
           end)
         }
 
@@ -327,7 +327,7 @@ end
           default: {
             is: -> { rand(1..10) },
             message: (lambda do |input_key:, actor:|
-              "Input `#{input_key}` is required"
+              "Input \"#{input_key}\" is required"
             end)
           }
   end
@@ -341,8 +341,8 @@ end
           type: {
             is: [TrueClass, FalseClass],
             message: (lambda do |origin:, input_key:, actor:, expected_type:, given_type:|
-              "Wrong type `#{given_type}` for `#{input_key}`. " \
-              "Expected: `#{expected_type}`"
+              "Wrong type \"#{given_type}\" for \"#{input_key}\". " \
+              "Expected: \"#{expected_type}\""
             end)
           }
   end
@@ -356,7 +356,7 @@ end
           allow_nil: {
             is: false,
             message: (lambda do |origin:, input_key:, actor:|
-              "The value `#{input_key}` cannot be empty"
+              "The value \"#{input_key}\" cannot be empty"
             end)
           }
   end
