@@ -277,7 +277,7 @@ class UpdateUser < Actor
   input :user,
         allow_nil: {
           is: false,
-          message: (lambda do |origin:, input_key:, actor:|
+          message: (lambda do |input_key:, **|
             "The value \"#{input_key}\" cannot be empty"
           end)
         }
@@ -296,7 +296,7 @@ end
     input :provider,
           inclusion: {
             in: ["MANGOPAY", "PayPal", "Stripe"],
-            message: (lambda do |input_key:, actor:, inclusion_in:, value:|
+            message: (lambda do |value:, **|
               "Payment system \"#{value}\" is not supported"
             end)
           }
@@ -311,7 +311,7 @@ end
           must: {
             exist: {
               is: -> provider { PROVIDERS.include?(provider) },
-              message: (lambda do |input_key:, check_name:, actor:, value:|
+              message: (lambda do |value:, **|
                 "The specified provider \"#{value}\" was not found."
               end)
             }
@@ -326,7 +326,7 @@ end
     input :multiplier,
           default: {
             is: -> { rand(1..10) },
-            message: (lambda do |input_key:, actor:|
+            message: (lambda do |input_key:, **|
               "Input \"#{input_key}\" is required"
             end)
           }
@@ -340,7 +340,7 @@ end
     input :bonus_applied,
           type: {
             is: [TrueClass, FalseClass],
-            message: (lambda do |origin:, input_key:, actor:, expected_type:, given_type:|
+            message: (lambda do |input_key:, expected_type:, given_type, **|
               "Wrong type \"#{given_type}\" for \"#{input_key}\". " \
               "Expected: \"#{expected_type}\""
             end)
@@ -355,7 +355,7 @@ end
     input :name,
           allow_nil: {
             is: false,
-            message: (lambda do |origin:, input_key:, actor:|
+            message: (lambda do |input_key:, **|
               "The value \"#{input_key}\" cannot be empty"
             end)
           }
