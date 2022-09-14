@@ -287,7 +287,7 @@ end
 ```
 
 <details>
-  <summary>Display full examples with all arguments</summary>
+  <summary>See examples of custom messages on all input arguments</summary>
 
   #### Inclusion
 
