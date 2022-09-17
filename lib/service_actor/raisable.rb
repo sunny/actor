@@ -9,7 +9,9 @@ module ServiceActor::Raisable
     def inherited(child)
       super
 
-      child.argument_error_class = argument_error_class || ServiceActor::ArgumentError
+      child.argument_error_class =
+        argument_error_class || ServiceActor::ArgumentError
+
       child.failure_class = failure_class || ServiceActor::Failure
     end
 
