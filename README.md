@@ -19,6 +19,7 @@ and controllers thin.
   - [Conditions](#conditions)
   - [Types](#types)
   - [Fail](#fail)
+  - [Custom input errors](#custom-input-errors)
 - [Play actors in a sequence](#play-actors-in-a-sequence)
   - [Rollback](#rollback)
   - [Inline actors](#inline-actors)
@@ -249,6 +250,119 @@ class UsersController < ApplicationController
   end
 end
 ```
+
+### Custom input errors
+
+Use a `Hash` with `is:` and `message:` keys to prepare custom
+error messages on inputs. For example:
+
+```rb
+class UpdateAdminUser < Actor
+  input :user,
+        must: {
+          be_an_admin: {
+            is: -> user { user.admin? },
+            message: "The user is not an administrator"
+          }
+        }
+
+  # ...
+end
+```
+
+You can also use incoming arguments when shaping your error text:
+
+```rb
+class UpdateUser < Actor
+  input :user,
+        allow_nil: {
+          is: false,
+          message: (lambda do |input_key:, **|
+            "The value \"#{input_key}\" cannot be empty"
+          end)
+        }
+
+  # ...
+end
+```
+
+<details>
+  <summary>See examples of custom messages on all input arguments</summary>
+
+  #### Inclusion
+
+  ```ruby
+  class Pay < Actor
+    input :provider,
+          inclusion: {
+            in: ["MANGOPAY", "PayPal", "Stripe"],
+            message: (lambda do |value:, **|
+              "Payment system \"#{value}\" is not supported"
+            end)
+          }
+  end
+  ```
+
+  #### Must
+
+  ```ruby
+  class Pay < Actor
+    input :provider,
+          must: {
+            exist: {
+              is: -> provider { PROVIDERS.include?(provider) },
+              message: (lambda do |value:, **|
+                "The specified provider \"#{value}\" was not found."
+              end)
+            }
+          }
+  end
+  ```
+
+  #### Default
+
+  ```ruby
+  class MultiplyThing < Actor
+    input :multiplier,
+          default: {
+            is: -> { rand(1..10) },
+            message: (lambda do |input_key:, **|
+              "Input \"#{input_key}\" is required"
+            end)
+          }
+  end
+  ```
+
+  #### Type
+
+  ```ruby
+  class ReduceOrderAmount < Actor
+    input :bonus_applied,
+          type: {
+            is: [TrueClass, FalseClass],
+            message: (lambda do |input_key:, expected_type:, given_type:, **|
+              "Wrong type \"#{given_type}\" for \"#{input_key}\". " \
+              "Expected: \"#{expected_type}\""
+            end)
+          }
+  end
+  ```
+
+  #### Allow nil
+
+  ```ruby
+  class CreateUser < Actor
+    input :name,
+          allow_nil: {
+            is: false,
+            message: (lambda do |input_key:, **|
+              "The value \"#{input_key}\" cannot be empty"
+            end)
+          }
+  end
+  ```
+
+</details>
 
 ## Play actors in a sequence
 

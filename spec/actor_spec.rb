@@ -102,7 +102,7 @@ RSpec.describe Actor do
         expect { SetNameToDowncase.call }
           .to raise_error(
             ServiceActor::ArgumentError,
-            "Input name on SetNameToDowncase is missing",
+            "The \"name\" input on \"SetNameToDowncase\" is missing",
           )
       end
     end
@@ -219,24 +219,46 @@ RSpec.describe Actor do
     end
 
     context "when called with a matching condition" do
-      it "suceeds" do
-        expect(SetNameWithInputCondition.call(name: "joe").name).to eq("JOE")
+      context "when normal mode" do
+        it "suceeds" do
+          expect(SetNameWithInputCondition.call(name: "joe").name).to eq("JOE")
+        end
+      end
+
+      context "when advanced mode" do
+        it "suceeds" do
+          expect(SetNameWithInputConditionAdvanced.call(name: "joe").name)
+            .to eq("JOE")
+        end
       end
     end
 
     context "when called with the wrong condition" do
-      it "suceeds" do
-        expected_error = 'Input name must be_lowercase but was "42"'
+      context "when normal mode" do
+        it "raises" do
+          expected_error =
+            "The \"name\" input on \"SetNameWithInputCondition\" " \
+            "must \"be_lowercase\" but was \"42\""
 
-        expect { SetNameWithInputCondition.call(name: "42") }
-          .to raise_error(ServiceActor::ArgumentError, expected_error)
+          expect { SetNameWithInputCondition.call(name: "42") }
+            .to raise_error(ServiceActor::ArgumentError, expected_error)
+        end
+      end
+
+      context "when advanced mode" do
+        it "raises" do
+          expected_error = "Failed to apply `be_lowercase`"
+
+          expect { SetNameWithInputConditionAdvanced.call(name: "42") }
+            .to raise_error(ServiceActor::ArgumentError, expected_error)
+        end
       end
     end
 
     context "when called with the wrong type of argument" do
       let(:expected_message) do
-        "Input name on SetNameToDowncase must be of type String but was " \
-          "#{1.class.name}"
+        "The \"name\" input on \"SetNameToDowncase\" must be of " \
+          "type \"String\" but was \"#{1.class.name}\""
       end
 
       it "raises" do
@@ -247,7 +269,7 @@ RSpec.describe Actor do
 
     context "when a type is defined but the argument is nil" do
       let(:expected_message) do
-        'The input "name" on SetNameToDowncase does not allow nil values'
+        'The "name" input on "SetNameToDowncase" does not allow nil values'
       end
 
       it "raises" do
@@ -262,24 +284,48 @@ RSpec.describe Actor do
         expect(actor.double).to eq(4.0)
       end
 
-      it "does not allow other types" do
-        expected_error =
-          "Input value on DoubleWithTypeAsString must be of type Integer, " \
-          "Float but was String"
-        expect { DoubleWithTypeAsString.call(value: "2.0") }
-          .to raise_error(ServiceActor::ArgumentError, expected_error)
+      context "when normal mode" do
+        it "does not allow other types" do
+          expected_error =
+            "The \"value\" input on \"DoubleWithTypeAsString\" must " \
+            "be of type \"Integer, Float\" but was \"String\""
+          expect { DoubleWithTypeAsString.call(value: "2.0") }
+            .to raise_error(ServiceActor::ArgumentError, expected_error)
+        end
+      end
+
+      context "when advanced mode" do
+        it "does not allow other types" do
+          expected_error =
+            "Wrong type `String` for `value`. Expected: `Integer, Float`"
+          expect { DoubleWithTypeAsStringAdvanced.call(value: "2.0") }
+            .to raise_error(ServiceActor::ArgumentError, expected_error)
+        end
       end
     end
 
     context "when setting the wrong type of output" do
-      let(:expected_message) do
-        "Output name on SetWrongTypeOfOutput must be of type String but was " \
-          "#{1.class.name}"
+      context "when normal mode" do
+        let(:expected_message) do
+          "The \"name\" output on \"SetWrongTypeOfOutput\" must " \
+            "be of type \"String\" but was \"#{1.class.name}\""
+        end
+
+        it "raises" do
+          expect { SetWrongTypeOfOutput.call }
+            .to raise_error(ServiceActor::ArgumentError, expected_message)
+        end
       end
 
-      it "raises" do
-        expect { SetWrongTypeOfOutput.call }
-          .to raise_error(ServiceActor::ArgumentError, expected_message)
+      context "when advanced mode" do
+        let(:expected_message) do
+          "Wrong type `Integer` for `name`. Expected: `String`"
+        end
+
+        it "raises" do
+          expect { SetWrongTypeOfOutputAdvanced.call }
+            .to raise_error(ServiceActor::ArgumentError, expected_message)
+        end
       end
     end
 
@@ -304,19 +350,39 @@ RSpec.describe Actor do
     end
 
     context "when disallowing nil on an input" do
-      context "when given the input" do
-        it "succeeds" do
-          expect(DisallowNilOnInput.call(name: "Jim")).to be_a_success
+      context "when normal mode" do
+        context "when given the input" do
+          it "succeeds" do
+            expect(DisallowNilOnInput.call(name: "Jim")).to be_a_success
+          end
+        end
+
+        context "without the input" do
+          it "fails" do
+            expected_error =
+              "The \"name\" input on \"DisallowNilOnInput\" does not " \
+              "allow nil values"
+
+            expect { DisallowNilOnInput.call(name: nil) }
+              .to raise_error(ServiceActor::ArgumentError, expected_error)
+          end
         end
       end
 
-      context "without the input" do
-        it "fails" do
-          expected_error =
-            'The input "name" on DisallowNilOnInput does not allow nil values'
+      context "when advanced mode" do
+        context "when given the input" do
+          it "succeeds" do
+            expect(DisallowNilOnInputAdvanced.call(name: "Jim")).to be_a_success
+          end
+        end
 
-          expect { DisallowNilOnInput.call(name: nil) }
-            .to raise_error(ServiceActor::ArgumentError, expected_error)
+        context "without the input" do
+          it "fails" do
+            expected_error = "The value `name` cannot be empty"
+
+            expect { DisallowNilOnInputAdvanced.call(name: nil) }
+              .to raise_error(ServiceActor::ArgumentError, expected_error)
+          end
         end
       end
     end
@@ -346,7 +412,8 @@ RSpec.describe Actor do
       context "without the output" do
         it "fails" do
           expected_error =
-            'The output "name" on DisallowNilOnOutput does not allow nil values'
+            "The \"name\" output on \"DisallowNilOnOutput\" " \
+            "does not allow nil values"
 
           expect { DisallowNilOnOutput.call(test_without_output: true) }
             .to raise_error(ServiceActor::ArgumentError, expected_error)
@@ -385,57 +452,117 @@ RSpec.describe Actor do
     end
 
     context 'when using "inclusion"' do
-      context "when given a correct value" do
-        it "returns the message" do
-          actor = PayWithProviderInclusion.call(provider: "PayPal")
-          expect(actor.message).to eq("Money transferred to PayPal!")
+      context "when normal mode" do
+        context "when given a correct value" do
+          it "returns the message" do
+            actor = PayWithProviderInclusion.call(provider: "PayPal")
+            expect(actor.message).to eq("Money transferred to PayPal!")
+          end
+        end
+
+        context "when given an incorrect value" do
+          let(:expected_alert) do
+            'The "provider" input must be included in ' \
+            '["MANGOPAY", "PayPal", "Stripe"] on "PayWithProviderInclusion" ' \
+            'instead of "Paypal"'
+          end
+
+          it "fails" do
+            expect { PayWithProviderInclusion.call(provider: "Paypal") }
+              .to raise_error(expected_alert)
+          end
+        end
+
+        context "when it has a default" do
+          it "uses it" do
+            actor = PayWithProviderInclusion.call
+            expect(actor.message).to eq("Money transferred to Stripe!")
+          end
         end
       end
 
-      context "when given an incorrect value" do
-        let(:expected_alert) do
-          "Input provider must be included in " \
-            '["MANGOPAY", "PayPal", "Stripe"] but instead was "Paypal"'
+      context "when advanced mode" do
+        context "when given a correct value" do
+          it "returns the message" do
+            actor = PayWithProviderInclusionAdvanced.call(provider: "PayPal")
+            expect(actor.message).to eq("Money transferred to PayPal!")
+          end
         end
 
-        it "fails" do
-          expect { PayWithProviderInclusion.call(provider: "Paypal") }
-            .to raise_error(expected_alert)
-        end
-      end
+        context "when given an incorrect value" do
+          let(:expected_alert) do
+            "Payment system \"Paypal\" is not supported"
+          end
 
-      context "when it has a default" do
-        it "uses it" do
-          actor = PayWithProviderInclusion.call
-          expect(actor.message).to eq("Money transferred to Stripe!")
+          it "fails" do
+            expect { PayWithProviderInclusionAdvanced.call(provider: "Paypal") }
+              .to raise_error(expected_alert)
+          end
+        end
+
+        context "when it has a default" do
+          it "uses it" do
+            actor = PayWithProviderInclusionAdvanced.call
+            expect(actor.message).to eq("Money transferred to Stripe!")
+          end
         end
       end
     end
 
     context 'when using "in"' do
-      context "when given a correct value" do
-        it "returns the message" do
-          actor = PayWithProvider.call(provider: "PayPal")
-          expect(actor.message).to eq("Money transferred to PayPal!")
+      context "when normal mode" do
+        context "when given a correct value" do
+          it "returns the message" do
+            actor = PayWithProvider.call(provider: "PayPal")
+            expect(actor.message).to eq("Money transferred to PayPal!")
+          end
+        end
+
+        context "when given an incorrect value" do
+          let(:expected_alert) do
+            'The "provider" input must be included in ' \
+            '["MANGOPAY", "PayPal", "Stripe"] on "PayWithProvider" ' \
+            'instead of "Paypal"'
+          end
+
+          it "fails" do
+            expect { PayWithProvider.call(provider: "Paypal") }
+              .to raise_error(ServiceActor::ArgumentError, expected_alert)
+          end
+        end
+
+        context "when it has a default" do
+          it "uses it" do
+            actor = PayWithProvider.call
+            expect(actor.message).to eq("Money transferred to Stripe!")
+          end
         end
       end
 
-      context "when given an incorrect value" do
-        let(:expected_alert) do
-          "Input provider must be included in " \
-            '["MANGOPAY", "PayPal", "Stripe"] but instead was "Paypal"'
+      context "when advanced mode" do
+        context "when given a correct value" do
+          it "returns the message" do
+            actor = PayWithProviderAdvanced.call(provider: "PayPal")
+            expect(actor.message).to eq("Money transferred to PayPal!")
+          end
         end
 
-        it "fails" do
-          expect { PayWithProvider.call(provider: "Paypal") }
-            .to raise_error(ServiceActor::ArgumentError, expected_alert)
-        end
-      end
+        context "when given an incorrect value" do
+          let(:expected_alert) do
+            "Payment system \"Paypal\" is not supported"
+          end
 
-      context "when it has a default" do
-        it "uses it" do
-          actor = PayWithProvider.call
-          expect(actor.message).to eq("Money transferred to Stripe!")
+          it "fails" do
+            expect { PayWithProviderAdvanced.call(provider: "Paypal") }
+              .to raise_error(ServiceActor::ArgumentError, expected_alert)
+          end
+        end
+
+        context "when it has a default" do
+          it "uses it" do
+            actor = PayWithProviderAdvanced.call
+            expect(actor.message).to eq("Money transferred to Stripe!")
+          end
         end
       end
     end
@@ -470,8 +597,8 @@ RSpec.describe Actor do
     context "with an argument error, caught by fail_on" do
       let(:actor) { FailOnArgumentError.result(name: 42) }
       let(:expected_error_message) do
-        "Input name on FailOnArgumentError must be of type String but was " \
-          "Integer"
+        "The \"name\" input on \"FailOnArgumentError\" must " \
+          "be of type \"String\" but was \"Integer\""
       end
 
       it { expect(actor).to be_a_failure }
