@@ -21,6 +21,9 @@ Gemspec/OrderedDependencies:
 Gemspec/RequiredRubyVersion:
   Enabled: false
 
+Layout/LineLength:
+  Max: 80
+
 Layout/SpaceAroundMethodCallOperator:
   Enabled: true
 
@@ -42,7 +45,7 @@ Metrics/MethodLength:
     - service_actor.gemspec
 
 RSpec/NestedGroups:
-  Max: 4
+  Max: 5
 
 RSpec/MultipleExpectations:
   Enabled: false

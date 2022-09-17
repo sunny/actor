@@ -9,28 +9,68 @@
 #     input :counter, default: 1
 #     input :multiplier, default: -> { rand(1..10) }
 #   end
+#
+#   class MultiplyThing < Actor
+#     input :counter,
+#           default: {
+#             is: 1,
+#             message: "Counter is required"
+#           }
+#
+#     input :multiplier,
+#           default: {
+#             is: -> { rand(1..10) },
+#             message: (lambda do |input_key:, actor:|
+#               "Input \"#{input_key}\" is required"
+#             end)
+#           }
+#   end
 module ServiceActor::Defaultable
   def self.included(base)
     base.prepend(PrependedMethods)
   end
 
   module PrependedMethods
-    def _call
-      self.class.inputs.each do |name, input|
-        next if result.key?(name)
+    def _call # rubocop:disable Metrics/MethodLength
+      self.class.inputs.each do |key, input|
+        next if result.key?(key)
 
-        if input.key?(:default)
-          default = input[:default]
-          default = default.call if default.is_a?(Proc)
-          result[name] = default
-          next
+        unless input.key?(:default)
+          raise_error_with(
+            "The \"#{key}\" input on \"#{self.class}\" is missing",
+          )
         end
 
-        raise ServiceActor::ArgumentError,
-              "Input #{name} on #{self.class} is missing"
+        default = input[:default]
+
+        if default.is_a?(Hash)
+          default_for_advanced_mode_with(result, key, default)
+        else
+          default_for_normal_mode_with(result, key, default)
+        end
       end
 
       super
+    end
+
+    private
+
+    def default_for_normal_mode_with(result, key, default)
+      default = default.call if default.is_a?(Proc)
+      result[key] = default
+    end
+
+    def default_for_advanced_mode_with(result, key, content)
+      default, message = content.values_at(:is, :message)
+
+      unless default
+        raise_error_with(message, input_key: key, actor: self.class)
+      end
+
+      default = default.call if default.is_a?(Proc)
+      result[key] = default
+
+      message.call(key, self.class)
     end
   end
 end
