@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class ApplicationService
+class ApplicationServiceWithCustomClasses
   include ServiceActor::Base
 
   self.argument_error_class = MyCustomArgumentError
