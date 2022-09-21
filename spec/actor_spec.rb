@@ -15,6 +15,13 @@ RSpec.describe Actor do
         expect { FailWithError.call }
           .to raise_error(ServiceActor::Failure, "Ouch")
       end
+
+      context "when a custom class is specified" do
+        it "raises the error message" do
+          expect { FailWithErrorWithCustomFailureClass.call }
+            .to raise_error(MyCustomFailure, "Ouch")
+        end
+      end
     end
 
     context "when an actor updates the context" do
@@ -325,6 +332,19 @@ RSpec.describe Actor do
         it "raises" do
           expect { SetWrongTypeOfOutputAdvanced.call }
             .to raise_error(ServiceActor::ArgumentError, expected_message)
+        end
+      end
+
+      context "when a custom class is specified" do
+        let(:expected_message) do
+          "The \"name\" output on " \
+            "\"SetWrongTypeOfOutputWithCustomArgumentErrorClass\" must " \
+              "be of type \"String\" but was \"#{1.class.name}\""
+        end
+
+        it "raises" do
+          expect { SetWrongTypeOfOutputWithCustomArgumentErrorClass.call }
+            .to raise_error(MyCustomArgumentError, expected_message)
         end
       end
     end
