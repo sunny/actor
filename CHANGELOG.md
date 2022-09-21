@@ -6,6 +6,7 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## unreleased
 
 Features:
+- Add support for custom error messages to `input` and `output`. #82
 - Rename the `in:` option to `inclusion:`.
 
 Fixes:
