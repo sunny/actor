@@ -265,7 +265,7 @@ RSpec.describe Actor do
     context "when called with the wrong type of argument" do
       let(:expected_message) do
         "The \"name\" input on \"SetNameToDowncase\" must be of " \
-          "type \"String\" but was \"#{1.class.name}\""
+          "type \"String\" but was \"Integer\""
       end
 
       it "raises" do
@@ -315,7 +315,7 @@ RSpec.describe Actor do
       context "when normal mode" do
         let(:expected_message) do
           "The \"name\" output on \"SetWrongTypeOfOutput\" must " \
-            "be of type \"String\" but was \"#{1.class.name}\""
+            "be of type \"String\" but was \"Integer\""
         end
 
         it "raises" do
@@ -339,7 +339,7 @@ RSpec.describe Actor do
         let(:expected_message) do
           "The \"name\" output on " \
             "\"SetWrongTypeOfOutputWithCustomArgumentErrorClass\" must " \
-              "be of type \"String\" but was \"#{1.class.name}\""
+              "be of type \"String\" but was \"Integer\""
         end
 
         it "raises" do
