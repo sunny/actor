@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
-class SetWrongTypeOfOutputWithCustomArgumentErrorClass < ApplicationServiceWithCustomClasses
+class SetWrongTypeOfOutputWithCustomArgumentErrorClass <
+        ApplicationServiceWithCustomClasses
   output :name, type: String
 
   def call
