@@ -5,8 +5,11 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## unreleased
 
+## v3.4.0
+
 Features:
-- Add support for custom error messages to `input` and `output`. #82
+- Accept custom error messages on `input` and `output`.
+- Customize the exception class raised on inputs.
 - Rename the `in:` option to `inclusion:`.
 
 Fixes:
