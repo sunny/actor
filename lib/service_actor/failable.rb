@@ -6,33 +6,35 @@
 #   class ApplicationActor < Actor
 #     fail_on ServiceActor::ArgumentError
 #   end
-module ServiceActor::Failable
-  def self.included(base)
-    base.extend(ClassMethods)
-    base.prepend(PrependedMethods)
-  end
-
-  module ClassMethods
-    def inherited(child)
-      super
-
-      child.fail_ons.push(*fail_ons)
+module ServiceActor
+  module Failable
+    def self.included(base)
+      base.extend(ClassMethods)
+      base.prepend(PrependedMethods)
     end
 
-    def fail_on(*exceptions)
-      fail_ons.push(*exceptions)
+    module ClassMethods
+      def inherited(child)
+        super
+
+        child.fail_ons.push(*fail_ons)
+      end
+
+      def fail_on(*exceptions)
+        fail_ons.push(*exceptions)
+      end
+
+      def fail_ons
+        @fail_ons ||= []
+      end
     end
 
-    def fail_ons
-      @fail_ons ||= []
-    end
-  end
-
-  module PrependedMethods
-    def _call
-      super
-    rescue *self.class.fail_ons => e
-      fail!(error: e.message)
+    module PrependedMethods
+      def _call
+        super
+      rescue *self.class.fail_ons => e
+        fail!(error: e.message)
+      end
     end
   end
 end

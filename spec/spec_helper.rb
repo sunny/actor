@@ -4,6 +4,8 @@ require "bundler/setup"
 require "service_actor"
 require "pry"
 
+require "service_actor/support/loader"
+
 # Autoload examples
 loader = Zeitwerk::Loader.new
 loader.push_dir(File.expand_path("examples", __dir__))

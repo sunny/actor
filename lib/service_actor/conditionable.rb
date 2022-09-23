@@ -25,50 +25,52 @@
 #             }
 #           }
 #   end
-module ServiceActor::Conditionable
-  def self.included(base)
-    base.prepend(PrependedMethods)
-  end
-
-  module PrependedMethods
-    DEFAULT_MESSAGE = lambda do |input_key:, check_name:, actor:, value:|
-      "The \"#{input_key}\" input on \"#{actor}\" must \"#{check_name}\" " \
-        "but was #{value.inspect}"
+module ServiceActor
+  module Conditionable
+    def self.included(base)
+      base.prepend(PrependedMethods)
     end
 
-    private_constant :DEFAULT_MESSAGE
-
-    def _call # rubocop:disable Metrics/MethodLength
-      self.class.inputs.each do |key, options|
-        next unless options[:must]
-
-        options[:must].each do |check_name, check|
-          value = result[key]
-
-          check, message = define_check_from(check)
-
-          next if check.call(value)
-
-          raise_error_with(
-            message,
-            input_key: key,
-            check_name: check_name,
-            actor: self.class,
-            value: value,
-          )
-        end
+    module PrependedMethods
+      DEFAULT_MESSAGE = lambda do |input_key:, check_name:, actor:, value:|
+        "The \"#{input_key}\" input on \"#{actor}\" must \"#{check_name}\" " \
+          "but was #{value.inspect}"
       end
 
-      super
-    end
+      private_constant :DEFAULT_MESSAGE
 
-    private
+      def _call # rubocop:disable Metrics/MethodLength
+        self.class.inputs.each do |key, options|
+          next unless options[:must]
 
-    def define_check_from(check)
-      if check.is_a?(Hash)
-        check.values_at(:is, :message)
-      else
-        [check, DEFAULT_MESSAGE]
+          options[:must].each do |check_name, check|
+            value = result[key]
+
+            check, message = define_check_from(check)
+
+            next if check.call(value)
+
+            raise_error_with(
+              message,
+              input_key: key,
+              check_name: check_name,
+              actor: self.class,
+              value: value,
+            )
+          end
+        end
+
+        super
+      end
+
+      private
+
+      def define_check_from(check)
+        if check.is_a?(Hash)
+          check.values_at(:is, :message)
+        else
+          [check, DEFAULT_MESSAGE]
+        end
       end
     end
   end

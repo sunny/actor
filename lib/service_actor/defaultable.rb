@@ -25,52 +25,54 @@
 #             end)
 #           }
 #   end
-module ServiceActor::Defaultable
-  def self.included(base)
-    base.prepend(PrependedMethods)
-  end
-
-  module PrependedMethods
-    def _call # rubocop:disable Metrics/MethodLength
-      self.class.inputs.each do |key, input|
-        next if result.key?(key)
-
-        unless input.key?(:default)
-          raise_error_with(
-            "The \"#{key}\" input on \"#{self.class}\" is missing",
-          )
-        end
-
-        default = input[:default]
-
-        if default.is_a?(Hash)
-          default_for_advanced_mode_with(result, key, default)
-        else
-          default_for_normal_mode_with(result, key, default)
-        end
-      end
-
-      super
+module ServiceActor
+  module Defaultable
+    def self.included(base)
+      base.prepend(PrependedMethods)
     end
 
-    private
+    module PrependedMethods
+      def _call # rubocop:disable Metrics/MethodLength
+        self.class.inputs.each do |key, input|
+          next if result.key?(key)
 
-    def default_for_normal_mode_with(result, key, default)
-      default = default.call if default.is_a?(Proc)
-      result[key] = default
-    end
+          unless input.key?(:default)
+            raise_error_with(
+              "The \"#{key}\" input on \"#{self.class}\" is missing",
+            )
+          end
 
-    def default_for_advanced_mode_with(result, key, content)
-      default, message = content.values_at(:is, :message)
+          default = input[:default]
 
-      unless default
-        raise_error_with(message, input_key: key, actor: self.class)
+          if default.is_a?(Hash)
+            default_for_advanced_mode_with(result, key, default)
+          else
+            default_for_normal_mode_with(result, key, default)
+          end
+        end
+
+        super
       end
 
-      default = default.call if default.is_a?(Proc)
-      result[key] = default
+      private
 
-      message.call(key, self.class)
+      def default_for_normal_mode_with(result, key, default)
+        default = default.call if default.is_a?(Proc)
+        result[key] = default
+      end
+
+      def default_for_advanced_mode_with(result, key, content)
+        default, message = content.values_at(:is, :message)
+
+        unless default
+          raise_error_with(message, input_key: key, actor: self.class)
+        end
+
+        default = default.call if default.is_a?(Proc)
+        result[key] = default
+
+        message.call(key, self.class)
+      end
     end
   end
 end

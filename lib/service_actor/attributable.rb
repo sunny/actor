@@ -6,52 +6,54 @@
 #     input :name
 #     output :name
 #   end
-module ServiceActor::Attributable
-  def self.included(base)
-    base.extend(ClassMethods)
-  end
-
-  module ClassMethods
-    def inherited(child)
-      super
-
-      child.inputs.merge!(inputs)
-      child.outputs.merge!(outputs)
+module ServiceActor
+  module Attributable
+    def self.included(base)
+      base.extend(ClassMethods)
     end
 
-    def input(name, **arguments)
-      inputs[name] = arguments
+    module ClassMethods
+      def inherited(child)
+        super
 
-      define_method(name) do
-        result[name]
+        child.inputs.merge!(inputs)
+        child.outputs.merge!(outputs)
       end
 
-      # For avoid method redefined warning messages.
-      alias_method name, name if method_defined?(name)
+      def input(name, **arguments)
+        inputs[name] = arguments
 
-      protected name
-    end
+        define_method(name) do
+          result[name]
+        end
 
-    def inputs
-      @inputs ||= {}
-    end
+        # For avoid method redefined warning messages.
+        alias_method name, name if method_defined?(name)
 
-    def output(name, **arguments)
-      outputs[name] = arguments
-
-      define_method(name) do
-        result[name]
+        protected name
       end
 
-      define_method("#{name}=") do |value|
-        result[name] = value
+      def inputs
+        @inputs ||= {}
       end
 
-      protected name, "#{name}="
-    end
+      def output(name, **arguments)
+        outputs[name] = arguments
 
-    def outputs
-      @outputs ||= {}
+        define_method(name) do
+          result[name]
+        end
+
+        define_method("#{name}=") do |value|
+          result[name] = value
+        end
+
+        protected name, "#{name}="
+      end
+
+      def outputs
+        @outputs ||= {}
+      end
     end
   end
 end
