@@ -17,4 +17,4 @@ jobs:
           bundler-cache: true
 
       - name: RuboCop
-        run: bin/rubocop
+        run: bin/rubocop --format github
