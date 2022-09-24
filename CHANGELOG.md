@@ -5,6 +5,11 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## unreleased
 
+## v3.4.1
+
+Fixes:
+- Fix exception on load when requiring `service_actor/base` directly.
+
 ## v3.4.0
 
 Features:

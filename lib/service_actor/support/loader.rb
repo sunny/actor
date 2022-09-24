@@ -2,6 +2,8 @@
 
 require "zeitwerk"
 
+module ServiceActor; end
+
 lib = File.expand_path("../..", __dir__)
 
 loader = Zeitwerk::Loader.new
@@ -12,5 +14,3 @@ loader.inflector = Zeitwerk::GemInflector.new(
 loader.push_dir(lib)
 loader.ignore(__dir__)
 loader.setup
-
-module ServiceActor; end
