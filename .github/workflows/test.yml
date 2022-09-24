@@ -13,18 +13,14 @@ jobs:
         ruby: [2.4, 2.5, 2.6, 2.7, '3.0', 3.1, head]
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-    - name: Set up Ruby
-      uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: ${{matrix.ruby}}
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{matrix.ruby}}
+          bundler-cache: true
 
-    - name: Install dependencies
-      # Fallback to an update for the diffent dependecy versions when using
-      # Ruby 2.4.
-      run: bundle install --jobs 4 --retry 3 || bundle update --jobs 4 --retry 3
-
-    - name: RSpec
-      run: bin/rake spec
+      - name: RSpec
+        run: bin/rake spec
