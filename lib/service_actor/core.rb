@@ -11,7 +11,11 @@ module ServiceActor::Core
     #   CreateUser.call(name: "Joe")
     def call(result = nil, **arguments)
       result = ServiceActor::Result.to_result(result).merge!(arguments)
-      new(result)._call
+
+      instance = new(result)
+      instance._call
+      instance.send(:raise_accumulated_errors) # For outputs
+
       result
     end
 
@@ -29,6 +33,7 @@ module ServiceActor::Core
   # :nodoc:
   def initialize(result)
     @result = result
+    @argument_errors = []
   end
 
   # To implement in your actors.
@@ -42,6 +47,7 @@ module ServiceActor::Core
   # actors.
   # :nodoc:
   def _call
+    raise_accumulated_errors # For inputs
     call
   end
 
@@ -57,10 +63,22 @@ module ServiceActor::Core
 
   private
 
+  attr_accessor :argument_errors
+
+  def add_argument_errors(add_argument_errors = [])
+    @argument_errors.push(*add_argument_errors)
+  end
+
   # Raises an error depending on the mode
   def raise_error_with(message, **arguments)
     message = message.call(**arguments) if message.is_a?(Proc)
 
     raise self.class.argument_error_class, message
+  end
+
+  def raise_accumulated_errors
+    return if @argument_errors.empty?
+
+    raise self.class.argument_error_class, @argument_errors.first
   end
 end
