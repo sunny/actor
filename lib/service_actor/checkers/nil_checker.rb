@@ -63,22 +63,6 @@ class ServiceActor::Checkers::NilChecker < ServiceActor::Checkers::Base
     allow_nil, message =
       define_allow_nil_and_message_from(@input_options[:allow_nil])
 
-    # puts
-    # puts
-    # puts :input_options
-    # puts @input_options.inspect
-    # puts @input_options[:allow_nil].inspect
-    # puts
-    # puts
-
-    # puts
-    # puts
-    # puts :allow_nil?
-    # puts allow_nil.inspect
-    # puts allow_nil?(allow_nil).inspect
-    # puts
-    # puts
-
     return if allow_nil?(allow_nil)
 
     add_argument_error(
