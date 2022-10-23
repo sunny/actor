@@ -12,11 +12,6 @@ module ServiceActor::Base
 
     # Extra concerns
     base.include(ServiceActor::Checkable)
-
-    # base.include(ServiceActor::TypeCheckable)
-    # base.include(ServiceActor::NilCheckable)
-    # base.include(ServiceActor::Conditionable)
-    # base.include(ServiceActor::Collectionable)
     base.include(ServiceActor::Defaultable)
     base.include(ServiceActor::Failable)
   end
