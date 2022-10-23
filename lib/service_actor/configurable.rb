@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module ServiceActor::Raisable
+module ServiceActor::Configurable
   def self.included(base)
     base.extend(ClassMethods)
   end

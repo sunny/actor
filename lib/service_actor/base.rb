@@ -6,7 +6,7 @@ module ServiceActor::Base
   def self.included(base)
     # Essential mechanics
     base.include(ServiceActor::Core)
-    base.include(ServiceActor::Raisable)
+    base.include(ServiceActor::Configurable)
     base.include(ServiceActor::Attributable)
     base.include(ServiceActor::Playable)
 
