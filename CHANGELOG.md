@@ -6,71 +6,72 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## unreleased
 
 Features:
-- Add `alias_input` method to aliases inputs and outputs
-
+- Add `alias_input` method to aliases inputs and outputs (#96)
 
 ## v3.4.1
 
 Fixes:
-- Fix exception on load when requiring `service_actor/base` directly.
+- Fix exception on load when requiring `service_actor/base` directly (#89)
 
 ## v3.4.0
 
 Features:
-- Accept custom error messages on `input` and `output`.
-- Customize the exception class raised on inputs.
-- Rename the `in:` option to `inclusion:`.
+- Accept custom error messages on `input` and `output` (#82)
+- Customize the exception class raised on inputs (#86)
+- Rename the `in:` option to `inclusion:` (#84)
 
 Fixes:
 - The “Input … must be included in …” error message is now correctly raised as a
-  `ServiceActor::ArgumentError` instead of an `ArgumentError`.
+  `ServiceActor::ArgumentError` instead of an `ArgumentError` (#83)
 
 ## v3.3.0
 
 Features:
-- Allow using actors as defaults, which can help with dependency injection.
+- Allow using actors as defaults, which can help with dependency injection (#74)
 
 Fixes:
 - The `if:` condition on a `play` is called only once, instead of once per
-  actor.
+  actor (#73)
 
 ## v3.2.0
 
 Features:
-- The `play` method accepts instance methods as symbols.
-- Add `*?` methods to results for boolean comparison.
+- The `play` method accepts instance methods as symbols (#72)
+- Add `*?` methods to results for boolean comparison (#59)
 
 ## v3.1.3
 
 Fixes:
 - The `play` method recognizes as actors anything that inherits from
-  `ServiceActor::Core` instead of just `Actor`.
-- The `play` method does not try to merge results of lambdas returning hashes.
-- Remove warning when calling `#rollback`.
+  `ServiceActor::Core` instead of just `Actor` (#46)
+- The `play` method does not try to merge results of lambdas returning hashes
+  (#56)
+- Remove warning when redefine an input (#52)
+- Remove warning when calling `#rollback` (#54)
 
 ## v3.1.2
 
 Fixes:
-- The `in:` option supports the `default:` keyword as well.
+- The `in:` option supports the `default:` keyword as well (#44)
 
 ## v3.1.1
 
 Fixes:
-- Ruby 2.4 and 3 support
+- Ruby 2.4 and 3 support (#34)
 
 ## v3.1.0
 
 Added:
-- Add `fail_on` to catch argument errors and turn them into actor failures.
+- Add `fail_on` to catch argument errors and turn them into actor failures (#30)
 
 Fixes:
-- Harmonize error messages by removing trailing dots.
+- Harmonize error messages by removing trailing dots (#31)
 
 ## v3.0.0
 
 Added:
-- Add `in:` option to inputs to ensure they match a given collection.
-- Add support for instances of Interactor when using `play`.
+- Add `in:` option to inputs to ensure they match a given collection (#25)
+- Add support for instances of Interactor when using `play` (#29)
 
 Breaking changes:
 - Dropped deprecated support for `call!` on an actor.
