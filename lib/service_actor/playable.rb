@@ -19,6 +19,14 @@ module ServiceActor::Playable
       play_actors.push(actors: actors, **options)
     end
 
+    def alias_input(**options)
+      lambda do |actor|
+        options.each do |new, original|
+          define_alias_input(actor, new, original)
+        end
+      end
+    end
+
     def play_actors
       @play_actors ||= []
     end
@@ -27,6 +35,20 @@ module ServiceActor::Playable
       super
 
       child.play_actors.concat(play_actors)
+    end
+
+    private
+
+    def define_alias_input(actor, new, original)
+      actor[new] = actor[original]
+      actor.instance_exec do
+        [original, new].each do |method|
+          define_singleton_method("#{method}=") do |v|
+            actor[original] = v
+            actor[new] = v
+          end
+        end
+      end
     end
   end
 
