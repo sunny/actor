@@ -25,7 +25,7 @@
 #             }
 #           }
 #   end
-class ServiceActor::Checkers::MustChecker < ServiceActor::Checkers::Base
+class ServiceActor::Checks::MustCheck < ServiceActor::Checks::Base
   DEFAULT_MESSAGE = lambda do |input_key:, actor:, check_name:, value:|
     "The \"#{input_key}\" input on \"#{actor}\" must \"#{check_name}\" " \
       "but was #{value.inspect}"
@@ -33,29 +33,29 @@ class ServiceActor::Checkers::MustChecker < ServiceActor::Checkers::Base
 
   private_constant :DEFAULT_MESSAGE
 
-  def self.for(checker_name:, input_key:, actor:, nested_checkers:, value:, **) # rubocop:disable Metrics/ParameterLists
-    return unless checker_name == :must
+  def self.for(check_name:, input_key:, actor:, nested_checks:, value:, **) # rubocop:disable Metrics/ParameterLists
+    return unless check_name == :must
 
     new(
       input_key: input_key,
       actor: actor,
-      nested_checkers: nested_checkers,
+      nested_checks: nested_checks,
       value: value,
     ).check
   end
 
-  def initialize(input_key:, actor:, nested_checkers:, value:)
+  def initialize(input_key:, actor:, nested_checks:, value:)
     super()
 
     @input_key = input_key
     @actor = actor
-    @nested_checkers = nested_checkers
+    @nested_checks = nested_checks
     @value = value
   end
 
   def check
-    @nested_checkers.each do |nested_checker_name, nested_checker_conditions|
-      check, message = define_check_and_message_from(nested_checker_conditions)
+    @nested_checks.each do |nested_check_name, nested_check_conditions|
+      check, message = define_check_and_message_from(nested_check_conditions)
 
       next if check.call(@value)
 
@@ -63,7 +63,7 @@ class ServiceActor::Checkers::MustChecker < ServiceActor::Checkers::Base
         message,
         input_key: @input_key,
         actor: @actor,
-        check_name: nested_checker_name,
+        check_name: nested_check_name,
         value: @value,
       )
     end
@@ -73,11 +73,11 @@ class ServiceActor::Checkers::MustChecker < ServiceActor::Checkers::Base
 
   private
 
-  def define_check_and_message_from(nested_checker_conditions)
-    if nested_checker_conditions.is_a?(Hash)
-      nested_checker_conditions.values_at(:is, :message)
+  def define_check_and_message_from(nested_check_conditions)
+    if nested_check_conditions.is_a?(Hash)
+      nested_check_conditions.values_at(:is, :message)
     else
-      [nested_checker_conditions, DEFAULT_MESSAGE]
+      [nested_check_conditions, DEFAULT_MESSAGE]
     end
   end
 end

@@ -16,43 +16,43 @@ module ServiceActor::Checkable
 
     def checks_for(origin) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
       self.class.send("#{origin}s").each do |input_key, input_options| # rubocop:disable Metrics/BlockLength
-        input_options.each do |checker_name, checker_conditions| # rubocop:disable Metrics/BlockLength
-          checkers = %w[
-            TypeChecker
-            MustChecker
-            InclusionChecker
-            NilChecker
-            DefaultChecker
+        input_options.each do |check_name, check_conditions| # rubocop:disable Metrics/BlockLength
+          checks = %w[
+            TypeCheck
+            MustCheck
+            InclusionCheck
+            NilCheck
+            DefaultCheck
           ]
 
-          checkers.each do |checker_class_name|
-            checker_class =
-              Object.const_get("ServiceActor::Checkers::#{checker_class_name}")
+          checks.each do |check_class_name|
+            check_class =
+              Object.const_get("ServiceActor::Checks::#{check_class_name}")
 
-            argument_errors = checker_class.for(
-              checker_name: checker_name,
+            argument_errors = check_class.for(
+              check_name: check_name,
               origin: origin.to_sym,
               input_key: input_key,
               actor: self.class,
               value: result[input_key],
 
-              # TypeChecker
-              type_definition: checker_conditions,
+              # TypeCheck
+              type_definition: check_conditions,
               given_type: result[input_key],
 
-              # MustChecker
-              nested_checkers: checker_conditions,
+              # MustCheck
+              nested_checks: check_conditions,
 
-              # InclusionChecker
-              inclusion: checker_conditions,
+              # InclusionCheck
+              inclusion: check_conditions,
 
-              # NilChecker
-              allow_nil: checker_conditions,
+              # NilCheck
+              allow_nil: check_conditions,
 
-              # DefaultChecker
+              # DefaultCheck
               result: result,
 
-              # NilChecker + DefaultChecker
+              # NilCheck + DefaultCheck
               input_options: input_options,
             )
 

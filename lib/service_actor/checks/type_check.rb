@@ -24,7 +24,7 @@
 #             end)
 #           }
 #   end
-class ServiceActor::Checkers::TypeChecker < ServiceActor::Checkers::Base
+class ServiceActor::Checks::TypeCheck < ServiceActor::Checks::Base
   DEFAULT_MESSAGE = lambda do
     |origin:, input_key:, actor:, expected_type:, given_type:|
 
@@ -35,7 +35,7 @@ class ServiceActor::Checkers::TypeChecker < ServiceActor::Checkers::Base
   private_constant :DEFAULT_MESSAGE
 
   def self.for( # rubocop:disable Metrics/ParameterLists
-    checker_name:,
+    check_name:,
     origin:,
     input_key:,
     actor:,
@@ -43,7 +43,7 @@ class ServiceActor::Checkers::TypeChecker < ServiceActor::Checkers::Base
     given_type:,
     **
   ) # do
-    return unless checker_name == :type
+    return unless check_name == :type
 
     new(
       origin: origin,

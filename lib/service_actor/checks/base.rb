@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class ServiceActor::Checkers::Base
+class ServiceActor::Checks::Base
   def initialize
     @argument_errors = []
   end

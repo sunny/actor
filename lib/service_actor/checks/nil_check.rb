@@ -28,7 +28,7 @@
 #               end)
 #             }
 #   end
-class ServiceActor::Checkers::NilChecker < ServiceActor::Checkers::Base
+class ServiceActor::Checks::NilCheck < ServiceActor::Checks::Base
   DEFAULT_MESSAGE = lambda do |origin:, input_key:, actor:|
     "The \"#{input_key}\" #{origin} on \"#{actor}\" does not allow nil values"
   end
