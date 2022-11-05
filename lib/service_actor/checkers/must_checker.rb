@@ -33,7 +33,7 @@ class ServiceActor::Checkers::MustChecker < ServiceActor::Checkers::Base
 
   private_constant :DEFAULT_MESSAGE
 
-  def self.for(checker_name:, input_key:, actor:, nested_checkers:, value:)
+  def self.for(checker_name:, input_key:, actor:, nested_checkers:, value:, **) # rubocop:disable Metrics/ParameterLists
     return unless checker_name == :must
 
     new(
@@ -44,7 +44,7 @@ class ServiceActor::Checkers::MustChecker < ServiceActor::Checkers::Base
     ).check
   end
 
-  def initialize(input_key:, actor:, nested_checkers:, value:, **)
+  def initialize(input_key:, actor:, nested_checkers:, value:)
     super()
 
     @input_key = input_key
