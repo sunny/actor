@@ -60,59 +60,6 @@ module ServiceActor::Checkable
           end
         end
       end
-
-      # self.class.inputs.each do |input_key, input_options|
-      #   input_options.each do |checker_name, checker_conditions|
-      #     common_attributes = {
-      #       checker_name: checker_name,
-      #       input_key: input_key,
-      #       actor: self.class
-      #     }
-
-      #     argument_errors = ServiceActor::Checkers::TypeChecker.for(
-      #       **common_attributes,
-      #       origin: :input,
-      #       type_definition: checker_conditions,
-      #       given_type: result[input_key],
-      #     )
-
-      #     add_argument_errors(argument_errors)
-
-      #     argument_errors = ServiceActor::Checkers::MustChecker.for(
-      #       **common_attributes,
-      #       nested_checkers: checker_conditions,
-      #       value: result[input_key],
-      #     )
-
-      #     add_argument_errors(argument_errors)
-
-      #     argument_errors = ServiceActor::Checkers::InclusionChecker.for(
-      #       **common_attributes,
-      #       inclusion: checker_conditions,
-      #       value: result[input_key],
-      #     )
-
-      #     add_argument_errors(argument_errors)
-
-      #     argument_errors = ServiceActor::Checkers::NilChecker.for(
-      #       **common_attributes,
-      #       origin: :input,
-      #       input_options: input_options,
-      #       allow_nil: checker_conditions,
-      #       value: result[input_key],
-      #     )
-
-      #     add_argument_errors(argument_errors)
-
-      #     argument_errors = ServiceActor::Checkers::DefaultChecker.for(
-      #       **common_attributes,
-      #       result: result,
-      #       input_options: input_options,
-      #     )
-
-      #     add_argument_errors(argument_errors)
-      #   end
-      # end
     end
 
     def outputs # rubocop:disable Metrics/MethodLength
@@ -152,41 +99,6 @@ module ServiceActor::Checkable
             add_argument_errors(argument_errors)
           end
         end
-
-        # input_options.each do |checker_name, checker_conditions|
-        #   common_attributes = {
-        #     checker_name: checker_name,
-        #     input_key: input_key,
-        #     actor: self.class
-        #   }
-
-        #   argument_errors = ServiceActor::Checkers::TypeChecker.for(
-        #     **common_attributes,
-        #     origin: :output,
-        #     type_definition: checker_conditions,
-        #     given_type: result[input_key],
-        #   )
-
-        #   add_argument_errors(argument_errors)
-
-        #   argument_errors = ServiceActor::Checkers::NilChecker.for(
-        #     **common_attributes,
-        #     origin: :output,
-        #     input_options: input_options,
-        #     allow_nil: checker_conditions,
-        #     value: result[input_key],
-        #   )
-
-        #   add_argument_errors(argument_errors)
-
-        #   argument_errors = ServiceActor::Checkers::DefaultChecker.for(
-        #     **common_attributes,
-        #     result: result,
-        #     input_options: input_options,
-        #   )
-
-        #   add_argument_errors(argument_errors)
-        # end
       end
     end
   end
