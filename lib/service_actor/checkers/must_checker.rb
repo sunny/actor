@@ -33,7 +33,9 @@ class ServiceActor::Checkers::MustChecker < ServiceActor::Checkers::Base
 
   private_constant :DEFAULT_MESSAGE
 
-  def self.for(input_key:, actor:, nested_checkers:, value:)
+  def self.for(checker_name:, input_key:, actor:, nested_checkers:, value:)
+    return unless checker_name == :must
+
     new(
       input_key: input_key,
       actor: actor,

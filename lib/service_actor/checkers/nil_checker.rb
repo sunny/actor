@@ -35,7 +35,14 @@ class ServiceActor::Checkers::NilChecker < ServiceActor::Checkers::Base
 
   private_constant :DEFAULT_MESSAGE
 
-  def self.for(origin:, input_key:, input_options:, actor:, allow_nil:, value:) # rubocop:disable Metrics/ParameterLists
+  def self.for( # rubocop:disable Metrics/ParameterLists
+    origin:,
+    input_key:,
+    input_options:,
+    actor:,
+    allow_nil:,
+    value:
+  ) # do
     new(
       origin: origin,
       input_key: input_key,
@@ -46,7 +53,14 @@ class ServiceActor::Checkers::NilChecker < ServiceActor::Checkers::Base
     ).check
   end
 
-  def initialize(origin:, input_key:, input_options:, actor:, allow_nil:, value:) # rubocop:disable Layout/LineLength, Metrics/ParameterLists
+  def initialize( # rubocop:disable Metrics/ParameterLists
+    origin:,
+    input_key:,
+    input_options:,
+    actor:,
+    allow_nil:,
+    value:
+  ) # do
     super()
 
     @origin = origin

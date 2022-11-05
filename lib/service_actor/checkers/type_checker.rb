@@ -34,7 +34,16 @@ class ServiceActor::Checkers::TypeChecker < ServiceActor::Checkers::Base
 
   private_constant :DEFAULT_MESSAGE
 
-  def self.for(origin:, input_key:, actor:, type_definition:, given_type:)
+  def self.for( # rubocop:disable Metrics/ParameterLists
+    checker_name:,
+    origin:,
+    input_key:,
+    actor:,
+    type_definition:,
+    given_type:
+  ) # do
+    return unless checker_name == :type
+
     new(
       origin: origin,
       input_key: input_key,
