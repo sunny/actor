@@ -225,6 +225,14 @@ RSpec.describe Actor do
       end
     end
 
+    context "when playing actors and alias_input" do
+      let(:actor) { PlayAliasInput.call }
+
+      it "calls the actors and can be referenced by alias" do
+        expect(actor.name).to eq("jim number 1")
+      end
+    end
+
     context "when called with a matching condition" do
       context "when normal mode" do
         it "suceeds" do

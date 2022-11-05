@@ -24,6 +24,7 @@ and controllers thin.
   - [Rollback](#rollback)
   - [Inline actors](#inline-actors)
   - [Play conditions](#play-conditions)
+  - [Input aliases](#input-aliases)
 - [Testing](#testing)
 - [FAQ](#faq)
 - [Thanks](#thanks)
@@ -472,6 +473,20 @@ class PlaceOrder < Actor
   play CreateOrder,
        Pay
   play NotifyAdmins, if: -> actor { actor.order.amount > 42 }
+end
+```
+
+### Input aliases
+
+You can use `input_alias` to transform the output of an actor into the input of
+the next actors.
+
+```rb
+class PlaceComment < Actor
+  play CreateComment,
+       NotifyCommentFollowers,
+       alias_input(commenter: :user),
+       UpdateUserStats
 end
 ```
 
