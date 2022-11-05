@@ -41,7 +41,8 @@ class ServiceActor::Checkers::NilChecker < ServiceActor::Checkers::Base
     input_options:,
     actor:,
     allow_nil:,
-    value:
+    value:,
+    **
   ) # do
     new(
       origin: origin,

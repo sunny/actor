@@ -44,7 +44,7 @@ class ServiceActor::Checkers::MustChecker < ServiceActor::Checkers::Base
     ).check
   end
 
-  def initialize(input_key:, actor:, nested_checkers:, value:)
+  def initialize(input_key:, actor:, nested_checkers:, value:, **)
     super()
 
     @input_key = input_key

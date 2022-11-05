@@ -34,11 +34,15 @@ module ServiceActor::Checkable
           # puts
           # puts
 
-          argument_errors = ServiceActor::Checkers::TypeChecker.for(
+          common_attributes = {
             checker_name: checker_name,
-            origin: :input,
             input_key: input_key,
-            actor: self.class,
+            actor: self.class
+          }
+
+          argument_errors = ServiceActor::Checkers::TypeChecker.for(
+            **common_attributes,
+            origin: :input,
             type_definition: checker_conditions,
             given_type: result[input_key],
           )
@@ -46,9 +50,7 @@ module ServiceActor::Checkable
           add_argument_errors(argument_errors)
 
           argument_errors = ServiceActor::Checkers::MustChecker.for(
-            checker_name: checker_name,
-            input_key: input_key,
-            actor: self.class,
+            **common_attributes,
             nested_checkers: checker_conditions,
             value: result[input_key],
           )
@@ -56,9 +58,7 @@ module ServiceActor::Checkable
           add_argument_errors(argument_errors)
 
           argument_errors = ServiceActor::Checkers::InclusionChecker.for(
-            checker_name: checker_name,
-            input_key: input_key,
-            actor: self.class,
+            **common_attributes,
             inclusion: checker_conditions,
             value: result[input_key],
           )
@@ -66,10 +66,9 @@ module ServiceActor::Checkable
           add_argument_errors(argument_errors)
 
           argument_errors = ServiceActor::Checkers::NilChecker.for(
+            **common_attributes,
             origin: :input,
-            input_key: input_key,
             input_options: input_options,
-            actor: self.class,
             allow_nil: checker_conditions,
             value: result[input_key],
           )
@@ -77,10 +76,9 @@ module ServiceActor::Checkable
           add_argument_errors(argument_errors)
 
           argument_errors = ServiceActor::Checkers::DefaultChecker.for(
+            **common_attributes,
             result: result,
-            input_key: input_key,
             input_options: input_options,
-            actor: self.class,
           )
 
           add_argument_errors(argument_errors)
@@ -98,7 +96,7 @@ module ServiceActor::Checkable
         # puts
         # puts input_key.inspect
 
-        input_options.each do |checker_name, checker_conditions|
+        input_options.each do |checker_name, checker_conditions| # rubocop:disable Metrics/BlockLength
           # puts
           # puts "type_checkable? => #{type_checkable?(checker_name)}"
           # puts "conditionable? => #{conditionable?(checker_name)}"
@@ -108,11 +106,15 @@ module ServiceActor::Checkable
           # puts
           # puts
 
-          argument_errors = ServiceActor::Checkers::TypeChecker.for(
+          common_attributes = {
             checker_name: checker_name,
-            origin: :output,
             input_key: input_key,
-            actor: self.class,
+            actor: self.class
+          }
+
+          argument_errors = ServiceActor::Checkers::TypeChecker.for(
+            **common_attributes,
+            origin: :output,
             type_definition: checker_conditions,
             given_type: result[input_key],
           )
@@ -120,10 +122,9 @@ module ServiceActor::Checkable
           add_argument_errors(argument_errors)
 
           argument_errors = ServiceActor::Checkers::NilChecker.for(
+            **common_attributes,
             origin: :output,
-            input_key: input_key,
             input_options: input_options,
-            actor: self.class,
             allow_nil: checker_conditions,
             value: result[input_key],
           )
@@ -131,10 +132,9 @@ module ServiceActor::Checkable
           add_argument_errors(argument_errors)
 
           argument_errors = ServiceActor::Checkers::DefaultChecker.for(
+            **common_attributes,
             result: result,
-            input_key: input_key,
             input_options: input_options,
-            actor: self.class,
           )
 
           add_argument_errors(argument_errors)

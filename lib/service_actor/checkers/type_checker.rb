@@ -40,7 +40,8 @@ class ServiceActor::Checkers::TypeChecker < ServiceActor::Checkers::Base
     input_key:,
     actor:,
     type_definition:,
-    given_type:
+    given_type:,
+    **
   ) # do
     return unless checker_name == :type
 
