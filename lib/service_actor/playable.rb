@@ -43,6 +43,7 @@ module ServiceActor::Playable
       actor[new] = actor[original]
       actor.instance_exec do
         [original, new].each do |method|
+          singleton_class.undef_method "#{method}="
           define_singleton_method("#{method}=") do |v|
             actor[original] = v
             actor[new] = v
