@@ -15,7 +15,7 @@ module ServiceActor::Checkable
     private
 
     def checks_for(origin) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
-      self.class.send("#{origin}s").each do |input_key, input_options| # rubocop:disable Metrics/BlockLength
+      self.class.public_send("#{origin}s").each do |input_key, input_options| # rubocop:disable Metrics/BlockLength
         input_options.each do |check_name, check_conditions| # rubocop:disable Metrics/BlockLength
           checks = %w[
             TypeCheck
