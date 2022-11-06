@@ -27,7 +27,7 @@ class ServiceActor::Checks::InclusionCheck < ServiceActor::Checks::Base
 
   private_constant :DEFAULT_MESSAGE
 
-  def self.for(check_name:, input_key:, actor:, inclusion:, value:, **) # rubocop:disable Metrics/ParameterLists
+  def self.check(check_name:, input_key:, actor:, inclusion:, value:, **) # rubocop:disable Metrics/ParameterLists
     # DEPRECATED: `in` is deprecated in favor of `inclusion`.
     return unless %i[inclusion in].include?(check_name)
 

@@ -26,7 +26,7 @@
 #           }
 #   end
 class ServiceActor::Checks::DefaultCheck < ServiceActor::Checks::Base
-  def self.for(result:, input_key:, input_options:, actor:, **)
+  def self.check(result:, input_key:, input_options:, actor:, **)
     new(
       result: result,
       input_key: input_key,

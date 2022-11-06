@@ -29,7 +29,7 @@ module ServiceActor::Checkable
             check_class =
               Object.const_get("ServiceActor::Checks::#{check_class_name}")
 
-            argument_errors = check_class.for(
+            argument_errors = check_class.check(
               check_name: check_name,
               origin: origin.to_sym,
               input_key: input_key,
