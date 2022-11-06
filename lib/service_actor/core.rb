@@ -33,7 +33,7 @@ module ServiceActor::Core
   # :nodoc:
   def initialize(result)
     @result = result
-    @argument_errors = []
+    @service_actor_argument_errors = []
   end
 
   # To implement in your actors.
@@ -63,10 +63,10 @@ module ServiceActor::Core
 
   private
 
-  attr_accessor :argument_errors
+  attr_accessor :service_actor_argument_errors
 
   def add_argument_errors(add_argument_errors = [])
-    @argument_errors.push(*add_argument_errors)
+    @service_actor_argument_errors.push(*add_argument_errors)
   end
 
   # Raises an error depending on the mode
@@ -77,8 +77,8 @@ module ServiceActor::Core
   end
 
   def raise_accumulated_errors
-    return if @argument_errors.empty?
+    return if @service_actor_argument_errors.empty?
 
-    raise self.class.argument_error_class, @argument_errors.first
+    raise self.class.argument_error_class, @service_actor_argument_errors.first
   end
 end
