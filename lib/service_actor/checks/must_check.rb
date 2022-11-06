@@ -33,14 +33,14 @@ class ServiceActor::Checks::MustCheck < ServiceActor::Checks::Base
 
   private_constant :DEFAULT_MESSAGE
 
-  def self.check(check_name:, input_key:, actor:, conditions:, value:, **) # rubocop:disable Metrics/ParameterLists
+  def self.check(check_name:, input_key:, actor:, conditions:, result:, **) # rubocop:disable Metrics/ParameterLists
     return unless check_name == :must
 
     new(
       input_key: input_key,
       actor: actor,
       nested_checks: conditions,
-      value: value,
+      value: result[input_key],
     ).check
   end
 

@@ -41,7 +41,7 @@ class ServiceActor::Checks::NilCheck < ServiceActor::Checks::Base
     input_options:,
     actor:,
     conditions:,
-    value:,
+    result:,
     **
   ) # do
     new(
@@ -50,7 +50,7 @@ class ServiceActor::Checks::NilCheck < ServiceActor::Checks::Base
       input_options: input_options,
       actor: actor,
       allow_nil: conditions,
-      value: value,
+      value: result[input_key],
     ).check
   end
 

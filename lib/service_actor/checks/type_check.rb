@@ -40,7 +40,7 @@ class ServiceActor::Checks::TypeCheck < ServiceActor::Checks::Base
     input_key:,
     actor:,
     conditions:,
-    value:,
+    result:,
     **
   ) # do
     return unless check_name == :type
@@ -50,7 +50,7 @@ class ServiceActor::Checks::TypeCheck < ServiceActor::Checks::Base
       input_key: input_key,
       actor: actor,
       type_definition: conditions,
-      given_type: value,
+      given_type: result[input_key],
     ).check
   end
 

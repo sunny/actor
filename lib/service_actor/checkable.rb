@@ -26,9 +26,6 @@ module ServiceActor::Checkable
               input_key: input_key,
               actor: self.class,
               conditions: check_conditions,
-              value: result[input_key],
-
-              # DefaultCheck
               result: result,
 
               # NilCheck + DefaultCheck
