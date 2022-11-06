@@ -39,8 +39,8 @@ class ServiceActor::Checks::TypeCheck < ServiceActor::Checks::Base
     origin:,
     input_key:,
     actor:,
-    type_definition:,
-    given_type:,
+    conditions:,
+    value:,
     **
   ) # do
     return unless check_name == :type
@@ -49,8 +49,8 @@ class ServiceActor::Checks::TypeCheck < ServiceActor::Checks::Base
       origin: origin,
       input_key: input_key,
       actor: actor,
-      type_definition: type_definition,
-      given_type: given_type,
+      type_definition: conditions,
+      given_type: value,
     ).check
   end
 

@@ -7,47 +7,26 @@ module ServiceActor::Checkable
 
   module PrependedMethods
     def _call
-      checks_for(:input)
+      service_actor_checks_for(:input)
       super
-      checks_for(:output)
+      service_actor_checks_for(:output)
     end
 
     private
 
-    def checks_for(origin) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
-      self.class.public_send("#{origin}s").each do |input_key, input_options| # rubocop:disable Metrics/BlockLength
-        input_options.each do |check_name, check_conditions| # rubocop:disable Metrics/BlockLength
-          checks = %w[
-            TypeCheck
-            MustCheck
-            InclusionCheck
-            NilCheck
-            DefaultCheck
-          ]
-
-          checks.each do |check_class_name|
-            check_class =
-              Object.const_get("ServiceActor::Checks::#{check_class_name}")
+    def service_actor_checks_for(origin) # rubocop:disable Metrics/MethodLength
+      self.class.public_send("#{origin}s").each do |input_key, input_options|
+        input_options.each do |check_name, check_conditions|
+          checks_class_names.each do |check_class_name|
+            check_class = check_class_for(check_class_name)
 
             argument_errors = check_class.check(
               check_name: check_name,
-              origin: origin.to_sym,
+              origin: origin,
               input_key: input_key,
               actor: self.class,
+              conditions: check_conditions,
               value: result[input_key],
-
-              # TypeCheck
-              type_definition: check_conditions,
-              given_type: result[input_key],
-
-              # MustCheck
-              nested_checks: check_conditions,
-
-              # InclusionCheck
-              inclusion: check_conditions,
-
-              # NilCheck
-              allow_nil: check_conditions,
 
               # DefaultCheck
               result: result,
@@ -60,6 +39,20 @@ module ServiceActor::Checkable
           end
         end
       end
+    end
+
+    def checks_class_names
+      %w[
+        TypeCheck
+        MustCheck
+        InclusionCheck
+        NilCheck
+        DefaultCheck
+      ]
+    end
+
+    def check_class_for(check_class_name)
+      Object.const_get("ServiceActor::Checks::#{check_class_name}")
     end
   end
 end

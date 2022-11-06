@@ -40,7 +40,7 @@ class ServiceActor::Checks::NilCheck < ServiceActor::Checks::Base
     input_key:,
     input_options:,
     actor:,
-    allow_nil:,
+    conditions:,
     value:,
     **
   ) # do
@@ -49,7 +49,7 @@ class ServiceActor::Checks::NilCheck < ServiceActor::Checks::Base
       input_key: input_key,
       input_options: input_options,
       actor: actor,
-      allow_nil: allow_nil,
+      allow_nil: conditions,
       value: value,
     ).check
   end
