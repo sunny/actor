@@ -17,7 +17,7 @@ module ServiceActor::Checkable
     def service_actor_checks_for(origin) # rubocop:disable Metrics/MethodLength
       self.class.public_send("#{origin}s").each do |input_key, input_options|
         input_options.each do |check_name, check_conditions|
-          checks_class.each do |check_class|
+          check_classes.each do |check_class|
             argument_errors = check_class.check(
               check_name: check_name,
               origin: origin,
@@ -34,7 +34,7 @@ module ServiceActor::Checkable
       end
     end
 
-    def checks_class
+    def check_classes
       [
         ServiceActor::Checks::TypeCheck,
         ServiceActor::Checks::MustCheck,
