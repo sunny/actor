@@ -12,6 +12,6 @@ class ServiceActor::Checks::Base
   def add_argument_error(message, **arguments)
     message = message.call(**arguments) if message.is_a?(Proc)
 
-    @argument_errors.push(message)
+    argument_errors.push(message)
   end
 end

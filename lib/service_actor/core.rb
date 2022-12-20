@@ -14,7 +14,6 @@ module ServiceActor::Core
 
       instance = new(result)
       instance._call
-      instance.send(:raise_accumulated_errors) # For outputs
 
       result
     end
@@ -33,7 +32,6 @@ module ServiceActor::Core
   # :nodoc:
   def initialize(result)
     @result = result
-    @service_actor_argument_errors = []
   end
 
   # To implement in your actors.
@@ -47,7 +45,6 @@ module ServiceActor::Core
   # actors.
   # :nodoc:
   def _call
-    raise_accumulated_errors # For inputs
     call
   end
 
@@ -59,26 +56,5 @@ module ServiceActor::Core
   # Can be called from inside an actor to stop execution and mark as failed.
   def fail!(**arguments)
     result.fail!(self.class.failure_class, **arguments)
-  end
-
-  private
-
-  attr_accessor :service_actor_argument_errors
-
-  def add_argument_errors(add_argument_errors = [])
-    @service_actor_argument_errors.push(*add_argument_errors)
-  end
-
-  # Raises an error depending on the mode
-  def raise_error_with(message, **arguments)
-    message = message.call(**arguments) if message.is_a?(Proc)
-
-    raise self.class.argument_error_class, message
-  end
-
-  def raise_accumulated_errors
-    return if @service_actor_argument_errors.empty?
-
-    raise self.class.argument_error_class, @service_actor_argument_errors.first
   end
 end

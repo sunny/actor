@@ -7,6 +7,8 @@ module ServiceActor::Checkable
 
   module PrependedMethods
     def _call
+      self.service_actor_argument_errors = []
+
       service_actor_checks_for(:input)
       super
       service_actor_checks_for(:output)
@@ -14,7 +16,10 @@ module ServiceActor::Checkable
 
     private
 
-    def service_actor_checks_for(origin) # rubocop:disable Metrics/MethodLength
+    attr_accessor :service_actor_argument_errors
+
+    # rubocop:disable Metrics/MethodLength
+    def service_actor_checks_for(origin)
       self.class.public_send("#{origin}s").each do |input_key, input_options|
         input_options.each do |check_name, check_conditions|
           check_classes.each do |check_class|
@@ -28,10 +33,20 @@ module ServiceActor::Checkable
               input_options: input_options,
             )
 
-            add_argument_errors(argument_errors)
+            service_actor_argument_errors.push(*argument_errors)
           end
         end
+
+        raise_actor_argument_errors
       end
+    end
+    # rubocop:enable Metrics/MethodLength
+
+    def raise_actor_argument_errors
+      return if service_actor_argument_errors.empty?
+
+      raise self.class.argument_error_class,
+            service_actor_argument_errors.first
     end
 
     def check_classes
