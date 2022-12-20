@@ -478,7 +478,7 @@ end
 
 ### Input aliases
 
-You can use `input_alias` to transform the output of an actor into the input of
+You can use `alias_input` to transform the output of an actor into the input of
 the next actors.
 
 ```rb
