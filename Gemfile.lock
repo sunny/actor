@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    service_actor (3.4.1)
+    service_actor (3.5.0)
       zeitwerk
 
 GEM
@@ -62,7 +62,7 @@ GEM
       rubocop (= 1.12.1)
     ruby-progressbar (1.11.0)
     unicode-display_width (2.2.0)
-    zeitwerk (2.6.0)
+    zeitwerk (2.6.6)
 
 PLATFORMS
   ruby

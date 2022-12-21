@@ -5,6 +5,8 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## unreleased
 
+## v3.5.0
+
 Features:
 - Add `alias_input` method to aliases inputs and outputs (#96)
 
