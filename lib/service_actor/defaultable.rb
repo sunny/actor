@@ -72,5 +72,12 @@ module ServiceActor::Defaultable
 
       message.call(key, self.class)
     end
+
+    # Raises an error depending on the mode
+    def raise_error_with(message, **arguments)
+      message = message.call(**arguments) if message.is_a?(Proc)
+
+      raise self.class.argument_error_class, message
+    end
   end
 end

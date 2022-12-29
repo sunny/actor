@@ -11,7 +11,10 @@ module ServiceActor::Core
     #   CreateUser.call(name: "Joe")
     def call(result = nil, **arguments)
       result = ServiceActor::Result.to_result(result).merge!(arguments)
-      new(result)._call
+
+      instance = new(result)
+      instance._call
+
       result
     end
 
@@ -53,14 +56,5 @@ module ServiceActor::Core
   # Can be called from inside an actor to stop execution and mark as failed.
   def fail!(**arguments)
     result.fail!(self.class.failure_class, **arguments)
-  end
-
-  private
-
-  # Raises an error depending on the mode
-  def raise_error_with(message, **arguments)
-    message = message.call(**arguments) if message.is_a?(Proc)
-
-    raise self.class.argument_error_class, message
   end
 end
