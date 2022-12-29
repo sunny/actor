@@ -5,6 +5,11 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## unreleased
 
+## v3.6.0
+
+Features:
+- When raising input errors, raise them in the order that they are defined (#97)
+
 ## v3.5.0
 
 Features:
