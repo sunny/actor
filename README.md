@@ -1,7 +1,5 @@
 # ServiceActor
 
-![Tests](https://github.com/sunny/actor/workflows/Tests/badge.svg)
-
 This Ruby gem lets you move your application logic into into small composable
 service objects. It is a lightweight framework that helps you keep your models
 and controllers thin.
