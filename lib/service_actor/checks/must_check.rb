@@ -57,7 +57,11 @@ class ServiceActor::Checks::MustCheck < ServiceActor::Checks::Base
     @nested_checks.each do |nested_check_name, nested_check_conditions|
       check, message = define_check_and_message_from(nested_check_conditions)
 
-      next if check.call(@value)
+      begin
+        next if check.call(@value)
+      rescue StandardError => e
+        message = "Error in code: #{e}"
+      end
 
       add_argument_error(
         message,
