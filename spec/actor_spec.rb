@@ -293,7 +293,7 @@ RSpec.describe Actor do
             "The \"per_page\" input on " \
               "\"ExpectedFallInMustWhenTypeIsLastAdvanced\" has an error " \
                 "in the code inside \"be_in_range\": " \
-                  "comparison of String with 3 failed"
+                  "[ArgumentError] comparison of String with 3 failed"
           end
 
           it "raises" do
