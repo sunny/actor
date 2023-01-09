@@ -290,7 +290,10 @@ RSpec.describe Actor do
       describe "and type is last" do
         context "when advanced mode" do
           let(:expected_message) do
-            "Error in code: comparison of String with 3 failed"
+            "The \"per_page\" input on " \
+              "\"ExpectedFallInMustWhenTypeIsLastAdvanced\" has an error " \
+                "in the code inside `be_in_range`: " \
+                  "comparison of String with 3 failed"
           end
 
           it "raises" do
