@@ -62,7 +62,7 @@ class ServiceActor::Checks::MustCheck < ServiceActor::Checks::Base
       rescue StandardError => e
         message =
           "The \"#{@input_key}\" input on \"#{@actor}\" has an error " \
-            "in the code inside `#{nested_check_name}`: #{e}"
+            "in the code inside \"#{nested_check_name}\": #{e}"
       end
 
       add_argument_error(
