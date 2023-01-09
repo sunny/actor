@@ -55,7 +55,7 @@ class ServiceActor::Checks::MustCheck < ServiceActor::Checks::Base
 
   def check
     @nested_checks.each do |nested_check_name, nested_check_conditions|
-      message = prepared_message_with(nested_check_name, nested_check_conditions)
+      message = prepared_message_with(nested_check_name, nested_check_conditions) # rubocop:disable Layout/LineLength
 
       next unless message
 
