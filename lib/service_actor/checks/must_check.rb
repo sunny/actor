@@ -53,7 +53,7 @@ class ServiceActor::Checks::MustCheck < ServiceActor::Checks::Base
     @value = value
   end
 
-  def check
+  def check # rubocop:disable Metrics/MethodLength
     @nested_checks.each do |nested_check_name, nested_check_conditions|
       check, message = define_check_and_message_from(nested_check_conditions)
 
