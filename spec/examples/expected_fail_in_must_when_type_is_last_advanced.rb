@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class ExpectedFallInMustWhenTypeIsLastAdvanced < Actor
+class ExpectedFailInMustWhenTypeIsLastAdvanced < Actor
   input :per_page,
         must: {
           be_in_range: {

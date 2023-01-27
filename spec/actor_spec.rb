@@ -275,13 +275,13 @@ RSpec.describe Actor do
         context "when advanced mode" do
           let(:expected_message) do
             "The \"per_page\" input on " \
-              "\"ExpectedFallInMustWhenTypeIsFirstAdvanced\" must be " \
+              "\"ExpectedFailInMustWhenTypeIsFirstAdvanced\" must be " \
                 "of type \"Integer\" but was \"String\""
           end
 
           it "raises" do
             expect do
-              ExpectedFallInMustWhenTypeIsFirstAdvanced.call(per_page: "6")
+              ExpectedFailInMustWhenTypeIsFirstAdvanced.call(per_page: "6")
             end.to raise_error(ServiceActor::ArgumentError, expected_message)
           end
         end
@@ -291,14 +291,14 @@ RSpec.describe Actor do
         context "when advanced mode" do
           let(:expected_message) do
             "The \"per_page\" input on " \
-              "\"ExpectedFallInMustWhenTypeIsLastAdvanced\" has an error " \
+              "\"ExpectedFailInMustWhenTypeIsLastAdvanced\" has an error " \
                 "in the code inside \"be_in_range\": " \
                   "[ArgumentError] comparison of String with 3 failed"
           end
 
           it "raises" do
             expect do
-              ExpectedFallInMustWhenTypeIsLastAdvanced.call(per_page: "6")
+              ExpectedFailInMustWhenTypeIsLastAdvanced.call(per_page: "6")
             end.to raise_error(ServiceActor::ArgumentError, expected_message)
           end
         end

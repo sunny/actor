@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class ExpectedFallInMustWhenTypeIsFirstAdvanced < Actor
+class ExpectedFailInMustWhenTypeIsFirstAdvanced < Actor
   input :per_page,
         type: Integer,
         must: {
