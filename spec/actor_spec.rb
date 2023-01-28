@@ -270,6 +270,41 @@ RSpec.describe Actor do
       end
     end
 
+    context "when called with an error in the code" do
+      describe "and type is first" do
+        context "when advanced mode" do
+          let(:expected_message) do
+            "The \"per_page\" input on " \
+              "\"ExpectedFailInMustWhenTypeIsFirstAdvanced\" must be " \
+                "of type \"Integer\" but was \"String\""
+          end
+
+          it "raises" do
+            expect do
+              ExpectedFailInMustWhenTypeIsFirstAdvanced.call(per_page: "6")
+            end.to raise_error(ServiceActor::ArgumentError, expected_message)
+          end
+        end
+      end
+
+      describe "and type is last" do
+        context "when advanced mode" do
+          let(:expected_message) do
+            "The \"per_page\" input on " \
+              "\"ExpectedFailInMustWhenTypeIsLastAdvanced\" has an error " \
+                "in the code inside \"be_in_range\": " \
+                  "[ArgumentError] comparison of String with 3 failed"
+          end
+
+          it "raises" do
+            expect do
+              ExpectedFailInMustWhenTypeIsLastAdvanced.call(per_page: "6")
+            end.to raise_error(ServiceActor::ArgumentError, expected_message)
+          end
+        end
+      end
+    end
+
     context "when called with the wrong type of argument" do
       let(:expected_message) do
         "The \"name\" input on \"SetNameToDowncase\" must be of " \
