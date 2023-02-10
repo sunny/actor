@@ -55,9 +55,9 @@ class ServiceActor::Checks::MustCheck < ServiceActor::Checks::Base
 
   def check
     @nested_checks.each do |nested_check_name, nested_check_conditions|
-      check, message = define_check_and_message_from(nested_check_conditions)
+      message = prepared_message_with(nested_check_name, nested_check_conditions) # rubocop:disable Layout/LineLength
 
-      next if check.call(@value)
+      next unless message
 
       add_argument_error(
         message,
@@ -72,6 +72,17 @@ class ServiceActor::Checks::MustCheck < ServiceActor::Checks::Base
   end
 
   private
+
+  def prepared_message_with(nested_check_name, nested_check_conditions)
+    check, message = define_check_and_message_from(nested_check_conditions)
+
+    return if check.call(@value)
+
+    message
+  rescue StandardError => e
+    "The \"#{@input_key}\" input on \"#{@actor}\" has an error in the code " \
+      "inside \"#{nested_check_name}\": [#{e.class}] #{e.message}"
+  end
 
   def define_check_and_message_from(nested_check_conditions)
     if nested_check_conditions.is_a?(Hash)
