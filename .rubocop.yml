@@ -22,6 +22,10 @@ Gemspec/OrderedDependencies:
 Gemspec/RequiredRubyVersion:
   Enabled: false
 
+# Errors out on Ruby 3.1.3
+Layout/BlockAlignment:
+  Enabled: false
+
 Layout/LineLength:
   Max: 80
 

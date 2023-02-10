@@ -5,6 +5,8 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## unreleased
 
+## v3.6.1 
+
 Fixes:
 - Catch errors in the code inside the `must` check (#105)
 - Allow calling `#fail!` on a Result (#107)
