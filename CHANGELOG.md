@@ -5,6 +5,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## unreleased
 
+Fixes:
+- Allow calling `#fail!` on a Result (#107)
+
 ## v3.6.0
 
 Features:

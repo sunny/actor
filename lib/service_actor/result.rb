@@ -15,7 +15,12 @@ class ServiceActor::Result < OpenStruct
     "<#{self.class.name} #{to_h}>"
   end
 
-  def fail!(failure_class, result = {})
+  def fail!(failure_class = nil, result = {})
+    if failure_class.nil? || failure_class.is_a?(Hash)
+      result = failure_class.to_h
+      failure_class = ServiceActor::Failure
+    end
+
     merge!(result)
     merge!(failure?: true)
 
