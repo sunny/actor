@@ -26,8 +26,9 @@
 #           }
 #   end
 class ServiceActor::Checks::DefaultCheck < ServiceActor::Checks::Base
-  def self.check(input_key:, actor:, result:, input_options:, **)
+  def self.check(origin:, input_key:, actor:, result:, input_options:, **) # rubocop:disable Metrics/ParameterLists
     new(
+      origin: origin,
       input_key: input_key,
       actor: actor,
       result: result,
@@ -35,9 +36,10 @@ class ServiceActor::Checks::DefaultCheck < ServiceActor::Checks::Base
     ).check
   end
 
-  def initialize(input_key:, actor:, result:, input_options:)
+  def initialize(origin:, input_key:, actor:, result:, input_options:)
     super()
 
+    @origin = origin
     @input_key = input_key
     @actor = actor
     @result = result
@@ -49,7 +51,7 @@ class ServiceActor::Checks::DefaultCheck < ServiceActor::Checks::Base
 
     unless @input_options.key?(:default)
       return add_argument_error(
-        "The \"#{@input_key}\" input on \"#{@actor}\" is missing",
+        "The \"#{@input_key}\" #{@origin} on \"#{@actor}\" is missing",
       )
     end
 
