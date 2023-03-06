@@ -22,9 +22,7 @@ jobs:
           ruby-version: ${{matrix.ruby}}
 
       - name: Install dependencies
-        # Fallback to an update for the diffent dependency versions when using
-        # Ruby 2.4.
-        run: bundle install --jobs 4 --retry 3 || bundle update --jobs 4 --retry 3
+        run: bundle install --jobs 4 --retry 3
 
       - name: RSpec
         run: bin/rake spec
