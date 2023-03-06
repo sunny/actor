@@ -114,6 +114,16 @@ RSpec.describe Actor do
       end
     end
 
+    context "when an output has not been given" do
+      it "raises an error" do
+        expect { OutputIsMissing.call }
+          .to raise_error(
+            ServiceActor::ArgumentError,
+            "The \"name\" output on \"OutputIsMissing\" is missing",
+          )
+      end
+    end
+
     context "when playing several actors" do
       let(:actor) { PlayActors.call(value: 1) }
 
