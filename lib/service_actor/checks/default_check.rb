@@ -26,22 +26,22 @@
 #           }
 #   end
 class ServiceActor::Checks::DefaultCheck < ServiceActor::Checks::Base
-  def self.check(result:, input_key:, input_options:, actor:, **)
+  def self.check(input_key:, actor:, result:, input_options:, **)
     new(
-      result: result,
       input_key: input_key,
-      input_options: input_options,
       actor: actor,
+      result: result,
+      input_options: input_options,
     ).check
   end
 
-  def initialize(result:, input_key:, input_options:, actor:)
+  def initialize(input_key:, actor:, result:, input_options:)
     super()
 
-    @result = result
     @input_key = input_key
-    @input_options = input_options
     @actor = actor
+    @result = result
+    @input_options = input_options
   end
 
   def check # rubocop:disable Metrics/MethodLength

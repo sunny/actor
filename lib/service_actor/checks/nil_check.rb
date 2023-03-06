@@ -38,38 +38,38 @@ class ServiceActor::Checks::NilCheck < ServiceActor::Checks::Base
   def self.check( # rubocop:disable Metrics/ParameterLists
     origin:,
     input_key:,
-    input_options:,
     actor:,
     conditions:,
     result:,
+    input_options:,
     **
   ) # do
     new(
       origin: origin,
       input_key: input_key,
-      input_options: input_options,
       actor: actor,
       allow_nil: conditions,
       value: result[input_key],
+      input_options: input_options,
     ).check
   end
 
   def initialize( # rubocop:disable Metrics/ParameterLists
     origin:,
     input_key:,
-    input_options:,
     actor:,
     allow_nil:,
-    value:
+    value:,
+    input_options:
   ) # do
     super()
 
     @origin = origin
     @input_key = input_key
-    @input_options = input_options
     @actor = actor
     @allow_nil = allow_nil
     @value = value
+    @input_options = input_options
   end
 
   def check
