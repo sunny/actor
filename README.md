@@ -12,17 +12,18 @@ and controllers thin.
 - [Usage](#usage)
   - [Inputs](#inputs)
   - [Outputs](#outputs)
-  - [Defaults](#defaults)
-  - [Allow nil](#allow-nil)
-  - [Conditions](#conditions)
-  - [Types](#types)
   - [Fail](#fail)
-  - [Custom input errors](#custom-input-errors)
 - [Play actors in a sequence](#play-actors-in-a-sequence)
   - [Rollback](#rollback)
   - [Inline actors](#inline-actors)
   - [Play conditions](#play-conditions)
   - [Input aliases](#input-aliases)
+- [Input options](#input-options)
+  - [Defaults](#defaults)
+  - [Allow nil](#allow-nil)
+  - [Conditions](#conditions)
+  - [Types](#types)
+  - [Custom input errors](#custom-input-errors)
 - [Testing](#testing)
 - [FAQ](#faq)
 - [Thanks](#thanks)
@@ -122,92 +123,6 @@ actor.greeting # => "Have a wonderful day!"
 actor.greeting? # => true
 ```
 
-### Defaults
-
-Inputs can be optional by providing a default:
-
-```rb
-class BuildGreeting < Actor
-  input :name
-  input :adjective, default: "wonderful"
-  input :length_of_time, default: -> { ["day", "week", "month"].sample }
-
-  output :greeting
-
-  def call
-    self.greeting = "Have a #{adjective} #{length_of_time} #{name}!"
-  end
-end
-
-actor = BuildGreeting.call(name: "Jim")
-actor.greeting # => "Have a wonderful week Jim!"
-```
-
-### Allow nil
-
-By default inputs accept `nil` values. To raise an error instead:
-
-```rb
-class UpdateUser < Actor
-  input :user, allow_nil: false
-
-  # …
-end
-```
-
-### Conditions
-
-You can ensure an input is included in a collection by using `inclusion`:
-
-```rb
-class Pay < Actor
-  input :currency, inclusion: %w[EUR USD]
-
-  # …
-end
-```
-
-This raises an argument error if the input does not match one of the given
-values.
-
-Declare custom conditions with the name of your choice by using `must`:
-
-```rb
-class UpdateAdminUser < Actor
-  input :user,
-        must: {
-          be_an_admin: -> user { user.admin? }
-        }
-
-  # …
-end
-```
-
-This will raise an argument error if any of the given lambdas returns a falsey
-value.
-
-### Types
-
-Sometimes it can help to have a quick way of making sure we didn’t mess up our
-inputs.
-
-For that you can use the `type` option and giving a class or an array
-of possible classes. If the input or output doesn’t match these types, an
-error is raised.
-
-```rb
-class UpdateUser < Actor
-  input :user, type: User
-  input :age, type: [Integer, Float]
-
-  # …
-end
-```
-
-You may also use strings instead of constants, such as `type: "User"`.
-
-When using a type condition, `allow_nil` defaults to `false`.
-
 ### Fail
 
 To stop the execution and mark an actor as having failed, use `fail!`:
@@ -249,119 +164,6 @@ class UsersController < ApplicationController
   end
 end
 ```
-
-### Custom input errors
-
-Use a `Hash` with `is:` and `message:` keys to prepare custom
-error messages on inputs. For example:
-
-```rb
-class UpdateAdminUser < Actor
-  input :user,
-        must: {
-          be_an_admin: {
-            is: -> user { user.admin? },
-            message: "The user is not an administrator"
-          }
-        }
-
-  # ...
-end
-```
-
-You can also use incoming arguments when shaping your error text:
-
-```rb
-class UpdateUser < Actor
-  input :user,
-        allow_nil: {
-          is: false,
-          message: (lambda do |input_key:, **|
-            "The value \"#{input_key}\" cannot be empty"
-          end)
-        }
-
-  # ...
-end
-```
-
-<details>
-  <summary>See examples of custom messages on all input arguments</summary>
-
-  #### Inclusion
-
-  ```ruby
-  class Pay < Actor
-    input :provider,
-          inclusion: {
-            in: ["MANGOPAY", "PayPal", "Stripe"],
-            message: (lambda do |value:, **|
-              "Payment system \"#{value}\" is not supported"
-            end)
-          }
-  end
-  ```
-
-  #### Must
-
-  ```ruby
-  class Pay < Actor
-    input :provider,
-          must: {
-            exist: {
-              is: -> provider { PROVIDERS.include?(provider) },
-              message: (lambda do |value:, **|
-                "The specified provider \"#{value}\" was not found."
-              end)
-            }
-          }
-  end
-  ```
-
-  #### Default
-
-  ```ruby
-  class MultiplyThing < Actor
-    input :multiplier,
-          default: {
-            is: -> { rand(1..10) },
-            message: (lambda do |input_key:, **|
-              "Input \"#{input_key}\" is required"
-            end)
-          }
-  end
-  ```
-
-  #### Type
-
-  ```ruby
-  class ReduceOrderAmount < Actor
-    input :bonus_applied,
-          type: {
-            is: [TrueClass, FalseClass],
-            message: (lambda do |input_key:, expected_type:, given_type:, **|
-              "Wrong type \"#{given_type}\" for \"#{input_key}\". " \
-              "Expected: \"#{expected_type}\""
-            end)
-          }
-  end
-  ```
-
-  #### Allow nil
-
-  ```ruby
-  class CreateUser < Actor
-    input :name,
-          allow_nil: {
-            is: false,
-            message: (lambda do |input_key:, **|
-              "The value \"#{input_key}\" cannot be empty"
-            end)
-          }
-  end
-  ```
-
-</details>
 
 ## Play actors in a sequence
 
@@ -487,6 +289,207 @@ class PlaceComment < Actor
        UpdateUserStats
 end
 ```
+
+## Input options
+
+### Defaults
+
+Inputs can be optional by providing a default:
+
+```rb
+class BuildGreeting < Actor
+  input :name
+  input :adjective, default: "wonderful"
+  input :length_of_time, default: -> { ["day", "week", "month"].sample }
+
+  output :greeting
+
+  def call
+    self.greeting = "Have a #{adjective} #{length_of_time} #{name}!"
+  end
+end
+
+actor = BuildGreeting.call(name: "Jim")
+actor.greeting # => "Have a wonderful week Jim!"
+```
+
+### Allow nil
+
+By default inputs accept `nil` values. To raise an error instead:
+
+```rb
+class UpdateUser < Actor
+  input :user, allow_nil: false
+
+  # …
+end
+```
+
+### Conditions
+
+You can ensure an input is included in a collection by using `inclusion`:
+
+```rb
+class Pay < Actor
+  input :currency, inclusion: %w[EUR USD]
+
+  # …
+end
+```
+
+This raises an argument error if the input does not match one of the given
+values.
+
+Declare custom conditions with the name of your choice by using `must`:
+
+```rb
+class UpdateAdminUser < Actor
+  input :user,
+        must: {
+          be_an_admin: -> user { user.admin? }
+        }
+
+  # …
+end
+```
+
+This will raise an argument error if any of the given lambdas returns a falsey
+value.
+
+### Types
+
+Sometimes it can help to have a quick way of making sure we didn’t mess up our
+inputs.
+
+For that you can use the `type` option and giving a class or an array
+of possible classes. If the input or output doesn’t match these types, an
+error is raised.
+
+```rb
+class UpdateUser < Actor
+  input :user, type: User
+  input :age, type: [Integer, Float]
+
+  # …
+end
+```
+
+You may also use strings instead of constants, such as `type: "User"`.
+
+When using a type condition, `allow_nil` defaults to `false`.
+
+### Custom input errors
+
+Use a `Hash` with `is:` and `message:` keys to prepare custom
+error messages on inputs. For example:
+
+```rb
+class UpdateAdminUser < Actor
+  input :user,
+        must: {
+          be_an_admin: {
+            is: -> user { user.admin? },
+            message: "The user is not an administrator"
+          }
+        }
+
+  # ...
+end
+```
+
+You can also use incoming arguments when shaping your error text:
+
+```rb
+class UpdateUser < Actor
+  input :user,
+        allow_nil: {
+          is: false,
+          message: (lambda do |input_key:, **|
+            "The value \"#{input_key}\" cannot be empty"
+          end)
+        }
+
+  # ...
+end
+```
+
+<details>
+  <summary>See examples of custom messages on all input arguments</summary>
+
+  #### Inclusion
+
+  ```ruby
+  class Pay < Actor
+    input :provider,
+          inclusion: {
+            in: ["MANGOPAY", "PayPal", "Stripe"],
+            message: (lambda do |value:, **|
+              "Payment system \"#{value}\" is not supported"
+            end)
+          }
+  end
+  ```
+
+  #### Must
+
+  ```ruby
+  class Pay < Actor
+    input :provider,
+          must: {
+            exist: {
+              is: -> provider { PROVIDERS.include?(provider) },
+              message: (lambda do |value:, **|
+                "The specified provider \"#{value}\" was not found."
+              end)
+            }
+          }
+  end
+  ```
+
+  #### Default
+
+  ```ruby
+  class MultiplyThing < Actor
+    input :multiplier,
+          default: {
+            is: -> { rand(1..10) },
+            message: (lambda do |input_key:, **|
+              "Input \"#{input_key}\" is required"
+            end)
+          }
+  end
+  ```
+
+  #### Type
+
+  ```ruby
+  class ReduceOrderAmount < Actor
+    input :bonus_applied,
+          type: {
+            is: [TrueClass, FalseClass],
+            message: (lambda do |input_key:, expected_type:, given_type:, **|
+              "Wrong type \"#{given_type}\" for \"#{input_key}\". " \
+              "Expected: \"#{expected_type}\""
+            end)
+          }
+  end
+  ```
+
+  #### Allow nil
+
+  ```ruby
+  class CreateUser < Actor
+    input :name,
+          allow_nil: {
+            is: false,
+            message: (lambda do |input_key:, **|
+              "The value \"#{input_key}\" cannot be empty"
+            end)
+          }
+  end
+  ```
+
+</details>
 
 ## Testing
 
