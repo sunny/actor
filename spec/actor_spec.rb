@@ -104,6 +104,13 @@ RSpec.describe Actor do
       end
     end
 
+    context "when a lambda default references other inputs" do
+      it "adds the computed default" do
+        actor = LambdaDefaultWithReference.call(old_project_id: 77_392)
+        expect(actor.project_id).to eq("77392.0")
+      end
+    end
+
     context "when an input has not been given" do
       it "raises an error" do
         expect { SetNameToDowncase.call }

@@ -294,23 +294,27 @@ end
 
 ### Defaults
 
-Inputs can be optional by providing a default:
+Inputs can be optional by providing a `default` value or lambda.
 
 ```rb
 class BuildGreeting < Actor
   input :name
   input :adjective, default: "wonderful"
   input :length_of_time, default: -> { ["day", "week", "month"].sample }
+  input :article, default: -> context { context.adjective =~ /^aeiou/ ? 'an' : 'a' }
 
   output :greeting
 
   def call
-    self.greeting = "Have a #{adjective} #{length_of_time} #{name}!"
+    self.greeting = "Have #{article} #{length_of_time}, #{name}!"
   end
 end
 
 actor = BuildGreeting.call(name: "Jim")
-actor.greeting # => "Have a wonderful week Jim!"
+actor.greeting # => "Have a wonderful week, Jim!"
+
+actor = BuildGreeting.call(name: "Siobhan", adjective: "elegant")
+actor.greeting # => "Have an elegant week, Siobhan!"
 ```
 
 ### Allow nil
