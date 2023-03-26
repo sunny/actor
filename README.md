@@ -78,7 +78,7 @@ SendNotification.call # => <ServiceActor::Result…>
 When called, an actor returns a result. Reading and writing to this result allows
 actors to accept and return multiple arguments. Let’s find out how to do that
 and then we’ll see how to
-[chain multiple actors togethor](#play-actors-in-a-sequence).
+[chain multiple actors together](#play-actors-in-a-sequence).
 
 ### Inputs
 
