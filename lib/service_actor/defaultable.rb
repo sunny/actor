@@ -56,8 +56,7 @@ module ServiceActor::Defaultable
     private
 
     def default_for_normal_mode_with(result, key, default)
-      default = default.call if default.is_a?(Proc)
-      result[key] = default
+      result[key] = reify_default(result, default)
     end
 
     def default_for_advanced_mode_with(result, key, content)
@@ -67,8 +66,7 @@ module ServiceActor::Defaultable
         raise_error_with(message, input_key: key, actor: self.class)
       end
 
-      default = default.call if default.is_a?(Proc)
-      result[key] = default
+      result[key] = reify_default(result, default)
 
       message.call(key, self.class)
     end
@@ -78,6 +76,12 @@ module ServiceActor::Defaultable
       message = message.call(**arguments) if message.is_a?(Proc)
 
       raise self.class.argument_error_class, message
+    end
+
+    def reify_default(result, default)
+      return default unless default.is_a?(Proc)
+
+      default.arity.zero? ? default.call : default.call(result)
     end
   end
 end

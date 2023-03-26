@@ -5,6 +5,8 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## unreleased
 
+- `default` lambdas optionally accept a `context` with other attributes (#112)
+
 ## v3.6.1 
 
 Fixes:
