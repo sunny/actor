@@ -29,13 +29,13 @@
 #             }
 #   end
 class ServiceActor::Checks::NilCheck < ServiceActor::Checks::Base
-  DEFAULT_MESSAGE = lambda do |origin:, input_key:, actor:|
+  DEFAULT_MESSAGE = -> origin:, input_key:, actor: do
     "The \"#{input_key}\" #{origin} on \"#{actor}\" does not allow nil values"
   end
 
   private_constant :DEFAULT_MESSAGE
 
-  def self.check( # rubocop:disable Metrics/ParameterLists
+  def self.check(
     origin:,
     input_key:,
     input_options:,
@@ -54,7 +54,7 @@ class ServiceActor::Checks::NilCheck < ServiceActor::Checks::Base
     ).check
   end
 
-  def initialize( # rubocop:disable Metrics/ParameterLists
+  def initialize(
     origin:,
     input_key:,
     input_options:,

@@ -4,10 +4,10 @@ class SetWrongTypeOfOutputAdvanced < Actor
   output :name,
          type: {
            is: String,
-           message: (lambda do |input_key:, expected_type:, given_type:, **|
+           message: (-> input_key:, expected_type:, given_type:, ** do
              "Wrong type `#{given_type}` for `#{input_key}`. " \
              "Expected: `#{expected_type}`"
-           end)
+           end),
          }
   def call
     self.name = 42

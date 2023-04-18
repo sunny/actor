@@ -4,9 +4,9 @@ class PayWithProviderInclusionAdvanced < Actor
   input :provider,
         inclusion: {
           in: %w[MANGOPAY PayPal Stripe],
-          message: (lambda do |value:, **|
+          message: (-> value:, ** do
             "Payment system \"#{value}\" is not supported"
-          end)
+          end),
         },
         default: "Stripe"
 

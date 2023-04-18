@@ -6,10 +6,10 @@ class SetNameWithInputConditionAdvanced < Actor
         must: {
           be_lowercase: {
             is: -> name { name =~ /\A[a-z]+\z/ },
-            message: (lambda do |check_name:, **|
+            message: (-> check_name:, ** do
               "Failed to apply `#{check_name}`"
-            end)
-          }
+            end),
+          },
         }
 
   output :name

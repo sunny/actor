@@ -5,9 +5,9 @@ class DisallowNilOnInputAdvanced < Actor
         type: String,
         allow_nil: {
           is: false,
-          message: (lambda do |input_key:, **|
+          message: (-> input_key:, ** do
             "The value `#{input_key}` cannot be empty"
-          end)
+          end),
         }
 
   def call; end

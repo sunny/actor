@@ -26,14 +26,14 @@
 #           }
 #   end
 class ServiceActor::Checks::MustCheck < ServiceActor::Checks::Base
-  DEFAULT_MESSAGE = lambda do |input_key:, actor:, check_name:, value:|
+  DEFAULT_MESSAGE = -> input_key:, actor:, check_name:, value: do
     "The \"#{input_key}\" input on \"#{actor}\" must \"#{check_name}\" " \
       "but was #{value.inspect}"
   end
 
   private_constant :DEFAULT_MESSAGE
 
-  def self.check(check_name:, input_key:, actor:, conditions:, result:, **) # rubocop:disable Metrics/ParameterLists
+  def self.check(check_name:, input_key:, actor:, conditions:, result:, **)
     return unless check_name == :must
 
     new(

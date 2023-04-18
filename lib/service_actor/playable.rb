@@ -20,7 +20,7 @@ module ServiceActor::Playable
     end
 
     def alias_input(**options)
-      lambda do |actor|
+      -> actor do
         options.each do |new, original|
           define_alias_input(actor, new, original)
         end

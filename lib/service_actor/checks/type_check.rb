@@ -25,16 +25,15 @@
 #           }
 #   end
 class ServiceActor::Checks::TypeCheck < ServiceActor::Checks::Base
-  DEFAULT_MESSAGE = lambda do
-    |origin:, input_key:, actor:, expected_type:, given_type:|
-
-    "The \"#{input_key}\" #{origin} on \"#{actor}\" must be of type " \
-      "\"#{expected_type}\" but was \"#{given_type}\""
-  end
+  DEFAULT_MESSAGE =
+    -> origin:, input_key:, actor:, expected_type:, given_type: do
+      "The \"#{input_key}\" #{origin} on \"#{actor}\" must be of type " \
+        "\"#{expected_type}\" but was \"#{given_type}\""
+    end
 
   private_constant :DEFAULT_MESSAGE
 
-  def self.check( # rubocop:disable Metrics/ParameterLists
+  def self.check(
     check_name:,
     origin:,
     input_key:,

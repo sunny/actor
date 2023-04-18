@@ -13,8 +13,12 @@ AllCops:
     - bin/rubocop
     - vendor/**/*
 
+# Bundler
+
 Bundler/GemComment:
   Enabled: true
+
+# Gemspec
 
 Gemspec/OrderedDependencies:
   Enabled: false
@@ -22,9 +26,32 @@ Gemspec/OrderedDependencies:
 Gemspec/RequiredRubyVersion:
   Enabled: false
 
-# Errors out on Ruby 3.1.3
+# Layout
+
 Layout/BlockAlignment:
+  # Errors out on Ruby 3.1.3
   Enabled: false
+
+Layout/CaseIndentation:
+  # Align case statements with the start of the line.
+  # E.g.:
+  #   color = case fruit
+  #   when "apple"
+  #     "red"
+  #   else
+  #     "green"
+  #   end
+  EnforcedStyle: end
+
+Layout/EndAlignment:
+  # Allow `end` to be aligned with the start of the line.
+  # E.g.:
+  #   color = if ripe?
+  #     "red"
+  #   else
+  #     "green"
+  #   end
+  EnforcedStyleAlignWith: variable
 
 Layout/LineLength:
   Max: 80
@@ -32,11 +59,23 @@ Layout/LineLength:
 Layout/SpaceAroundMethodCallOperator:
   Enabled: true
 
+Layout/SpaceInLambdaLiteral:
+  # Prefer `-> (a, b) { … }` over `->(a, b) { … }`.
+  EnforcedStyle: require_space
+
+Layout/SpaceInsideHashLiteralBraces:
+  # Prefer `{key: 1}` over `{ key: 1 }`.
+  EnforcedStyle: no_space
+
+# Lint
+
 Lint/RaiseException:
   Enabled: true
 
 Lint/StructNewOverride:
   Enabled: true
+
+# Metrics
 
 Metrics/BlockLength:
   Exclude:
@@ -49,17 +88,47 @@ Metrics/MethodLength:
     - spec/**/*
     - service_actor.gemspec
 
+Metrics/ParameterLists:
+  # When limiting the number of parameters, do not count keyword arguments.
+  CountKeywordArgs: false
+
+# RSpec
+
+RSpec/ExpectChange:
+  EnforcedStyle: block
+
 RSpec/NestedGroups:
   Max: 5
 
 RSpec/MultipleExpectations:
   Enabled: false
 
+RSpec/ReturnFromStub:
+  EnforcedStyle: and_return
+
+# Style
+
 Style/AsciiComments:
-  Enabled: false
+  # Allow more non-ASCII characters in comments.
+  AllowedChars:
+    - …
+    - ’
+    - “
+    - ”
 
 Style/ClassAndModuleChildren:
+  # Prefer combined class definitions `class Foo::Bar` over nested ones.
   EnforcedStyle: compact
+
+Style/Documentation:
+  # Do not require a comment for every class.
+  Enabled: false
+
+Style/DoubleNegation:
+  Enabled: false
+
+Style/ExponentialNotation:
+  Enabled: true
 
 Style/HashEachMethods:
   Enabled: true
@@ -70,27 +139,50 @@ Style/HashTransformKeys:
 Style/HashTransformValues:
   Enabled: true
 
-Style/Documentation:
-  Enabled: false
+Style/Lambda:
+  # Prefer `->` to `lambda`.
+  EnforcedStyle: literal
 
-Style/ExponentialNotation:
-  Enabled: true
-
-# Allow using the second parameter as a boolean.
 Style/OptionalBooleanParameter:
-  Enabled: false
-
-Style/StringLiterals:
-  EnforcedStyle: double_quotes
-
-Style/TrailingCommaInArguments:
-  EnforcedStyleForMultiline: comma
-
-Style/DoubleNegation:
+  # Allow using the second parameter as a boolean.
   Enabled: false
 
 Style/StabbyLambdaParentheses:
+  # Do not add parentheses around args in lambda:
+  #     -> args { … }
   EnforcedStyle: require_no_parentheses
 
-Layout/SpaceInLambdaLiteral:
-  EnforcedStyle: require_space
+Style/StringLiterals:
+  # Prefer "double quotes" over 'single quotes'.
+  EnforcedStyle: double_quotes
+
+Style/SymbolArray:
+  # Prefer [:a, :b] over %i[a b].
+  EnforcedStyle: brackets
+
+Style/TrailingCommaInArguments:
+  # Prefer trailing commas in multiline arguments:
+  #   call(
+  #     a: 1,
+  #     b: 2,
+  #   )
+  EnforcedStyleForMultiline: comma
+
+Style/TrailingCommaInArrayLiteral:
+  # Prefer trailing commas in arrays:
+  #   [
+  #     1,
+  #     2,
+  #   ]
+  EnforcedStyleForMultiline: consistent_comma
+
+Style/TrailingCommaInHashLiteral:
+  # Prefer trailing commas in multiline hashes:
+  #   {
+  #     a: 1,
+  #     b: 2,
+  #   }
+  EnforcedStyleForMultiline: consistent_comma
+
+Style/YodaCondition:
+  EnforcedStyle: forbid_for_equality_operators_only

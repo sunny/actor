@@ -55,7 +55,7 @@ module ServiceActor::Checkable
         ServiceActor::Checks::MustCheck,
         ServiceActor::Checks::InclusionCheck,
         ServiceActor::Checks::NilCheck,
-        ServiceActor::Checks::DefaultCheck
+        ServiceActor::Checks::DefaultCheck,
       ]
     end
   end
