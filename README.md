@@ -1,6 +1,6 @@
 # ServiceActor
 
-This Ruby gem lets you move your application logic into into small composable
+This Ruby gem lets you move your application logic into small composable
 service objects. It is a lightweight framework that helps you keep your models
 and controllers thin.
 
