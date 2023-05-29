@@ -302,7 +302,8 @@ class BuildGreeting < Actor
   input :name
   input :adjective, default: "wonderful"
   input :length_of_time, default: -> { ["day", "week", "month"].sample }
-  input :article, default: -> context { context.adjective =~ /^aeiou/ ? 'an' : 'a' }
+  input :article,
+        default: -> context { context.adjective =~ /^aeiou/ ? 'an' : 'a' }
 
   output :greeting
 

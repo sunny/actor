@@ -5,6 +5,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## unreleased
 
+## v3.7.0
+
+Features:
 - `default` lambdas optionally accept a `context` with other attributes (#112)
 - Handle `unless:` condition on a `play` (#116)
 
