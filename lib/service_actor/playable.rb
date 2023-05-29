@@ -56,7 +56,7 @@ module ServiceActor::Playable
   module PrependedMethods
     def call
       self.class.play_actors.each do |options|
-        next if options[:if] && !options[:if].call(result)
+        next unless valid_condition(options)
 
         options[:actors].each { |actor| play_actor(actor) }
       end
@@ -76,6 +76,13 @@ module ServiceActor::Playable
     end
 
     private
+
+    def valid_condition(options)
+      return false if options[:if] && !options[:if].call(result)
+      return false if options[:unless]&.call(result)
+
+      true
+    end
 
     def play_actor(actor)
       play_service_actor(actor) ||
