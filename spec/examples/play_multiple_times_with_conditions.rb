@@ -6,9 +6,14 @@ class PlayMultipleTimesWithConditions < Actor
   play AddNameToContext
 
   play IncrementValue,
-       IncrementValue,
        if: -> actor { actor.name == "Jim" }
+
+  play IncrementValue,
+       unless: -> actor { actor.name == "Tom" }
 
   play FailWithError,
        if: -> _ { false }
+
+  play FailWithError,
+       unless: -> _ { true }
 end

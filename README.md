@@ -273,6 +273,7 @@ class PlaceOrder < Actor
   play CreateOrder,
        Pay
   play NotifyAdmins, if: -> actor { actor.order.amount > 42 }
+  play CreatePayment, unless: -> actor { actor.order.currency == "USD" }
 end
 ```
 
