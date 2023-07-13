@@ -644,7 +644,7 @@ RSpec.describe Actor do
       end
     end
 
-    context "when using advance mode with checks and not adding message key" do
+    context "when using advanced mode with checks and not adding message key" do
       context "when using inclusion check" do
         let(:expected_alert) do
           'The "provider" input must be included ' \
@@ -673,7 +673,7 @@ RSpec.describe Actor do
 
       context "when using must check" do
         let(:expected_error) do
-          "The \"num\" input on \"CheckMustAdvancedNoMessage\" "\
+          "The \"num\" input on \"CheckMustAdvancedNoMessage\" " \
           "must \"be_smaller\" " \
           "but was 6"
         end
