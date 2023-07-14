@@ -86,6 +86,8 @@ class ServiceActor::Checks::TypeCheck < ServiceActor::Checks::Base
 
   def define_types_and_message
     if @type_definition.is_a?(Hash)
+      @type_definition[:message] ||= DEFAULT_MESSAGE
+
       @type_definition, message =
         @type_definition.values_at(:is, :message)
     else

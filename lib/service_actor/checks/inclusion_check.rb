@@ -67,6 +67,7 @@ class ServiceActor::Checks::InclusionCheck < ServiceActor::Checks::Base
 
   def define_inclusion_and_message
     if @inclusion.is_a?(Hash)
+      @inclusion[:message] ||= DEFAULT_MESSAGE
       @inclusion.values_at(:in, :message)
     else
       [@inclusion, DEFAULT_MESSAGE]

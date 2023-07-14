@@ -86,6 +86,7 @@ class ServiceActor::Checks::MustCheck < ServiceActor::Checks::Base
 
   def define_check_and_message_from(nested_check_conditions)
     if nested_check_conditions.is_a?(Hash)
+      nested_check_conditions[:message] ||= DEFAULT_MESSAGE
       nested_check_conditions.values_at(:is, :message)
     else
       [nested_check_conditions, DEFAULT_MESSAGE]

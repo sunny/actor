@@ -5,6 +5,10 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## unreleased
 
+Fixes:
+- missing `message` key on advanced `input` or `output` checks 
+  will be set to a default message (#117)
+
 ## v3.7.0
 
 Features:

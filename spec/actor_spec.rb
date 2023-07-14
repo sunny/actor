@@ -643,6 +643,59 @@ RSpec.describe Actor do
         expect(actor.value).to eq(5 + 2)
       end
     end
+
+    context "when using advanced mode with checks and not adding message key" do
+      context "when using inclusion check" do
+        let(:expected_alert) do
+          'The "provider" input must be included ' \
+          'in ["MANGOPAY", "PayPal", "Stripe"] on ' \
+          '"PayWithProviderAdvancedNoMessage" ' \
+          'instead of "Paypal2"'
+        end
+
+        it "returns the default message" do
+          expect { PayWithProviderAdvancedNoMessage.call(provider: "Paypal2") }
+            .to raise_error(ServiceActor::ArgumentError, expected_alert)
+        end
+      end
+
+      context "when using type check" do
+        let(:expected_error) do
+          "The \"name\" input on \"CheckTypeAdvanced\" must " \
+            "be of type \"String\" but was \"Integer\""
+        end
+
+        it "returns the default message" do
+          expect { CheckTypeAdvanced.call(name: 2) }
+            .to raise_error(ServiceActor::ArgumentError, expected_error)
+        end
+      end
+
+      context "when using must check" do
+        let(:expected_error) do
+          "The \"num\" input on \"CheckMustAdvancedNoMessage\" " \
+          "must \"be_smaller\" " \
+          "but was 6"
+        end
+
+        it "returns the default message" do
+          expect { CheckMustAdvancedNoMessage.call(num: 6) }
+            .to raise_error(ServiceActor::ArgumentError, expected_error)
+        end
+      end
+
+      context "when using nil check" do
+        let(:expected_error) do
+          "The \"name\" input on \"CheckNilAdvancedNoMessage\" "\
+          "does not allow nil values"
+        end
+
+        it "returns the default message" do
+          expect { CheckNilAdvancedNoMessage.call(name: nil) }
+            .to raise_error(ServiceActor::ArgumentError, expected_error)
+        end
+      end
+    end
   end
 
   describe "#result" do

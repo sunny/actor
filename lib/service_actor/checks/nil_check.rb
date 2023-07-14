@@ -92,6 +92,7 @@ class ServiceActor::Checks::NilCheck < ServiceActor::Checks::Base
 
   def define_allow_nil_and_message_from(allow_nil)
     if allow_nil.is_a?(Hash)
+      allow_nil[:message] ||= DEFAULT_MESSAGE
       allow_nil.values_at(:is, :message)
     else
       [allow_nil, DEFAULT_MESSAGE]
