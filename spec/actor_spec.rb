@@ -79,16 +79,40 @@ RSpec.describe Actor do
         expect(actor.greeting).to eq("Hello, world!")
       end
 
-      it "ignores values added to call" do
+      it "is overridden by values added to call" do
         actor = AddGreetingWithDefault.call(name: "jim")
         expect(actor.name).to eq("jim")
       end
 
-      it "ignores values already in the context" do
+      it "is overridden by values already in the context" do
         actor = AddGreetingWithDefault.call(
           ServiceActor::Result.new(name: "jim"),
         )
         expect(actor.name).to eq("jim")
+      end
+    end
+
+    context "when an input has a default that is a hash" do
+      it "adds it to the context" do
+        actor = AddGreetingWithHashDefault.call
+        expect(actor.options).to eq({name: "world"})
+      end
+
+      it "can use it" do
+        actor = AddGreetingWithHashDefault.call
+        expect(actor.greeting).to eq("Hello, world!")
+      end
+
+      it "is overridden by values added to call" do
+        actor = AddGreetingWithHashDefault.call(options: {name: "Alice"})
+        expect(actor.options).to eq({name: "Alice"})
+      end
+
+      it "is overridden by values already in the context" do
+        actor = AddGreetingWithHashDefault.call(
+          ServiceActor::Result.new(options: {name: "Alice"}),
+        )
+        expect(actor.options).to eq({name: "Alice"})
       end
     end
 

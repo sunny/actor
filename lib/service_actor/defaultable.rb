@@ -43,7 +43,7 @@ module ServiceActor::Defaultable
 
         default = input[:default]
 
-        if default.is_a?(Hash)
+        if default.is_a?(Hash) && default[:is]
           default_for_advanced_mode_with(result, key, default)
         else
           default_for_normal_mode_with(result, key, default)
