@@ -21,6 +21,6 @@ class PlayInstanceMethods < Actor
   end
 
   def do_nothing
-    { name: "Does nothing" }
+    {name: "Does nothing"}
   end
 end
