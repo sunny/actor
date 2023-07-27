@@ -8,6 +8,6 @@ class LambdaDefaultWithReference < Actor
   output :properties, type: Hash
 
   def call
-    self.properties = { project_id: project_id }
+    self.properties = {project_id: project_id}
   end
 end

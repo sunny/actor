@@ -56,7 +56,7 @@ RSpec.describe ServiceActor::Result do
 
     context "when not empty" do
       it "returns true" do
-        result.options = { name: "Actor" }
+        result.options = {name: "Actor"}
 
         expect(result.options?).to be true
       end
