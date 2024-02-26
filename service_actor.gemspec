@@ -32,7 +32,7 @@ Gem::Specification.new do |spec|
     `git ls-files -z lib`.split("\x0")
   end
 
-  spec.required_ruby_version = [">= 2.4"]
+  spec.required_ruby_version = [">= 2.7"]
 
   # Loader
   spec.add_runtime_dependency "zeitwerk"
@@ -46,10 +46,10 @@ Gem::Specification.new do |spec|
   # Debugger
   spec.add_development_dependency "pry"
 
-  # Linting rubocop-lts v12 is a rubocop wrapper for Ruby >= 2.4,
+  # Linting rubocop-lts is a rubocop wrapper for Ruby
   #   and should only be bumped when dropping old Ruby support
-  # see: https://dev.to/pboling/rubocop-lts-1e31
-  spec.add_development_dependency "rubocop-lts", ["~> 12.0", ">= 12.0.1"]
+  # see: https://rubocop-lts.gitlab.io/HOW_TO_UPGRADE_RUBY/
+  spec.add_development_dependency "rubocop-lts", "~> 18.2"
 
   # Lint RSpec code
   spec.add_development_dependency "rubocop-rspec"
