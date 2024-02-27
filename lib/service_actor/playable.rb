@@ -39,17 +39,8 @@ module ServiceActor::Playable
 
     private
 
-    def define_alias_input(actor, new, original)
-      actor[new] = actor[original]
-      actor.instance_exec do
-        [original, new].each do |method|
-          singleton_class.send(:undef_method, "#{method}=")
-          define_singleton_method("#{method}=") do |v|
-            actor[original] = v
-            actor[new] = v
-          end
-        end
-      end
+    def define_alias_input(actor, new_input, original_input)
+      actor[new_input] = actor.delete(original_input)
     end
   end
 
@@ -113,7 +104,7 @@ module ServiceActor::Playable
       return unless actor.is_a?(Class)
       return unless actor.ancestors.map(&:name).include?("Interactor")
 
-      result.merge!(actor.call(result).to_h)
+      result.merge!(actor.call(result.to_h).to_h)
     end
   end
 end

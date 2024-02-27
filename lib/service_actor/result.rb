@@ -4,11 +4,19 @@ require "ostruct"
 
 # Represents the context of an actor, holding the data from both its inputs
 # and outputs.
-class ServiceActor::Result < OpenStruct
+class ServiceActor::Result
   def self.to_result(data)
     return data if data.is_a?(self)
 
     new(data.to_h)
+  end
+
+  def initialize(data = {})
+    @data = data.to_h
+  end
+
+  def to_h
+    data
   end
 
   def inspect
@@ -21,8 +29,8 @@ class ServiceActor::Result < OpenStruct
       failure_class = ServiceActor::Failure
     end
 
-    merge!(result)
-    merge!(failure?: true)
+    data.merge!(result)
+    data[:failure] = true
 
     raise failure_class, self
   end
@@ -32,13 +40,11 @@ class ServiceActor::Result < OpenStruct
   end
 
   def failure?
-    self[:failure?] || false
+    data[:failure] || false
   end
 
   def merge!(result)
-    result.each_pair do |key, value|
-      self[key] = value
-    end
+    data.merge!(result)
 
     self
   end
@@ -48,7 +54,15 @@ class ServiceActor::Result < OpenStruct
   end
 
   def [](name)
-    to_h[name]
+    data[name]
+  end
+
+  def []=(key, value)
+    data[key] = value
+  end
+
+  def delete(key)
+    data.delete(key)
   end
 
   # Defined here to override the method on `Object`.
@@ -58,24 +72,20 @@ class ServiceActor::Result < OpenStruct
 
   private
 
-  def respond_to_missing?(method_name, include_private = false)
-    method_name.to_s.end_with?("?") || super
+  attr_reader :data
+
+  def respond_to_missing?(_method_name, _include_private = false)
+    true
   end
 
-  def method_missing(symbol, *args)
-    attribute = symbol.to_s.chomp("?")
-
-    if symbol.to_s.end_with?("?") && respond_to?(attribute)
-      define_singleton_method symbol do
-        value = send(attribute.to_sym)
-
-        # Same as ActiveSupport’s #present?
-        value.respond_to?(:empty?) ? !value.empty? : !!value
-      end
-
-      return send(symbol)
+  def method_missing(method_name, *args) # rubocop:disable Metrics/AbcSize
+    if method_name.end_with?("?")
+      value = data[method_name.to_s.chomp("?").to_sym]
+      value.respond_to?(:empty?) ? !value.empty? : !!value
+    elsif method_name.end_with?("=")
+      data[method_name.to_s.chomp("=").to_sym] = args.first
+    else
+      data[method_name]
     end
-
-    super symbol, *args
   end
 end
