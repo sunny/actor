@@ -51,6 +51,10 @@ Gem::Specification.new do |spec|
   # see: https://rubocop-lts.gitlab.io/HOW_TO_UPGRADE_RUBY/
   spec.add_development_dependency "rubocop-lts", "~> 18.2"
 
+  # This is a rubocop-lts dependency. Can be removed once a new version
+  # of rubocop-lts is released.
+  spec.add_development_dependency "rspec-block_is_expected"
+
   # Lint RSpec code
   spec.add_development_dependency "rubocop-rspec"
 
