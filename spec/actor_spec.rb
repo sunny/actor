@@ -432,7 +432,7 @@ RSpec.describe Actor do
     context "when setting an unknown output" do
       it "raises" do
         expect { SetUnknownOutput.call }
-          .to raise_error(NoMethodError, /undefined method `foobar='/)
+          .to raise_error(NoMethodError, /undefined method ['`]foobar='/)
       end
     end
 
