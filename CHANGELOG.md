@@ -9,7 +9,8 @@ Fixes:
 - Add default message to missing `message` key on advanced `input` or `output`
   checks (#117)
 - Allow using a Hash as `default:` (#119)
-- Refactor `ServiceActor::Result` to get rid of `OpenStruct` inheritance.
+- Refactor `ServiceActor::Result` to get rid of `OpenStruct` inheritance
+  (#127)
 
 ## v3.7.0
 
