@@ -720,6 +720,62 @@ RSpec.describe Actor do
         end
       end
     end
+
+    context "with `failure_class` which is not a class" do
+      let(:actor) do
+        Class.new(Actor) do
+          self.failure_class = 1
+        end
+      end
+
+      it do
+        expect { actor }.to raise_error(
+          ArgumentError, "Expected 1 to be a subclass of Exception"
+        )
+      end
+    end
+
+    context "with `failure_class` that does not inherit `Exception`" do
+      let(:actor) do
+        Class.new(Actor) do
+          self.failure_class = Class.new
+        end
+      end
+
+      it do
+        expect { actor }.to raise_error(
+          ArgumentError, /Expected .+ to be a subclass of Exception/
+        )
+      end
+    end
+
+    context "with `argument_error_class` which is not a class" do
+      let(:actor) do
+        Class.new(Actor) do
+          self.argument_error_class = 1
+        end
+      end
+
+      it do
+        expect { actor }.to raise_error(
+          ArgumentError, "Expected 1 to be a subclass of Exception"
+        )
+      end
+    end
+
+    context "with `argument_error_class` that does not inherit `Exception`" do
+      let(:actor) do
+        Class.new(Actor) do
+          self.argument_error_class = Class.new
+        end
+      end
+
+      it do
+        expect { actor }.to raise_error(
+          ArgumentError, /Expected .+ to be a subclass of Exception/
+        )
+      end
+    end
   end
 
   describe "#result" do
