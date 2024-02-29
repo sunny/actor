@@ -22,6 +22,7 @@ RSpec.describe ServiceActor::Result do
         :fail!,
         :class,
         :success?,
+        :deconstruct_keys,
         :[]=,
         :[],
         :kind_of?,
