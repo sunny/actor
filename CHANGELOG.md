@@ -11,6 +11,8 @@ Fixes:
 - Allow using a Hash as `default:` (#119)
 - Refactor `ServiceActor::Result` to get rid of `OpenStruct` inheritance
   (#127)
+- Ensure provided `failure_class` and `argument_error_class` values
+  are subclasses of `Exception` (#132)
 
 ## v3.7.0
 
