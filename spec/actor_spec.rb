@@ -721,8 +721,8 @@ RSpec.describe Actor do
       end
     end
 
-    context "with unset output" do
-      specify do
+    context "with unset output and allow_nil: true" do
+      it "succeeds" do
         actor = WithUnsetOutput.result
 
         expect(actor).to be_a_success
