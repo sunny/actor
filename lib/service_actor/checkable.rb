@@ -58,15 +58,5 @@ module ServiceActor::Checkable
       raise self.class.argument_error_class,
             service_actor_argument_errors.first
     end
-
-    def check_classes
-      [
-        ServiceActor::Checks::TypeCheck,
-        ServiceActor::Checks::MustCheck,
-        ServiceActor::Checks::InclusionCheck,
-        ServiceActor::Checks::NilCheck,
-        ServiceActor::Checks::DefaultCheck
-      ]
-    end
   end
 end
