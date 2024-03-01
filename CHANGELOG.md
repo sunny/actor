@@ -13,6 +13,7 @@ Fixes:
   (#127)
 - Ensure provided `failure_class` and `argument_error_class` values
   are subclasses of `Exception` (#132)
+- Skip `default` check for actor outputs (#135)
 
 ## v3.7.0
 

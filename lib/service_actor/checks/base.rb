@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
 class ServiceActor::Checks::Base
+  def self.applicable_to_origin?(_origin)
+    true
+  end
+
   def initialize
     @argument_errors = []
   end
