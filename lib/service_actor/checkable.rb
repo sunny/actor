@@ -6,6 +6,15 @@ module ServiceActor::Checkable
   end
 
   module PrependedMethods
+    CHECK_CLASSES = [
+      ServiceActor::Checks::TypeCheck,
+      ServiceActor::Checks::MustCheck,
+      ServiceActor::Checks::InclusionCheck,
+      ServiceActor::Checks::NilCheck,
+      ServiceActor::Checks::DefaultCheck
+    ].freeze
+    private_constant :CHECK_CLASSES
+
     def _call
       self.service_actor_argument_errors = []
 
@@ -20,6 +29,7 @@ module ServiceActor::Checkable
 
     # rubocop:disable Metrics/MethodLength
     def service_actor_checks_for(origin)
+      check_classes = CHECK_CLASSES.select { _1.applicable_to_origin?(origin) }
       self.class.public_send("#{origin}s").each do |input_key, input_options|
         input_options.each do |check_name, check_conditions|
           check_classes.each do |check_class|

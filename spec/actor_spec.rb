@@ -721,6 +721,15 @@ RSpec.describe Actor do
       end
     end
 
+    context "with unset output" do
+      specify do
+        actor = WithUnsetOutput.result
+
+        expect(actor).to be_a_success
+        expect(actor.value).to be_nil
+      end
+    end
+
     context "with `failure_class` which is not a class" do
       let(:actor) do
         Class.new(Actor) do
