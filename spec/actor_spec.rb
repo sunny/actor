@@ -785,6 +785,34 @@ RSpec.describe Actor do
         )
       end
     end
+
+    context "with `fail_on` which is not a class" do
+      let(:actor) do
+        Class.new(Actor) do
+          fail_on ArgumentError, "Some string", RuntimeError
+        end
+      end
+
+      it do
+        expect { actor }.to raise_error(
+          ArgumentError, "Expected Some string to be a subclass of Exception"
+        )
+      end
+    end
+
+    context "with `fail_on` which does not inherit `Exception`" do
+      let(:actor) do
+        Class.new(Actor) do
+          fail_on ArgumentError, Class.new
+        end
+      end
+
+      it do
+        expect { actor }.to raise_error(
+          ArgumentError, /Expected .+ to be a subclass of Exception/
+        )
+      end
+    end
   end
 
   describe "#result" do
