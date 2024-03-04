@@ -16,25 +16,17 @@ module ServiceActor::Configurable
     end
 
     def argument_error_class=(value)
-      validate_provided_error_class(value)
+      ServiceActor::ArgumentsValidator.validate_error_class(value)
 
       @argument_error_class = value
     end
 
     def failure_class=(value)
-      validate_provided_error_class(value)
+      ServiceActor::ArgumentsValidator.validate_error_class(value)
 
       @failure_class = value
     end
 
     attr_reader :argument_error_class, :failure_class
-
-    private
-
-    def validate_provided_error_class(value)
-      return if value.is_a?(Class) && value <= Exception
-
-      raise ArgumentError, "Expected #{value} to be a subclass of Exception"
-    end
   end
 end
