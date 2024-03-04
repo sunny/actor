@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "ostruct"
-
 # Represents the context of an actor, holding the data from both its inputs
 # and outputs.
 class ServiceActor::Result
@@ -63,11 +61,6 @@ class ServiceActor::Result
 
   def delete(key)
     data.delete(key)
-  end
-
-  # Defined here to override the method on `Object`.
-  def display
-    to_h.fetch(:display)
   end
 
   private

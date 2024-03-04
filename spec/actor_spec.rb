@@ -423,12 +423,6 @@ RSpec.describe Actor do
       end
     end
 
-    context "when using an output called display" do
-      it "returns it" do
-        expect(SetOutputCalledDisplay.call.display).to eq("Foobar")
-      end
-    end
-
     context "when setting an unknown output" do
       it "raises" do
         expect { SetUnknownOutput.call }
@@ -727,6 +721,40 @@ RSpec.describe Actor do
 
         expect(actor).to be_a_success
         expect(actor.value).to be_nil
+      end
+    end
+
+    context "with `input` name that collides with result methods" do
+      let(:actor) do
+        Class.new(Actor) do
+          input :value, type: Integer
+          input :object_id, type: String
+        end
+      end
+
+      it "raises `ArgumentError` exception" do
+        expect { actor }.to raise_error(
+          ArgumentError, <<~TXT
+            Defined input `object_id` collides with `ServiceActor::Result` instance method
+          TXT
+        )
+      end
+    end
+
+    context "with `output` name that collides with result methods" do
+      let(:actor) do
+        Class.new(Actor) do
+          input :value, type: Integer
+          output :display, type: String
+        end
+      end
+
+      it "raises `ArgumentError` exception" do
+        expect { actor }.to raise_error(
+          ArgumentError, <<~TXT
+            Defined output `display` collides with `ServiceActor::Result` instance method
+          TXT
+        )
       end
     end
 
