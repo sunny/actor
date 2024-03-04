@@ -11,6 +11,7 @@ Fixes:
 - Allow using a Hash as `default:` (#119)
 - Refactor `ServiceActor::Result` to get rid of `OpenStruct` inheritance
   (#127)
+- Deprecate invoking undefined methods on `ServiceActor::Result` (#129)
 - Ensure provided `failure_class` and `argument_error_class` values
   are subclasses of `Exception` (#132)
 - Skip `default` check for actor outputs (#135)

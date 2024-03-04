@@ -833,5 +833,35 @@ RSpec.describe Actor do
       it { expect(actor.name).to eq("Jim") }
       it { expect(actor.value).to eq(0) }
     end
+
+    context "with sending unexpected messages" do
+      let(:actor) { PlayActors.result(value: 42) }
+
+      before { allow(Kernel).to receive(:warn) }
+
+      it { expect(actor).to be_a_success }
+      it { expect(actor).to respond_to(:name) }
+      it { expect(actor).to respond_to(:name?) }
+      it { expect(actor.name).to eq("jim") }
+
+      it { expect(actor).not_to respond_to(:unknown_method) }
+      it { expect(actor).not_to respond_to(:unknown_method?) }
+
+      it "warns about sending unexpected messages" do
+        actor.unknown_method
+
+        expect(Kernel).to have_received(:warn).with(
+          include("unknown_method"),
+        )
+      end
+
+      it "warns about sending unexpected predicate messages" do
+        actor.unknown_method?
+
+        expect(Kernel).to have_received(:warn).with(
+          include("unknown_method?"),
+        )
+      end
+    end
   end
 end
