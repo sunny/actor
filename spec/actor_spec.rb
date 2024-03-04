@@ -758,6 +758,24 @@ RSpec.describe Actor do
       end
     end
 
+    context "with `alias_input` that collides with result methods" do
+      let(:actor) do
+        Class.new(Actor) do
+          input :value, type: Integer
+
+          play alias_input(object_id: :value)
+        end
+      end
+
+      it "raises `ArgumentError` exception" do
+        expect { actor }.to raise_error(
+          ArgumentError, <<~TXT
+            Defined alias `object_id` collides with `ServiceActor::Result` instance method
+          TXT
+        )
+      end
+    end
+
     context "with `failure_class` which is not a class" do
       let(:actor) do
         Class.new(Actor) do
