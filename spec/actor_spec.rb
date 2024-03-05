@@ -745,14 +745,14 @@ RSpec.describe Actor do
       let(:actor) do
         Class.new(Actor) do
           input :value, type: Integer
-          output :display, type: String
+          output :send, type: String
         end
       end
 
       it "raises `ArgumentError` exception" do
         expect { actor }.to raise_error(
           ArgumentError, <<~TXT
-            Defined output `display` collides with `ServiceActor::Result` instance method
+            Defined output `send` collides with `ServiceActor::Result` instance method
           TXT
         )
       end

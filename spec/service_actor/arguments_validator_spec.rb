@@ -4,12 +4,12 @@ RSpec.describe ServiceActor::ArgumentsValidator do
   describe ".validate_origin_name" do
     let(:expected_error_message) do
       <<~TXT
-        Defined input `to_s` collides with `ServiceActor::Result` instance method
+        Defined input `fail!` collides with `ServiceActor::Result` instance method
       TXT
     end
 
     it "raises if collision present" do
-      expect { described_class.validate_origin_name(:to_s, origin: :input) }
+      expect { described_class.validate_origin_name(:fail!, origin: :input) }
         .to raise_error(ArgumentError, expected_error_message)
     end
 
