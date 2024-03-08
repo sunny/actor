@@ -10,7 +10,7 @@ class ServiceActor::Result < BasicObject
     new(data.to_h)
   end
 
-  %i[class respond_to? is_a? kind_of? object_id send].each do |mid|
+  %i[class respond_to? is_a? kind_of? send].each do |mid|
     define_method(mid, ::Kernel.instance_method(mid))
   end
 
@@ -65,7 +65,7 @@ class ServiceActor::Result < BasicObject
     data[key] = value
   end
 
-  def delete(key)
+  def __delete__(key)
     data.delete(key)
   end
 

@@ -734,7 +734,7 @@ RSpec.describe Actor do
       let(:actor) do
         Class.new(Actor) do
           input :value, type: Integer
-          input :object_id, type: String
+          input :kind_of?, type: String
         end
       end
 
@@ -742,7 +742,7 @@ RSpec.describe Actor do
         actor
 
         expect(Kernel).to have_received(:warn)
-          .with(/DEPRECATED: Defining inputs, .* input: `object_id`/)
+          .with(/DEPRECATED: Defining inputs, .* input: `kind_of\?`/)
           .once
       end
     end
@@ -753,7 +753,7 @@ RSpec.describe Actor do
       let(:actor) do
         Class.new(Actor) do
           input :value, type: Integer
-          output :send, type: String
+          output :fail!, type: String
         end
       end
 
@@ -761,7 +761,7 @@ RSpec.describe Actor do
         actor
 
         expect(Kernel).to have_received(:warn)
-          .with(/DEPRECATED: Defining inputs, .* output: `send`/)
+          .with(/DEPRECATED: Defining inputs, .* output: `fail!`/)
           .once
       end
     end
@@ -773,7 +773,7 @@ RSpec.describe Actor do
         Class.new(Actor) do
           input :value, type: Integer
 
-          play alias_input(object_id: :value)
+          play alias_input(merge!: :value)
         end
       end
 
@@ -781,7 +781,7 @@ RSpec.describe Actor do
         actor
 
         expect(Kernel).to have_received(:warn)
-          .with(/DEPRECATED: Defining inputs, .* alias: `object_id`/)
+          .with(/DEPRECATED: Defining inputs, .* alias: `merge!`/)
           .once
       end
     end
