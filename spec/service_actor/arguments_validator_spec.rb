@@ -2,21 +2,20 @@
 
 RSpec.describe ServiceActor::ArgumentsValidator do
   describe ".validate_origin_name" do
-    let(:expected_error_message) do
-      <<~TXT
-        Defined input `fail!` collides with `ServiceActor::Result` instance method
-      TXT
-    end
+    before { allow(Kernel).to receive(:warn).with(kind_of(String)) }
 
     it "raises if collision present" do
-      expect { described_class.validate_origin_name(:fail!, origin: :input) }
-        .to raise_error(ArgumentError, expected_error_message)
+      described_class.validate_origin_name(:fail!, origin: :input)
+
+      expect(Kernel).to have_received(:warn)
+        .with(/DEPRECATED: Defining inputs, .* input: `fail!`/)
+        .once
     end
 
     it do
-      expect do
-        described_class.validate_origin_name(:some_method, origin: :output)
-      end.not_to raise_error
+      described_class.validate_origin_name(:some_method, origin: :output)
+
+      expect(Kernel).not_to have_received(:warn)
     end
   end
 

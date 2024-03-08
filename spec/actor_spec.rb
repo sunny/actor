@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
 RSpec.describe Actor do
+  shared_context "with mocked `Kernel.warn` method" do
+    before { allow(Kernel).to receive(:warn).with(kind_of(String)) }
+  end
+
   describe "#call" do
     context "when fail! is not called" do
       let(:actor) { DoNothing.call }
@@ -725,6 +729,8 @@ RSpec.describe Actor do
     end
 
     context "with `input` name that collides with result methods" do
+      include_context "with mocked `Kernel.warn` method"
+
       let(:actor) do
         Class.new(Actor) do
           input :value, type: Integer
@@ -732,16 +738,18 @@ RSpec.describe Actor do
         end
       end
 
-      it "raises `ArgumentError` exception" do
-        expect { actor }.to raise_error(
-          ArgumentError, <<~TXT
-            Defined input `object_id` collides with `ServiceActor::Result` instance method
-          TXT
-        )
+      specify do
+        actor
+
+        expect(Kernel).to have_received(:warn)
+          .with(/DEPRECATED: Defining inputs, .* input: `object_id`/)
+          .once
       end
     end
 
     context "with `output` name that collides with result methods" do
+      include_context "with mocked `Kernel.warn` method"
+
       let(:actor) do
         Class.new(Actor) do
           input :value, type: Integer
@@ -749,16 +757,18 @@ RSpec.describe Actor do
         end
       end
 
-      it "raises `ArgumentError` exception" do
-        expect { actor }.to raise_error(
-          ArgumentError, <<~TXT
-            Defined output `send` collides with `ServiceActor::Result` instance method
-          TXT
-        )
+      specify do
+        actor
+
+        expect(Kernel).to have_received(:warn)
+          .with(/DEPRECATED: Defining inputs, .* output: `send`/)
+          .once
       end
     end
 
     context "with `alias_input` that collides with result methods" do
+      include_context "with mocked `Kernel.warn` method"
+
       let(:actor) do
         Class.new(Actor) do
           input :value, type: Integer
@@ -767,12 +777,12 @@ RSpec.describe Actor do
         end
       end
 
-      it "raises `ArgumentError` exception" do
-        expect { actor }.to raise_error(
-          ArgumentError, <<~TXT
-            Defined alias `object_id` collides with `ServiceActor::Result` instance method
-          TXT
-        )
+      specify do
+        actor
+
+        expect(Kernel).to have_received(:warn)
+          .with(/DEPRECATED: Defining inputs, .* alias: `object_id`/)
+          .once
       end
     end
 
@@ -909,9 +919,9 @@ RSpec.describe Actor do
     end
 
     context "with sending unexpected messages" do
-      let(:actor) { PlayActors.result(value: 42) }
+      include_context "with mocked `Kernel.warn` method"
 
-      before { allow(Kernel).to receive(:warn) }
+      let(:actor) { PlayActors.result(value: 42) }
 
       it { expect(actor).to be_a_success }
       it { expect(actor).to respond_to(:name) }
