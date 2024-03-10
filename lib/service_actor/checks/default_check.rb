@@ -26,17 +26,19 @@
 #           }
 #   end
 class ServiceActor::Checks::DefaultCheck < ServiceActor::Checks::Base
-  def self.applicable_to_origin?(origin)
-    origin == :input
-  end
+  class << self
+    def applicable_to_origin?(origin)
+      origin == :input
+    end
 
-  def self.check(result:, input_key:, input_options:, actor:, **)
-    new(
-      result: result,
-      input_key: input_key,
-      input_options: input_options,
-      actor: actor,
-    ).check
+    def check(result:, input_key:, input_options:, actor:, **)
+      new(
+        result: result,
+        input_key: input_key,
+        input_options: input_options,
+        actor: actor,
+      ).check
+    end
   end
 
   def initialize(result:, input_key:, input_options:, actor:)

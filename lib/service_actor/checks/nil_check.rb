@@ -35,23 +35,25 @@ class ServiceActor::Checks::NilCheck < ServiceActor::Checks::Base
 
   private_constant :DEFAULT_MESSAGE
 
-  def self.check( # rubocop:disable Metrics/ParameterLists
-    origin:,
-    input_key:,
-    input_options:,
-    actor:,
-    conditions:,
-    result:,
-    **
-  ) # do
-    new(
-      origin: origin,
-      input_key: input_key,
-      input_options: input_options,
-      actor: actor,
-      allow_nil: conditions,
-      value: result[input_key],
-    ).check
+  class << self
+    def check(
+      origin:,
+      input_key:,
+      input_options:,
+      actor:,
+      conditions:,
+      result:,
+      **
+    ) # do
+      new(
+        origin: origin,
+        input_key: input_key,
+        input_options: input_options,
+        actor: actor,
+        allow_nil: conditions,
+        value: result[input_key],
+      ).check
+    end
   end
 
   def initialize( # rubocop:disable Metrics/ParameterLists

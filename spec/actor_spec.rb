@@ -9,7 +9,7 @@ RSpec.describe Actor do
     context "when fail! is not called" do
       let(:actor) { DoNothing.call }
 
-      it { expect(actor).to be_kind_of(ServiceActor::Result) }
+      it { expect(actor).to be_a(ServiceActor::Result) }
       it { expect(actor).to be_a_success }
       it { expect(actor).not_to be_a_failure }
     end
@@ -288,7 +288,7 @@ RSpec.describe Actor do
         it "raises" do
           expected_error =
             "The \"name\" input on \"SetNameWithInputCondition\" " \
-            "must \"be_lowercase\" but was \"42\""
+              "must \"be_lowercase\" but was \"42\""
 
           expect { SetNameWithInputCondition.call(name: "42") }
             .to raise_error(ServiceActor::ArgumentError, expected_error)
@@ -311,7 +311,7 @@ RSpec.describe Actor do
           let(:expected_message) do
             "The \"per_page\" input on " \
               "\"ExpectedFailInMustWhenTypeIsFirstAdvanced\" must be " \
-                "of type \"Integer\" but was \"String\""
+              "of type \"Integer\" but was \"String\""
           end
 
           it "raises" do
@@ -327,8 +327,8 @@ RSpec.describe Actor do
           let(:expected_message) do
             "The \"per_page\" input on " \
               "\"ExpectedFailInMustWhenTypeIsLastAdvanced\" has an error " \
-                "in the code inside \"be_in_range\": " \
-                  "[ArgumentError] comparison of String with 3 failed"
+              "in the code inside \"be_in_range\": " \
+              "[ArgumentError] comparison of String with 3 failed"
           end
 
           it "raises" do
@@ -373,7 +373,7 @@ RSpec.describe Actor do
         it "does not allow other types" do
           expected_error =
             "The \"value\" input on \"DoubleWithTypeAsString\" must " \
-            "be of type \"Integer, Float\" but was \"String\""
+              "be of type \"Integer, Float\" but was \"String\""
           expect { DoubleWithTypeAsString.call(value: "2.0") }
             .to raise_error(ServiceActor::ArgumentError, expected_error)
         end
@@ -417,7 +417,7 @@ RSpec.describe Actor do
         let(:expected_message) do
           "The \"name\" output on " \
             "\"SetWrongTypeOfOutputWithCustomArgumentErrorClass\" must " \
-              "be of type \"String\" but was \"Integer\""
+            "be of type \"String\" but was \"Integer\""
         end
 
         it "raises" do
@@ -453,7 +453,7 @@ RSpec.describe Actor do
           it "fails" do
             expected_error =
               "The \"name\" input on \"DisallowNilOnInput\" does not " \
-              "allow nil values"
+                "allow nil values"
 
             expect { DisallowNilOnInput.call(name: nil) }
               .to raise_error(ServiceActor::ArgumentError, expected_error)
@@ -505,7 +505,7 @@ RSpec.describe Actor do
         it "fails" do
           expected_error =
             "The \"name\" output on \"DisallowNilOnOutput\" " \
-            "does not allow nil values"
+              "does not allow nil values"
 
           expect { DisallowNilOnOutput.call(test_without_output: true) }
             .to raise_error(ServiceActor::ArgumentError, expected_error)
@@ -555,8 +555,8 @@ RSpec.describe Actor do
         context "when given an incorrect value" do
           let(:expected_alert) do
             'The "provider" input must be included in ' \
-            '["MANGOPAY", "PayPal", "Stripe"] on "PayWithProviderInclusion" ' \
-            'instead of "Paypal"'
+              '["MANGOPAY", "PayPal", "Stripe"] on ' \
+              '"PayWithProviderInclusion" instead of "Paypal"'
           end
 
           it "fails" do
@@ -613,8 +613,8 @@ RSpec.describe Actor do
         context "when given an incorrect value" do
           let(:expected_alert) do
             'The "provider" input must be included in ' \
-            '["MANGOPAY", "PayPal", "Stripe"] on "PayWithProvider" ' \
-            'instead of "Paypal"'
+              '["MANGOPAY", "PayPal", "Stripe"] on "PayWithProvider" ' \
+              'instead of "Paypal"'
           end
 
           it "fails" do
@@ -670,9 +670,9 @@ RSpec.describe Actor do
       context "when using inclusion check" do
         let(:expected_alert) do
           'The "provider" input must be included ' \
-          'in ["MANGOPAY", "PayPal", "Stripe"] on ' \
-          '"PayWithProviderAdvancedNoMessage" ' \
-          'instead of "Paypal2"'
+            'in ["MANGOPAY", "PayPal", "Stripe"] on ' \
+            '"PayWithProviderAdvancedNoMessage" ' \
+            'instead of "Paypal2"'
         end
 
         it "returns the default message" do
@@ -696,8 +696,8 @@ RSpec.describe Actor do
       context "when using must check" do
         let(:expected_error) do
           "The \"num\" input on \"CheckMustAdvancedNoMessage\" " \
-          "must \"be_smaller\" " \
-          "but was 6"
+            "must \"be_smaller\" " \
+            "but was 6"
         end
 
         it "returns the default message" do
@@ -708,8 +708,8 @@ RSpec.describe Actor do
 
       context "when using nil check" do
         let(:expected_error) do
-          "The \"name\" input on \"CheckNilAdvancedNoMessage\" "\
-          "does not allow nil values"
+          "The \"name\" input on \"CheckNilAdvancedNoMessage\" " \
+            "does not allow nil values"
         end
 
         it "returns the default message" do
@@ -792,7 +792,8 @@ RSpec.describe Actor do
 
       it do
         expect { actor }.to raise_error(
-          ArgumentError, "Expected 1 to be a subclass of Exception"
+          ArgumentError,
+          "Expected 1 to be a subclass of Exception",
         )
       end
     end
@@ -806,7 +807,8 @@ RSpec.describe Actor do
 
       it do
         expect { actor }.to raise_error(
-          ArgumentError, /Expected .+ to be a subclass of Exception/
+          ArgumentError,
+          /Expected .+ to be a subclass of Exception/,
         )
       end
     end
@@ -820,7 +822,8 @@ RSpec.describe Actor do
 
       it do
         expect { actor }.to raise_error(
-          ArgumentError, "Expected 1 to be a subclass of Exception"
+          ArgumentError,
+          "Expected 1 to be a subclass of Exception",
         )
       end
     end
@@ -834,7 +837,8 @@ RSpec.describe Actor do
 
       it do
         expect { actor }.to raise_error(
-          ArgumentError, /Expected .+ to be a subclass of Exception/
+          ArgumentError,
+          /Expected .+ to be a subclass of Exception/,
         )
       end
     end
@@ -848,7 +852,8 @@ RSpec.describe Actor do
 
       it do
         expect { actor }.to raise_error(
-          ArgumentError, "Expected Some string to be a subclass of Exception"
+          ArgumentError,
+          "Expected Some string to be a subclass of Exception",
         )
       end
     end
@@ -862,7 +867,8 @@ RSpec.describe Actor do
 
       it do
         expect { actor }.to raise_error(
-          ArgumentError, /Expected .+ to be a subclass of Exception/
+          ArgumentError,
+          /Expected .+ to be a subclass of Exception/,
         )
       end
     end
@@ -872,7 +878,7 @@ RSpec.describe Actor do
     context "when fail! is not called" do
       let(:actor) { DoNothing.result }
 
-      it { expect(actor).to be_kind_of(ServiceActor::Result) }
+      it { expect(actor).to be_a(ServiceActor::Result) }
       it { expect(actor).to be_a_success }
       it { expect(actor).not_to be_a_failure }
     end
@@ -880,7 +886,7 @@ RSpec.describe Actor do
     context "when fail! is called" do
       let(:actor) { FailWithError.result }
 
-      it { expect(actor).to be_kind_of(ServiceActor::Result) }
+      it { expect(actor).to be_a(ServiceActor::Result) }
       it { expect(actor).to be_a_failure }
       it { expect(actor).not_to be_a_success }
       it { expect(actor.error).to eq("Ouch") }

@@ -8,8 +8,8 @@ class SetNameWithInputConditionAdvanced < Actor
             is: -> name { name =~ /\A[a-z]+\z/ },
             message: (lambda do |check_name:, **|
               "Failed to apply `#{check_name}`"
-            end)
-          }
+            end),
+          },
         }
 
   output :name

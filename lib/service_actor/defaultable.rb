@@ -26,8 +26,10 @@
 #           }
 #   end
 module ServiceActor::Defaultable
-  def self.included(base)
-    base.prepend(PrependedMethods)
+  class << self
+    def included(base)
+      base.prepend(PrependedMethods)
+    end
   end
 
   module PrependedMethods

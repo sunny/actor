@@ -7,8 +7,10 @@
 #     output :name
 #   end
 module ServiceActor::Attributable
-  def self.included(base)
-    base.extend(ClassMethods)
+  class << self
+    def included(base)
+      base.extend(ClassMethods)
+    end
   end
 
   module ClassMethods
@@ -30,8 +32,8 @@ module ServiceActor::Attributable
         result[name]
       end
 
-      # For avoid method redefined warning messages.
-      alias_method name, name if method_defined?(name)
+      # To avoid method redefined warning messages.
+      alias_method(name, name) if method_defined?(name)
 
       protected name
     end
@@ -50,12 +52,12 @@ module ServiceActor::Attributable
       define_method(name) do
         result[name]
       end
+      protected name
 
-      define_method("#{name}=") do |value|
+      define_method(:"#{name}=") do |value|
         result[name] = value
       end
-
-      protected name, "#{name}="
+      protected :"#{name}="
     end
 
     def outputs

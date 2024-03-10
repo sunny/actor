@@ -6,7 +6,7 @@ class PayWithProviderInclusionAdvanced < Actor
           in: %w[MANGOPAY PayPal Stripe],
           message: (lambda do |value:, **|
             "Payment system \"#{value}\" is not supported"
-          end)
+          end),
         },
         default: "Stripe"
 

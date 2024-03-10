@@ -7,7 +7,7 @@ class DisallowNilOnInputAdvanced < Actor
           is: false,
           message: (lambda do |input_key:, **|
             "The value `#{input_key}` cannot be empty"
-          end)
+          end),
         }
 
   def call; end

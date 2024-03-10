@@ -303,7 +303,7 @@ class BuildGreeting < Actor
   input :adjective, default: "wonderful"
   input :length_of_time, default: -> { ["day", "week", "month"].sample }
   input :article,
-        default: -> context { context.adjective =~ /^aeiou/ ? 'an' : 'a' }
+        default: -> context { context.adjective.match?(/^aeiou/) ? "an" : "a" }
 
   output :greeting
 
@@ -475,7 +475,7 @@ end
             is: [TrueClass, FalseClass],
             message: (lambda do |input_key:, expected_type:, given_type:, **|
               "Wrong type \"#{given_type}\" for \"#{input_key}\". " \
-              "Expected: \"#{expected_type}\""
+                "Expected: \"#{expected_type}\""
             end)
           }
   end

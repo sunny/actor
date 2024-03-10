@@ -7,9 +7,11 @@
 #     fail_on ServiceActor::ArgumentError
 #   end
 module ServiceActor::Failable
-  def self.included(base)
-    base.extend(ClassMethods)
-    base.prepend(PrependedMethods)
+  class << self
+    def included(base)
+      base.extend(ClassMethods)
+      base.prepend(PrependedMethods)
+    end
   end
 
   module ClassMethods

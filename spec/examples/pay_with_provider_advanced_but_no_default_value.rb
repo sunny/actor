@@ -6,13 +6,13 @@ class PayWithProviderAdvancedButNoDefaultValue < Actor
           in: %w[MANGOPAY PayPal Stripe],
           message: (lambda do |value:, **|
             "Payment system \"#{value}\" is not supported"
-          end)
+          end),
         },
         default: {
           # value: "Stripe",
           message: (lambda do |input_key:, **|
             "Input `#{input_key}` is required"
-          end)
+          end),
         }
 
   output :message, type: String
