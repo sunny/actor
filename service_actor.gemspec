@@ -46,10 +46,17 @@ Gem::Specification.new do |spec|
   # Debugger
   spec.add_development_dependency "pry"
 
-  # Linting rubocop-lts is a rubocop wrapper for Ruby
+  # Linting rubocop-lts is a RuboCop wrapper for Ruby
   #   and should only be bumped when dropping old Ruby support
   # see: https://rubocop-lts.gitlab.io/HOW_TO_UPGRADE_RUBY/
   spec.add_development_dependency "rubocop-lts", "~> 18.2"
+
+  # rubocop-lts dependency. Can be removed when RuboCop LTS is upgraded.
+  # https://github.com/sunny/actor/pull/126#issuecomment-1966682674
+  spec.add_development_dependency "rspec-block_is_expected", ">= 1.0"
+
+  # Update RuboCop rules gradually.
+  spec.add_development_dependency "rubocop-gradual", ">= 0.3"
 
   # Lint RSpec code
   spec.add_development_dependency "rubocop-rspec"
