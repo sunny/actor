@@ -58,14 +58,18 @@
   "lib/service_actor/base.rb:1384601898": [
     [6, 3, 372, "Style/ClassMethodsDefinitions: Use `class << self` to define a class method.", 1859694145]
   ],
-  "lib/service_actor/checkable.rb:2255365888": [
+  "lib/service_actor/checkable.rb:1371441970": [
     [4, 3, 64, "Style/ClassMethodsDefinitions: Use `class << self` to define a class method.", 3862627531],
-    [23, 30, 12, "Performance/StringIdentifierArgument: Use `:\"#{origin}s\"` instead of `\"#{origin}s\"`.", 2481531303],
-    [49, 13, 35, "Layout/ArgumentAlignment: Use one level of indentation for arguments following the first line of a multi-line method call.", 3019920128],
-    [58, 9, 34, "Style/TrailingCommaInArrayLiteral: Put a comma after the last item of a multiline array.", 1744210091]
+    [14, 7, 34, "Style/TrailingCommaInArrayLiteral: Put a comma after the last item of a multiline array.", 1744210091],
+    [33, 30, 12, "Performance/StringIdentifierArgument: Use `:\"#{origin}s\"` instead of `\"#{origin}s\"`.", 2481531303],
+    [59, 13, 35, "Layout/ArgumentAlignment: Use one level of indentation for arguments following the first line of a multi-line method call.", 3019920128]
   ],
-  "lib/service_actor/checks/default_check.rb:502786818": [
-    [29, 3, 196, "Style/ClassMethodsDefinitions: Use `class << self` to define a class method.", 329234138]
+  "lib/service_actor/checks/base.rb:124451405": [
+    [4, 3, 54, "Style/ClassMethodsDefinitions: Use `class << self` to define a class method.", 853011185]
+  ],
+  "lib/service_actor/checks/default_check.rb:315716200": [
+    [29, 3, 65, "Style/ClassMethodsDefinitions: Use `class << self` to define a class method.", 720136416],
+    [33, 3, 196, "Style/ClassMethodsDefinitions: Use `class << self` to define a class method.", 329234138]
   ],
   "lib/service_actor/checks/inclusion_check.rb:3443106288": [
     [25, 9, 29, "Layout/LineEndStringConcatenationIndentation: Align parts of a string concatenated with backslash.", 2400253882],
@@ -80,33 +84,36 @@
   "lib/service_actor/checks/type_check.rb:2396679417": [
     [37, 3, 368, "Style/ClassMethodsDefinitions: Use `class << self` to define a class method.", 1749704976]
   ],
-  "lib/service_actor/configurable.rb:3064826469": [
-    [4, 3, 59, "Style/ClassMethodsDefinitions: Use `class << self` to define a class method.", 1204933570]
-  ],
-  "lib/service_actor/core.rb:193916122": [
+  "lib/service_actor/configurable.rb:2379152505": [
     [4, 3, 59, "Style/ClassMethodsDefinitions: Use `class << self` to define a class method.", 1204933570],
-    [38, 3, 13, "Style/SingleLineMethods: Avoid single-line method definitions.", 622651540],
-    [41, 3, 17, "Style/SingleLineMethods: Avoid single-line method definitions.", 2825890304]
+    [21, 7, 21, "ThreadSafety/InstanceVariableInClassMethod: Avoid instance variables in class methods.", 240420736],
+    [27, 7, 14, "ThreadSafety/InstanceVariableInClassMethod: Avoid instance variables in class methods.", 2923095860]
+  ],
+  "lib/service_actor/core.rb:3246954327": [
+    [4, 3, 59, "Style/ClassMethodsDefinitions: Use `class << self` to define a class method.", 1204933570],
+    [19, 21, 9, "Performance/StringIdentifierArgument: Use `:\"#{key}=\"` instead of `\"#{key}=\"`.", 1022841802],
+    [42, 3, 13, "Style/SingleLineMethods: Avoid single-line method definitions.", 622651540],
+    [45, 3, 17, "Style/SingleLineMethods: Avoid single-line method definitions.", 2825890304]
   ],
   "lib/service_actor/defaultable.rb:3257396550": [
     [29, 3, 64, "Style/ClassMethodsDefinitions: Use `class << self` to define a class method.", 3862627531]
   ],
-  "lib/service_actor/failable.rb:695496369": [
+  "lib/service_actor/failable.rb:3481571367": [
     [10, 3, 94, "Style/ClassMethodsDefinitions: Use `class << self` to define a class method.", 4021822177],
-    [27, 7, 9, "ThreadSafety/InstanceVariableInClassMethod: Avoid instance variables in class methods.", 319259018]
+    [31, 7, 9, "ThreadSafety/InstanceVariableInClassMethod: Avoid instance variables in class methods.", 319259018]
   ],
-  "lib/service_actor/playable.rb:71635662": [
+  "lib/service_actor/playable.rb:3511078507": [
     [12, 3, 94, "Style/ClassMethodsDefinitions: Use `class << self` to define a class method.", 4021822177],
-    [31, 7, 12, "ThreadSafety/InstanceVariableInClassMethod: Avoid instance variables in class methods.", 798044166],
-    [47, 35, 12, "Performance/StringIdentifierArgument: Use `:\"#{method}=\"` instead of `\"#{method}=\"`.", 819163746]
+    [31, 7, 12, "ThreadSafety/InstanceVariableInClassMethod: Avoid instance variables in class methods.", 798044166]
   ],
-  "lib/service_actor/result.rb:1916958279": [
-    [7, 30, 10, "Style/OpenStructUse: Avoid using `OpenStruct`; use `Struct`, `Hash`, a class or test doubles instead.", 3414223046],
+  "lib/service_actor/result.rb:1828502347": [
     [8, 3, 86, "Style/ClassMethodsDefinitions: Use `class << self` to define a class method.", 3727597697],
-    [69, 7, 30, "Style/MethodCallWithArgsParentheses: Use parentheses for method calls with arguments.", 2530640534],
-    [79, 5, 19, "Style/SuperWithArgsParentheses: Use parentheses for `super` with arguments.", 2901087331]
+    [79, 50, 2, "Style/RedundantLineContinuation: Redundant line continuation.", 5862675],
+    [80, 20, 45, "Layout/MultilineOperationIndentation: Use 2 (not 15) spaces for indenting a condition in an `if` statement spanning multiple lines.", 888429576],
+    [88, 8, 51, "Layout/MultilineOperationIndentation: Use 4 (not 3) spaces for indenting a condition in an `if` statement spanning multiple lines.", 2035554402],
+    [103, 7, 61, "Layout/LineEndStringConcatenationIndentation: Indent the first part of a string concatenated with backslash.", 1446933026]
   ],
-  "service_actor.gemspec:1369984762": [
+  "service_actor.gemspec:3176990543": [
     [32, 5, 21, "Style/CommandLiteral: Use `%x` around command string.", 2340001096],
     [38, 3, 38, "Gemspec/DependencyVersion: Dependency version specification is required.", 2799546261],
     [38, 3, 38, "Style/MethodCallWithArgsParentheses: Use parentheses for method calls with arguments.", 2799546261],
@@ -118,18 +125,17 @@
     [47, 3, 37, "Style/MethodCallWithArgsParentheses: Use parentheses for method calls with arguments.", 1202442760],
     [52, 3, 56, "Style/MethodCallWithArgsParentheses: Use parentheses for method calls with arguments.", 1496057722],
     [56, 3, 67, "Style/MethodCallWithArgsParentheses: Use parentheses for method calls with arguments.", 3352209572],
-    [59, 3, 47, "Gemspec/DependencyVersion: Dependency version specification is required.", 3367389567],
-    [59, 3, 47, "Style/MethodCallWithArgsParentheses: Use parentheses for method calls with arguments.", 3367389567],
-    [62, 3, 53, "Gemspec/DependencyVersion: Dependency version specification is required.", 4157127408],
-    [62, 3, 53, "Style/MethodCallWithArgsParentheses: Use parentheses for method calls with arguments.", 4157127408],
-    [65, 3, 46, "Gemspec/DependencyVersion: Dependency version specification is required.", 2185074421],
-    [65, 3, 46, "Style/MethodCallWithArgsParentheses: Use parentheses for method calls with arguments.", 2185074421],
-    [68, 3, 55, "Gemspec/DependencyVersion: Dependency version specification is required.", 3647435321],
-    [68, 3, 55, "Style/MethodCallWithArgsParentheses: Use parentheses for method calls with arguments.", 3647435321],
+    [59, 3, 59, "Style/MethodCallWithArgsParentheses: Use parentheses for method calls with arguments.", 4236915618],
+    [62, 3, 47, "Gemspec/DependencyVersion: Dependency version specification is required.", 3367389567],
+    [62, 3, 47, "Style/MethodCallWithArgsParentheses: Use parentheses for method calls with arguments.", 3367389567],
+    [65, 3, 53, "Gemspec/DependencyVersion: Dependency version specification is required.", 4157127408],
+    [65, 3, 53, "Style/MethodCallWithArgsParentheses: Use parentheses for method calls with arguments.", 4157127408],
+    [68, 3, 46, "Gemspec/DependencyVersion: Dependency version specification is required.", 2185074421],
+    [68, 3, 46, "Style/MethodCallWithArgsParentheses: Use parentheses for method calls with arguments.", 2185074421],
     [71, 3, 44, "Gemspec/DependencyVersion: Dependency version specification is required.", 664785788],
     [71, 3, 44, "Style/MethodCallWithArgsParentheses: Use parentheses for method calls with arguments.", 664785788]
   ],
-  "spec/actor_spec.rb:2400814428": [
+  "spec/actor_spec.rb:1274419012": [
     [8, 29, 10, "RSpec/ClassCheck: Prefer `be_a` over `be_kind_of`.", 3679076707],
     [287, 13, 38, "Layout/LineEndStringConcatenationIndentation: Indent the first part of a string concatenated with backslash.", 2685815861],
     [310, 17, 40, "Layout/LineEndStringConcatenationIndentation: Align parts of a string concatenated with backslash.", 288459521],
@@ -145,8 +151,8 @@
     [701, 11, 22, "Layout/LineEndStringConcatenationIndentation: Indent the first part of a string concatenated with backslash.", 3999235946],
     [713, 65, 1, "Layout/LineContinuationSpacing: Use one space in front of backslash.", 177657],
     [714, 11, 27, "Layout/LineEndStringConcatenationIndentation: Indent the first part of a string concatenated with backslash.", 4216326503],
-    [729, 29, 10, "RSpec/ClassCheck: Prefer `be_a` over `be_kind_of`.", 3679076707],
-    [737, 29, 10, "RSpec/ClassCheck: Prefer `be_a` over `be_kind_of`.", 3679076707]
+    [822, 29, 10, "RSpec/ClassCheck: Prefer `be_a` over `be_kind_of`.", 3679076707],
+    [830, 29, 10, "RSpec/ClassCheck: Prefer `be_a` over `be_kind_of`.", 3679076707]
   ],
   "spec/examples/allow_nil_on_input_with_type_and_default_nil.rb:2686481601": [
     [6, 3, 13, "Style/SingleLineMethods: Avoid single-line method definitions.", 622651540]
