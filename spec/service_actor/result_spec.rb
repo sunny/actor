@@ -9,6 +9,38 @@ RSpec.describe ServiceActor::Result do
     expect(result.respond_to?(:name?)).to be true
   end
 
+  describe ".instance_methods" do
+    it "stays the same across supported Rubies" do # rubocop:disable RSpec/ExampleLength
+      expect(described_class.instance_methods).to contain_exactly(
+        :merge!,
+        :send,
+        :delete!,
+        :key?,
+        :pretty_print,
+        :failure?,
+        :inspect,
+        :fail!,
+        :class,
+        :success?,
+        :[]=,
+        :[],
+        :kind_of?,
+        :is_a?,
+        :respond_to?,
+        :to_h,
+        :equal?,
+        :!,
+        :__send__,
+        :==,
+        :!=,
+        :__binding__,
+        :instance_eval,
+        :instance_exec,
+        :__id__,
+      )
+    end
+  end
+
   context "when input is String" do
     context "when is empty" do
       it "returns false" do

@@ -1,14 +1,17 @@
 # frozen_string_literal: true
 
-require "ostruct"
-
 # Represents the context of an actor, holding the data from both its inputs
 # and outputs.
-class ServiceActor::Result
+
+class ServiceActor::Result < BasicObject
   def self.to_result(data)
     return data if data.is_a?(self)
 
     new(data.to_h)
+  end
+
+  %i[class is_a? kind_of? send].each do |method_name|
+    define_method(method_name, ::Kernel.instance_method(method_name))
   end
 
   def initialize(data = {})
@@ -22,17 +25,18 @@ class ServiceActor::Result
   def inspect
     "<#{self.class.name} #{to_h}>"
   end
+  alias pretty_print inspect
 
   def fail!(failure_class = nil, result = {})
-    if failure_class.nil? || failure_class.is_a?(Hash)
+    if failure_class.nil? || failure_class.is_a?(::Hash)
       result = failure_class.to_h
-      failure_class = ServiceActor::Failure
+      failure_class = ::ServiceActor::Failure
     end
 
     data.merge!(result)
     data[:failure] = true
 
-    raise failure_class, self
+    ::Kernel.raise failure_class, self
   end
 
   def success?
@@ -61,13 +65,13 @@ class ServiceActor::Result
     data[key] = value
   end
 
-  def delete(key)
+  def delete!(key)
     data.delete(key)
   end
 
-  # Defined here to override the method on `Object`.
-  def display
-    to_h.fetch(:display)
+  def respond_to?(method_name, include_private = false)
+    self.class.instance_methods.include?(method_name) ||
+      respond_to_missing?(method_name, include_private)
   end
 
   private
@@ -98,7 +102,7 @@ class ServiceActor::Result
   end
 
   def warn_on_undefined_method_invocation(message)
-    Kernel.warn(
+    ::Kernel.warn(
       "DEPRECATED: Invoking undefined methods on `ServiceActor::Result` will " \
       "lead to runtime errors in the next major release of Actor. " \
       "Invoked method: `#{message}`",

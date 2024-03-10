@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
 RSpec.describe Actor do
+  shared_context "with mocked `Kernel.warn` method" do
+    before { allow(Kernel).to receive(:warn).with(kind_of(String)) }
+  end
+
   describe "#call" do
     context "when fail! is not called" do
       let(:actor) { DoNothing.call }
@@ -423,12 +427,6 @@ RSpec.describe Actor do
       end
     end
 
-    context "when using an output called display" do
-      it "returns it" do
-        expect(SetOutputCalledDisplay.call.display).to eq("Foobar")
-      end
-    end
-
     context "when setting an unknown output" do
       it "raises" do
         expect { SetUnknownOutput.call }
@@ -730,6 +728,61 @@ RSpec.describe Actor do
       end
     end
 
+    context "with `input` name that collides with result methods" do
+      include_context "with mocked `Kernel.warn` method"
+
+      let(:actor) do
+        Class.new(Actor) do
+          input :value, type: Integer
+          input :kind_of?, type: String
+        end
+      end
+
+      specify do
+        expect { actor }.to raise_error(
+          ArgumentError,
+          "input `kind_of?` overrides `ServiceActor::Result` instance method",
+        )
+      end
+    end
+
+    context "with `output` name that collides with result methods" do
+      include_context "with mocked `Kernel.warn` method"
+
+      let(:actor) do
+        Class.new(Actor) do
+          input :value, type: Integer
+          output :fail!, type: String
+        end
+      end
+
+      specify do
+        expect { actor }.to raise_error(
+          ArgumentError,
+          "output `fail!` overrides `ServiceActor::Result` instance method",
+        )
+      end
+    end
+
+    context "with `alias_input` that collides with result methods" do
+      include_context "with mocked `Kernel.warn` method"
+
+      let(:actor) do
+        Class.new(Actor) do
+          input :value, type: Integer
+
+          play alias_input(merge!: :value)
+        end
+      end
+
+      specify do
+        expect { actor }.to raise_error(
+          ArgumentError,
+          "alias `merge!` overrides `ServiceActor::Result` instance method",
+        )
+      end
+    end
+
     context "with `failure_class` which is not a class" do
       let(:actor) do
         Class.new(Actor) do
@@ -863,9 +916,9 @@ RSpec.describe Actor do
     end
 
     context "with sending unexpected messages" do
-      let(:actor) { PlayActors.result(value: 42) }
+      include_context "with mocked `Kernel.warn` method"
 
-      before { allow(Kernel).to receive(:warn) }
+      let(:actor) { PlayActors.result(value: 42) }
 
       it { expect(actor).to be_a_success }
       it { expect(actor).to respond_to(:name) }

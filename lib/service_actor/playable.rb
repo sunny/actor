@@ -20,6 +20,12 @@ module ServiceActor::Playable
     end
 
     def alias_input(**options)
+      options.each_key do |new|
+        ServiceActor::ArgumentsValidator.validate_origin_name(
+          new, origin: :alias
+        )
+      end
+
       lambda do |actor|
         options.each do |new, original|
           define_alias_input(actor, new, original)
@@ -40,7 +46,7 @@ module ServiceActor::Playable
     private
 
     def define_alias_input(actor, new_input, original_input)
-      actor[new_input] = actor.delete(original_input)
+      actor[new_input] = actor.delete!(original_input)
     end
   end
 
