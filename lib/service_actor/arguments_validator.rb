@@ -6,12 +6,8 @@ module ServiceActor::ArgumentsValidator
   def validate_origin_name(name, origin:)
     return unless ServiceActor::Result.instance_methods.include?(name.to_sym)
 
-    Kernel.warn(
-      "DEPRECATED: Defining inputs, outputs or alias_input that collide with " \
-      "`ServiceActor::Result` instance methods will lead to runtime errors " \
-      "in the next major release of Actor. " \
-      "Problematic #{origin}: `#{name}`",
-    )
+    raise ArgumentError,
+          "#{origin} `#{name}` overrides `ServiceActor::Result` instance method"
   end
 
   def validate_error_class(value)

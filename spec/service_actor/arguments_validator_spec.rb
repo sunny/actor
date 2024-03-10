@@ -2,20 +2,19 @@
 
 RSpec.describe ServiceActor::ArgumentsValidator do
   describe ".validate_origin_name" do
-    before { allow(Kernel).to receive(:warn).with(kind_of(String)) }
-
-    it "raises if collision present" do
-      described_class.validate_origin_name(:fail!, origin: :input)
-
-      expect(Kernel).to have_received(:warn)
-        .with(/DEPRECATED: Defining inputs, .* input: `fail!`/)
-        .once
+    it "raises if collision present" do # rubocop:disable RSpec/ExampleLength
+      expect do
+        described_class.validate_origin_name(:fail!, origin: :input)
+      end.to raise_error(
+        ArgumentError,
+        "input `fail!` overrides `ServiceActor::Result` instance method",
+      )
     end
 
     it do
-      described_class.validate_origin_name(:some_method, origin: :output)
-
-      expect(Kernel).not_to have_received(:warn)
+      expect do
+        described_class.validate_origin_name(:some_method, origin: :output)
+      end.not_to raise_error
     end
   end
 

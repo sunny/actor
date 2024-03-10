@@ -46,7 +46,7 @@ module ServiceActor::Playable
     private
 
     def define_alias_input(actor, new_input, original_input)
-      actor[new_input] = actor.__delete__(original_input)
+      actor[new_input] = actor.delete!(original_input)
     end
   end
 

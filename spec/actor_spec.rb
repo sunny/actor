@@ -739,11 +739,10 @@ RSpec.describe Actor do
       end
 
       specify do
-        actor
-
-        expect(Kernel).to have_received(:warn)
-          .with(/DEPRECATED: Defining inputs, .* input: `kind_of\?`/)
-          .once
+        expect { actor }.to raise_error(
+          ArgumentError,
+          "input `kind_of?` overrides `ServiceActor::Result` instance method",
+        )
       end
     end
 
@@ -758,11 +757,10 @@ RSpec.describe Actor do
       end
 
       specify do
-        actor
-
-        expect(Kernel).to have_received(:warn)
-          .with(/DEPRECATED: Defining inputs, .* output: `fail!`/)
-          .once
+        expect { actor }.to raise_error(
+          ArgumentError,
+          "output `fail!` overrides `ServiceActor::Result` instance method",
+        )
       end
     end
 
@@ -778,11 +776,10 @@ RSpec.describe Actor do
       end
 
       specify do
-        actor
-
-        expect(Kernel).to have_received(:warn)
-          .with(/DEPRECATED: Defining inputs, .* alias: `merge!`/)
-          .once
+        expect { actor }.to raise_error(
+          ArgumentError,
+          "alias `merge!` overrides `ServiceActor::Result` instance method",
+        )
       end
     end
 
