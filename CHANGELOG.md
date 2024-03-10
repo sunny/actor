@@ -5,6 +5,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## unreleased
 
+Changes:
+- Drop support for Ruby before 2.7 (#126)
+
 Fixes:
 - Add default message to missing `message` key on advanced `input` or `output`
   checks (#117)
