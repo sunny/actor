@@ -15,6 +15,18 @@ module ServiceActor::Configurable
       child.failure_class = failure_class || ServiceActor::Failure
     end
 
-    attr_accessor :argument_error_class, :failure_class
+    def argument_error_class=(value)
+      ServiceActor::ArgumentsValidator.validate_error_class(value)
+
+      @argument_error_class = value
+    end
+
+    def failure_class=(value)
+      ServiceActor::ArgumentsValidator.validate_error_class(value)
+
+      @failure_class = value
+    end
+
+    attr_reader :argument_error_class, :failure_class
   end
 end

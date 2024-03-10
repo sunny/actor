@@ -720,6 +720,99 @@ RSpec.describe Actor do
         end
       end
     end
+
+    context "with unset output and allow_nil: true" do
+      it "succeeds" do
+        actor = WithUnsetOutput.result
+
+        expect(actor).to be_a_success
+        expect(actor.value).to be_nil
+      end
+    end
+
+    context "with `failure_class` which is not a class" do
+      let(:actor) do
+        Class.new(Actor) do
+          self.failure_class = 1
+        end
+      end
+
+      it do
+        expect { actor }.to raise_error(
+          ArgumentError, "Expected 1 to be a subclass of Exception"
+        )
+      end
+    end
+
+    context "with `failure_class` that does not inherit `Exception`" do
+      let(:actor) do
+        Class.new(Actor) do
+          self.failure_class = Class.new
+        end
+      end
+
+      it do
+        expect { actor }.to raise_error(
+          ArgumentError, /Expected .+ to be a subclass of Exception/
+        )
+      end
+    end
+
+    context "with `argument_error_class` which is not a class" do
+      let(:actor) do
+        Class.new(Actor) do
+          self.argument_error_class = 1
+        end
+      end
+
+      it do
+        expect { actor }.to raise_error(
+          ArgumentError, "Expected 1 to be a subclass of Exception"
+        )
+      end
+    end
+
+    context "with `argument_error_class` that does not inherit `Exception`" do
+      let(:actor) do
+        Class.new(Actor) do
+          self.argument_error_class = Class.new
+        end
+      end
+
+      it do
+        expect { actor }.to raise_error(
+          ArgumentError, /Expected .+ to be a subclass of Exception/
+        )
+      end
+    end
+
+    context "with `fail_on` which is not a class" do
+      let(:actor) do
+        Class.new(Actor) do
+          fail_on ArgumentError, "Some string", RuntimeError
+        end
+      end
+
+      it do
+        expect { actor }.to raise_error(
+          ArgumentError, "Expected Some string to be a subclass of Exception"
+        )
+      end
+    end
+
+    context "with `fail_on` which does not inherit `Exception`" do
+      let(:actor) do
+        Class.new(Actor) do
+          fail_on ArgumentError, Class.new
+        end
+      end
+
+      it do
+        expect { actor }.to raise_error(
+          ArgumentError, /Expected .+ to be a subclass of Exception/
+        )
+      end
+    end
   end
 
   describe "#result" do
@@ -767,6 +860,36 @@ RSpec.describe Actor do
       it { expect(actor).not_to be_a_success }
       it { expect(actor.name).to eq("Jim") }
       it { expect(actor.value).to eq(0) }
+    end
+
+    context "with sending unexpected messages" do
+      let(:actor) { PlayActors.result(value: 42) }
+
+      before { allow(Kernel).to receive(:warn) }
+
+      it { expect(actor).to be_a_success }
+      it { expect(actor).to respond_to(:name) }
+      it { expect(actor).to respond_to(:name?) }
+      it { expect(actor.name).to eq("jim") }
+
+      it { expect(actor).not_to respond_to(:unknown_method) }
+      it { expect(actor).not_to respond_to(:unknown_method?) }
+
+      it "warns about sending unexpected messages" do
+        actor.unknown_method
+
+        expect(Kernel).to have_received(:warn).with(
+          include("unknown_method"),
+        )
+      end
+
+      it "warns about sending unexpected predicate messages" do
+        actor.unknown_method?
+
+        expect(Kernel).to have_received(:warn).with(
+          include("unknown_method?"),
+        )
+      end
     end
   end
 end

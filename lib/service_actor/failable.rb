@@ -20,6 +20,10 @@ module ServiceActor::Failable
     end
 
     def fail_on(*exceptions)
+      exceptions.each do |exception|
+        ServiceActor::ArgumentsValidator.validate_error_class(exception)
+      end
+
       fail_ons.push(*exceptions)
     end
 

@@ -74,18 +74,34 @@ class ServiceActor::Result
 
   attr_reader :data
 
-  def respond_to_missing?(_method_name, _include_private = false)
-    true
+  def respond_to_missing?(method_name, _include_private = false)
+    return true if method_name.end_with?("=")
+    return true if method_name.end_with?("?") && \
+                   data.key?(method_name.to_s.chomp("?").to_sym)
+    return true if data.key?(method_name)
+
+    false
   end
 
   def method_missing(method_name, *args) # rubocop:disable Metrics/AbcSize
-    if method_name.end_with?("?")
-      value = data[method_name.to_s.chomp("?").to_sym]
+    if method_name.end_with?("?") &&
+       data.key?(key = method_name.to_s.chomp("?").to_sym)
+      value = data[key]
       value.respond_to?(:empty?) ? !value.empty? : !!value
     elsif method_name.end_with?("=")
       data[method_name.to_s.chomp("=").to_sym] = args.first
-    else
+    elsif data.key?(method_name)
       data[method_name]
+    else
+      warn_on_undefined_method_invocation(method_name)
     end
+  end
+
+  def warn_on_undefined_method_invocation(message)
+    Kernel.warn(
+      "DEPRECATED: Invoking undefined methods on `ServiceActor::Result` will " \
+      "lead to runtime errors in the next major release of Actor. " \
+      "Invoked method: `#{message}`",
+    )
   end
 end
