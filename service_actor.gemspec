@@ -67,9 +67,6 @@ Gem::Specification.new do |spec|
   # Add Rakefile linting
   spec.add_development_dependency "rubocop-rake"
 
-  # Formatter for GitHub’s code scanning
-  spec.add_development_dependency "code-scanning-rubocop"
-
   # For testing Interactor migration support
   spec.add_development_dependency "interactor"
 end
