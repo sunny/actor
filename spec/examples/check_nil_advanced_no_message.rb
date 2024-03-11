@@ -2,7 +2,5 @@
 
 class CheckNilAdvancedNoMessage < Actor
   input :name,
-        allow_nil: {
-          is: false
-        }
+        allow_nil: {is: false}
 end

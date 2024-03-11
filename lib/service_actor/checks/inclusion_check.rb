@@ -22,21 +22,23 @@ class ServiceActor::Checks::InclusionCheck < ServiceActor::Checks::Base
   DEFAULT_MESSAGE = lambda do |input_key:, actor:, inclusion_in:, value:|
     "The \"#{input_key}\" input must be included " \
       "in #{inclusion_in.inspect} on \"#{actor}\" " \
-        "instead of #{value.inspect}"
+      "instead of #{value.inspect}"
   end
 
   private_constant :DEFAULT_MESSAGE
 
-  def self.check(check_name:, input_key:, actor:, conditions:, result:, **) # rubocop:disable Metrics/ParameterLists
-    # DEPRECATED: `in` is deprecated in favor of `inclusion`.
-    return unless %i[inclusion in].include?(check_name)
+  class << self
+    def check(check_name:, input_key:, actor:, conditions:, result:, **)
+      # DEPRECATED: `in` is deprecated in favor of `inclusion`.
+      return unless %i[inclusion in].include?(check_name)
 
-    new(
-      input_key: input_key,
-      actor: actor,
-      inclusion: conditions,
-      value: result[input_key],
-    ).check
+      new(
+        input_key: input_key,
+        actor: actor,
+        inclusion: conditions,
+        value: result[input_key],
+      ).check
+    end
   end
 
   def initialize(input_key:, actor:, inclusion:, value:)

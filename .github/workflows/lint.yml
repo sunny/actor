@@ -17,4 +17,4 @@ jobs:
           bundler-cache: true
 
       - name: RuboCop
-        run: bin/rubocop-gradual --check
+        run: NO_GRADUAL=1 bin/rubocop --format github

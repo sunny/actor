@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
 module ServiceActor::Core
-  def self.included(base)
-    base.extend(ClassMethods)
+  class << self
+    def included(base)
+      base.extend(ClassMethods)
+    end
   end
 
   module ClassMethods
@@ -16,7 +18,7 @@ module ServiceActor::Core
       instance._call
 
       outputs.each_key do |key|
-        result.send("#{key}=", nil) unless result.respond_to?(key)
+        result.send(:"#{key}=", nil) unless result.respond_to?(key)
       end
 
       result

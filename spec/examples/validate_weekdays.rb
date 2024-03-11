@@ -10,7 +10,7 @@ class ValidateWeekdays < Actor
         must: {
           be_valid: lambda do |numbers|
             numbers.nil? || numbers.all? { |number| (0..6).cover?(number) }
-          end
+          end,
         }
 
   def call; end

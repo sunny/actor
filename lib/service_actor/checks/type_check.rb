@@ -34,24 +34,26 @@ class ServiceActor::Checks::TypeCheck < ServiceActor::Checks::Base
 
   private_constant :DEFAULT_MESSAGE
 
-  def self.check( # rubocop:disable Metrics/ParameterLists
-    check_name:,
-    origin:,
-    input_key:,
-    actor:,
-    conditions:,
-    result:,
-    **
-  ) # do
-    return unless check_name == :type
+  class << self
+    def check(
+      check_name:,
+      origin:,
+      input_key:,
+      actor:,
+      conditions:,
+      result:,
+      **
+    ) # do
+      return unless check_name == :type
 
-    new(
-      origin: origin,
-      input_key: input_key,
-      actor: actor,
-      type_definition: conditions,
-      given_type: result[input_key],
-    ).check
+      new(
+        origin: origin,
+        input_key: input_key,
+        actor: actor,
+        type_definition: conditions,
+        given_type: result[input_key],
+      ).check
+    end
   end
 
   def initialize(origin:, input_key:, actor:, type_definition:, given_type:)

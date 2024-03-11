@@ -2,12 +2,13 @@
 
 # Represents the context of an actor, holding the data from both its inputs
 # and outputs.
-
 class ServiceActor::Result < BasicObject
-  def self.to_result(data)
-    return data if data.is_a?(self)
+  class << self
+    def to_result(data)
+      return data if data.is_a?(self)
 
-    new(data.to_h)
+      new(data.to_h)
+    end
   end
 
   %i[class is_a? kind_of? send].each do |method_name|
@@ -25,7 +26,8 @@ class ServiceActor::Result < BasicObject
   def inspect
     "<#{self.class.name} #{to_h}>"
   end
-  alias pretty_print inspect
+
+  alias_method :pretty_print, :inspect
 
   def fail!(failure_class = nil, result = {})
     if failure_class.nil? || failure_class.is_a?(::Hash)
@@ -80,8 +82,11 @@ class ServiceActor::Result < BasicObject
 
   def respond_to_missing?(method_name, _include_private = false)
     return true if method_name.end_with?("=")
-    return true if method_name.end_with?("?") && \
-                   data.key?(method_name.to_s.chomp("?").to_sym)
+    if method_name.end_with?("?") &&
+        data.key?(method_name.to_s.chomp("?").to_sym)
+      return true
+    end
+
     return true if data.key?(method_name)
 
     false
@@ -89,7 +94,7 @@ class ServiceActor::Result < BasicObject
 
   def method_missing(method_name, *args) # rubocop:disable Metrics/AbcSize
     if method_name.end_with?("?") &&
-       data.key?(key = method_name.to_s.chomp("?").to_sym)
+        data.key?(key = method_name.to_s.chomp("?").to_sym)
       value = data[key]
       value.respond_to?(:empty?) ? !value.empty? : !!value
     elsif method_name.end_with?("=")
@@ -104,8 +109,8 @@ class ServiceActor::Result < BasicObject
   def warn_on_undefined_method_invocation(message)
     ::Kernel.warn(
       "DEPRECATED: Invoking undefined methods on `ServiceActor::Result` will " \
-      "lead to runtime errors in the next major release of Actor. " \
-      "Invoked method: `#{message}`",
+        "lead to runtime errors in the next major release of Actor. " \
+        "Invoked method: `#{message}`",
     )
   end
 end

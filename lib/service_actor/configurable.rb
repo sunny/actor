@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
 module ServiceActor::Configurable
-  def self.included(base)
-    base.extend(ClassMethods)
+  class << self
+    def included(base)
+      base.extend(ClassMethods)
+    end
   end
 
   module ClassMethods

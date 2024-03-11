@@ -29,22 +29,22 @@ Gem::Specification.new do |spec|
   ]
 
   spec.files = Dir.chdir(File.expand_path(__dir__)) do
-    `git ls-files -z lib`.split("\x0")
+    %x(git ls-files -z lib).split("\x0")
   end
 
   spec.required_ruby_version = [">= 2.7"]
 
   # Loader
-  spec.add_runtime_dependency "zeitwerk"
+  spec.add_runtime_dependency "zeitwerk", ">= 1.0"
 
   # Tests
-  spec.add_development_dependency "rspec"
+  spec.add_development_dependency "rspec", ">= 3.0"
 
   # Development Tasks
-  spec.add_development_dependency "rake"
+  spec.add_development_dependency "rake", ">= 13.0"
 
   # Debugger
-  spec.add_development_dependency "pry"
+  spec.add_development_dependency "pry", ">= 0.12"
 
   # Linting rubocop-lts is a RuboCop wrapper for Ruby
   #   and should only be bumped when dropping old Ruby support
@@ -59,14 +59,17 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rubocop-gradual", ">= 0.3"
 
   # Lint RSpec code
-  spec.add_development_dependency "rubocop-rspec"
+  spec.add_development_dependency "rubocop-rspec", ">= 2.0"
 
   # Add performance linting
-  spec.add_development_dependency "rubocop-performance"
+  spec.add_development_dependency "rubocop-performance", ">= 1.0"
 
   # Add Rakefile linting
-  spec.add_development_dependency "rubocop-rake"
+  spec.add_development_dependency "rubocop-rake", ">= 0.1"
+
+  # Formatter for GitHub’s code scanning
+  spec.add_development_dependency "code-scanning-rubocop", ">= 0.6"
 
   # For testing Interactor migration support
-  spec.add_development_dependency "interactor"
+  spec.add_development_dependency "interactor", ">= 3.0"
 end

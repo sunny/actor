@@ -9,9 +9,11 @@
 #          SendWelcomeEmail
 #   end
 module ServiceActor::Playable
-  def self.included(base)
-    base.extend(ClassMethods)
-    base.prepend(PrependedMethods)
+  class << self
+    def included(base)
+      base.extend(ClassMethods)
+      base.prepend(PrependedMethods)
+    end
   end
 
   module ClassMethods

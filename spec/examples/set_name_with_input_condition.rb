@@ -4,7 +4,7 @@ class SetNameWithInputCondition < Actor
   input :name,
         type: String,
         must: {
-          be_lowercase: -> name { name =~ /\A[a-z]+\z/ }
+          be_lowercase: -> name { name =~ /\A[a-z]+\z/ },
         }
 
   output :name
