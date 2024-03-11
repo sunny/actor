@@ -72,4 +72,7 @@ Gem::Specification.new do |spec|
 
   # For testing Interactor migration support
   spec.add_development_dependency "interactor", ">= 3.0"
+
+  # Code coverage reporter
+  spec.add_development_dependency "simplecov", ">= 0.0"
 end
