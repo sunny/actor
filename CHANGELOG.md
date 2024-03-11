@@ -5,6 +5,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## unreleased
 
+Features:
+- Add pattern matching support for `ServiceActor::Result` (#134)
+
 Changes:
 - Drop support for Ruby before 2.7 (#126)
 

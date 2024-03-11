@@ -76,6 +76,12 @@ class ServiceActor::Result < BasicObject
       respond_to_missing?(method_name, include_private)
   end
 
+  def deconstruct_keys(keys)
+    deconstructed_keys = to_h.merge(success: success?, failure: failure?)
+
+    keys ? deconstructed_keys.slice(*keys) : deconstructed_keys
+  end
+
   private
 
   attr_reader :data

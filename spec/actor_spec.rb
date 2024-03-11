@@ -950,5 +950,26 @@ RSpec.describe Actor do
         )
       end
     end
+
+    context "when using pattern matching" do
+      let(:successful_result) { FailForDifferentReasons.result(month: 2) }
+      let(:holidays_result) { FailForDifferentReasons.result(month: 12) }
+      let(:invalid_result) { FailForDifferentReasons.result(month: -1) }
+
+      it { expect(match_result(successful_result)).to eq "Welcome!" }
+      it { expect(match_result(holidays_result)).to eq "Come next year!" }
+      it { expect(match_result(invalid_result)).to be_nil }
+
+      def match_result(result)
+        case result
+        in {success: true, message:}
+          message
+        in {failure: true, reason: :holidays, message:}
+          message
+        in {failure: true, reason: :invalid_month}
+          nil
+        end
+      end
+    end
   end
 end
