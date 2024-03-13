@@ -11,9 +11,11 @@ class ServiceActor::Result < BasicObject
     end
   end
 
-  %i[class is_a? kind_of? send].each do |method_name|
+  %i[class is_a? kind_of? send tap then block_given?].each do |method_name|
     define_method(method_name, ::Kernel.instance_method(method_name))
   end
+
+  alias_method :yield_self, :then
 
   def initialize(data = {})
     @data = data.to_h

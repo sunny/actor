@@ -38,6 +38,10 @@ RSpec.describe ServiceActor::Result do
         :instance_eval,
         :instance_exec,
         :__id__,
+        :tap,
+        :then,
+        :yield_self,
+        :block_given?,
       )
     end
   end
