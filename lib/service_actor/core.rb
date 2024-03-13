@@ -17,10 +17,6 @@ module ServiceActor::Core
       instance = new(result)
       instance._call
 
-      outputs.each_key do |key|
-        result.send(:"#{key}=", nil) unless result.respond_to?(key)
-      end
-
       result
     end
 

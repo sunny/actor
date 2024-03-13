@@ -427,6 +427,13 @@ RSpec.describe Actor do
       end
     end
 
+    context "with accessing origins multiple times" do
+      it "returns expected value" do
+        expect(AccessOriginsMultipleTimes.call(value: 0).value_result).to eq(2)
+        expect(AccessOriginsMultipleTimes.call(value: 0).output_with_default).to eq(42)
+      end
+    end
+
     context "when setting an unknown output" do
       it "raises" do
         expect { SetUnknownOutput.call }

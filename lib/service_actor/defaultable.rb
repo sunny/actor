@@ -52,6 +52,12 @@ module ServiceActor::Defaultable
         end
       end
 
+      self.class.outputs.each do |key, options|
+        unless result.key?(key)
+          result.send(:"#{key}=", options[:default])
+        end
+      end
+
       super
     end
 
