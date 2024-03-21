@@ -5,26 +5,28 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## unreleased
 
+## v3.8.0
+
 Features:
 - Add pattern matching support for `ServiceActor::Result` (#134)
 
-Changes:
-- Drop support for Ruby before 2.7 (#126)
-
 Fixes:
+- Allow using a Hash as `default:` (#119)
 - Add default message to missing `message` key on advanced `input` or `output`
   checks (#117)
-- Allow using a Hash as `default:` (#119)
-- Refactor `ServiceActor::Result` to get rid of `OpenStruct` inheritance
-  (#127)
 - Deprecate invoking undefined methods on `ServiceActor::Result` (#129)
-- Ensure provided `failure_class` and `argument_error_class` values
-  are subclasses of `Exception` (#132)
-- Skip `default` check for actor outputs (#135)
-- Ensure provided `fail_on` arguments are subclasses of `Exception` (#136)
 - Ensure `input`, `output` and `alias_input` names do not collide with
   `ServiceActor::Result` instance methods (#138)
+- Refactor `ServiceActor::Result` to get rid of `OpenStruct` inheritance
+  (#127)
+- Ensure provided `failure_class` and `argument_error_class` values
+  are subclasses of `Exception` (#132)
+- Ensure provided `fail_on` arguments are subclasses of `Exception` (#136)
+- Skip `default` check for actor outputs (#135)
 - Remove unused `DefaultCheck` (#144)
+
+Dependencies:
+- Drop support for Ruby before 2.7 (#126)
 
 ## v3.7.0
 
