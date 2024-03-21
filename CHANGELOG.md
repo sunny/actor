@@ -24,6 +24,7 @@ Fixes:
 - Ensure provided `fail_on` arguments are subclasses of `Exception` (#136)
 - Ensure `input`, `output` and `alias_input` names do not collide with
   `ServiceActor::Result` instance methods (#138)
+- Remove unused `DefaultCheck` (#144)
 
 ## v3.7.0
 

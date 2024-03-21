@@ -13,7 +13,6 @@ module ServiceActor::Checkable
       ServiceActor::Checks::MustCheck,
       ServiceActor::Checks::InclusionCheck,
       ServiceActor::Checks::NilCheck,
-      ServiceActor::Checks::DefaultCheck,
     ].freeze
     private_constant :CHECK_CLASSES
 
