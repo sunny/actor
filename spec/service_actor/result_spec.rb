@@ -14,6 +14,8 @@ RSpec.describe ServiceActor::Result do
       expect(described_class.instance_methods).to contain_exactly(
         :merge!,
         :send,
+        :public_send,
+        :object_id,
         :delete!,
         :key?,
         :pretty_print,
@@ -42,6 +44,7 @@ RSpec.describe ServiceActor::Result do
         :then,
         :yield_self,
         :block_given?,
+        :instance_variables,
       )
     end
   end
