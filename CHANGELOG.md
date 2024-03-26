@@ -5,6 +5,8 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## unreleased
 
+## v3.8.1
+
 Fix:
 - Add more introspection methods to `ServiceActor::Result` to prevent exceptions
   on apps that depended on them (#148)

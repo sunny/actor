@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    service_actor (3.8.0)
+    service_actor (3.8.1)
       zeitwerk (>= 1.0)
 
 GEM
