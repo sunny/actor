@@ -20,6 +20,7 @@ RSpec.describe ServiceActor::Result do
         :key?,
         :pretty_print,
         :failure?,
+        :error,
         :inspect,
         :fail!,
         :class,
@@ -124,6 +125,34 @@ RSpec.describe ServiceActor::Result do
       result.name = false
 
       expect(result.name?).to be false
+    end
+  end
+
+  describe "#object_id" do
+    it "is defined" do
+      expect(result.object_id).to be_a(Integer)
+    end
+  end
+
+  describe "#public_send" do
+    it "returns the underlying data" do
+      result.name = "Sunny"
+
+      expect(result.public_send(:name)).to eq("Sunny")
+    end
+  end
+
+  describe "#instance_variables" do
+    it "returns the instance variables" do
+      expect(result.instance_variables).to eq([:@data])
+    end
+  end
+
+  describe "#error" do
+    it "returns the error key from the data hash" do
+      result.error = "Something went wrong"
+
+      expect(result.error).to eq("Something went wrong")
     end
   end
 
