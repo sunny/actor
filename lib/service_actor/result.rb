@@ -11,7 +11,7 @@ class ServiceActor::Result < BasicObject
     end
   end
 
-  %i[class is_a? kind_of? send tap then block_given?].each do |method_name|
+  %i[class is_a? kind_of? send public_send tap then block_given? object_id instance_variables].each do |method_name|
     define_method(method_name, ::Kernel.instance_method(method_name))
   end
 
