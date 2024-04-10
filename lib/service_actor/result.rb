@@ -33,8 +33,6 @@ class ServiceActor::Result < BasicObject
   end
 
   def to_h
-    # default_output is an internal datum used by .output_of
-    # don't expose it with the rest of the result
     filter_default_output(data)
   end
 
@@ -105,8 +103,10 @@ class ServiceActor::Result < BasicObject
 
   attr_reader :data
 
+  # Key `_default_output` is an internal datum used by actor class
+  # method `.output`. Don't expose it with the rest of the result.
   def filter_default_output(h)
-    h.filter { |k| k != :_default_output }
+    h.except(:_default_output)
   end
 
   def respond_to_missing?(method_name, _include_private = false)

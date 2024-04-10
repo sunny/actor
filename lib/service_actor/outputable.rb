@@ -1,11 +1,19 @@
 # frozen_string_literal: true
 
-# Adds the `fail_on` DSL to actors. This allows you to call `.result` and get
-# back a failed actor instead of raising an exception.
+# Adds the `output` method to actors. This allows you to call `.output` and get
+# back the return value of that actor's `call` method.
 #
-#   class ApplicationActor < Actor
-#     fail_on ServiceActor::ArgumentError
+# In the case of play actors, it will return the value of the final actor's
+# `call` method in the chain.
+#
+#   class MyActor < Actor
+#     def call
+#       "foo"
+#     end
 #   end
+#
+#   > MyActor.output
+#   => "foo"
 module ServiceActor::Outputable
   class << self
     def included(base)

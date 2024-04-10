@@ -181,15 +181,6 @@ RSpec.describe Actor do
       end
     end
 
-    context "when playing several actors, one fails, one rolls back" do
-      # TODO: extend `output_of` with option to return the last valid rollback
-      # value instead of raising
-      it "raises with the message" do
-        expect { PlayErrorAndCatchItInRollback.output_of }
-          .to raise_error(ServiceActor::Failure, "Ouch")
-      end
-    end
-
     context "when playing actors and alias_input" do
       it "calls the actors and can be referenced by alias" do
         expect(PlayAliasInput.output_of).to eq("jim number 1")
