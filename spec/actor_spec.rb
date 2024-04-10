@@ -9,7 +9,7 @@ RSpec.describe Actor do
     context "when fail! is not called" do
       let(:output) { DoNothing.output_of }
 
-      it { expect(output).to eq nil }
+      it { expect(output).to be_nil }
     end
 
     context "when fail! is called" do
