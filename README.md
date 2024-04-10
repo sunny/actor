@@ -136,7 +136,7 @@ class BuildGreeting < Actor
   end
 end
 
-BuildGreeting.output_of(name: 'Fred') # => "Have a wonderful day, Fred!"
+BuildGreeting.output_of(name: "Fred") # => "Have a wonderful day, Fred!"
 ```
 
 ### Fail
