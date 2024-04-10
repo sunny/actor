@@ -45,6 +45,8 @@ module ServiceActor::Core
   # This method is used internally to override behavior on call. Overriding
   # `call` instead would mean that end-users have to call `super` in their
   # actors.
+  # When overriding and calling `super`, make sure the final value is the return
+  # value of `super` (see e.g. ServiceActor::Checkable).
   # :nodoc:
   def _call
     call
