@@ -5,6 +5,198 @@ RSpec.describe Actor do
     before { allow(Kernel).to receive(:warn).with(kind_of(String)) }
   end
 
+  describe "#output_of" do
+    context "when fail! is not called" do
+      let(:output) { DoNothing.output_of }
+
+      it { expect(output).to eq nil }
+    end
+
+    context "when fail! is called" do
+      it "raises the error message" do
+        expect { FailWithError.output_of }
+          .to raise_error(ServiceActor::Failure, "Ouch")
+      end
+
+      context "when a custom class is specified" do
+        it "raises the error message" do
+          expect { FailWithErrorWithCustomFailureClass.output_of }
+            .to raise_error(MyCustomFailure, "Ouch")
+        end
+      end
+    end
+
+    context "when an actor updates the context using output_of" do
+      it "returns the value of the context change" do
+        output = AddNameToContext.output_of
+        expect(output).to eq("Jim")
+      end
+    end
+
+    context "when an actor updates the context with a hash using output_of" do
+      it "returns the hash value of the context change" do
+        output = AddHashToContext.output_of
+        expect(output).to eq(name: "Jim")
+      end
+    end
+
+    context "when an actor uses a method named after the input" do
+      it "returns what is assigned to the context" do
+        output = SetNameToDowncase.output_of(name: "JIM")
+        expect(output).to eq("jim")
+      end
+    end
+
+    context "when given a context instead of a hash" do
+      it "returns the value of the context" do
+        actor = ServiceActor::Result.new(name: "Jim")
+
+        expect(AddNameToContext.output_of(actor)).to eq("Jim")
+      end
+    end
+
+    context "when an actor changes a value" do
+      it "returns the updated value" do
+        expect(IncrementValue.output_of(value: 1)).to eq(2)
+      end
+    end
+
+    context "when an input has a default" do
+      it "can use it" do
+        expect(AddGreetingWithDefault.output_of).to eq("Hello, world!")
+      end
+
+      it "is overridden by values added to call" do
+        expect(AddGreetingWithDefault.output_of(name: "Jim")).to eq("Hello, Jim!")
+      end
+
+      it "is overridden by values already in the context" do
+        output = AddGreetingWithDefault.output_of(
+          ServiceActor::Result.new(name: "jim"),
+        )
+        expect(output).to eq("Hello, jim!")
+      end
+    end
+
+    context "when an input has a default that is a hash" do
+      it "can use it" do
+        expect(AddGreetingWithHashDefault.output_of).to eq("Hello, world!")
+      end
+
+      it "is overridden by values added to call" do
+        output = AddGreetingWithHashDefault.output_of(options: {name: "Alice"})
+        expect(output).to eq("Hello, Alice!")
+      end
+
+      it "is overridden by values already in the context" do
+        output = AddGreetingWithHashDefault.output_of(
+          ServiceActor::Result.new(options: {name: "Alice"}),
+        )
+        expect(output).to eq("Hello, Alice!")
+      end
+    end
+
+    context "when an input has a lambda default" do
+      it "can use it" do
+        output = AddGreetingWithLambdaDefault.output_of
+        expect(output).to eq("Hello, world!")
+      end
+    end
+
+    context "when a lambda default references other inputs" do
+      it "adds the computed default" do
+        output = LambdaDefaultWithReference.output_of(old_project_id: 77_392)
+        expect(output).to eq(project_id: "77392.0")
+      end
+    end
+
+    context "when an input has not been given" do
+      it "raises an error" do
+        expect { SetNameToDowncase.output_of }
+          .to raise_error(
+            ServiceActor::ArgumentError,
+            "The \"name\" input on \"SetNameToDowncase\" is missing",
+          )
+      end
+    end
+
+    context "when playing several actors" do
+      it "returns the result of the last actor" do
+        expect(PlayActors.output_of(value: 1)).to eq(3)
+      end
+
+      context "when not providing arguments" do
+        it "uses defaults from the inner actors" do
+          expect(PlayActors.output_of).to eq(2)
+        end
+      end
+    end
+
+    context "when playing actors and lambdas" do
+      it "calls the actors and lambdas in order and returns the final value" do
+        expect(PlayLambdas.output_of).to eq("jim number 4")
+      end
+    end
+
+    context "when playing actors and symbols" do
+      it "calls the actors and symbols in order and returns the final value" do
+        expect(PlayInstanceMethods.output_of).to eq("jim number 4")
+      end
+    end
+
+    context "when using `play` several times" do
+      it "shares the result between actors and returns the final value" do
+        expect(PlayMultipleTimes.output_of(value: 1)).to eq(3)
+      end
+    end
+
+    context "when using `play` with conditions" do
+      it "does not trigger actors with conditions and returns the final value" do
+        expect(PlayMultipleTimesWithConditions.output_of).to eq(3)
+      end
+    end
+
+    context "when using `play` with evaluated conditions" do
+      let(:output) do
+        PlayMultipleTimesWithEvaluatedConditions.output_of(callable: callable)
+      end
+      let(:callable) { -> {} }
+
+      before do
+        allow(callable).to receive(:call).and_return(true)
+      end
+
+      it "does not evaluate conditions multiple times" do
+        expect(output).to eq(4)
+        expect(callable).to have_received(:call).once
+      end
+    end
+
+    context "when playing several actors and one fails" do
+      let(:actor) { ServiceActor::Result.new(value: 0) }
+
+      it "raises with the message" do
+        expect { FailPlayingActionsWithRollback.output_of(actor) }
+          .to raise_error(ServiceActor::Failure, "Ouch")
+      end
+    end
+
+    context "when playing several actors, one fails, one rolls back" do
+      # TODO: extend `output_of` with option to return the last valid rollback
+      # value instead of raising
+      it "raises with the message" do
+        expect { PlayErrorAndCatchItInRollback.output_of }
+          .to raise_error(ServiceActor::Failure, "Ouch")
+      end
+    end
+
+    context "when playing actors and alias_input" do
+      it "calls the actors and can be referenced by alias" do
+        expect(PlayAliasInput.output_of).to eq("jim number 1")
+      end
+    end
+  end
+
   describe "#call" do
     context "when fail! is not called" do
       let(:actor) { DoNothing.call }
