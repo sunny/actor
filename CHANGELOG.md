@@ -6,7 +6,7 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## unreleased
 
 Features:
-- Add support for `output_of()` method on actors (#152)
+- Add support for `value()` method on actors (#152)
 
 ## v3.8.1
 

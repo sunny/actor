@@ -125,7 +125,7 @@ actor.greeting? # => true
 
 If you only have one value you want from an actor, you can skip defining an
 output by making it the return value of `.call()` and calling your actor with
-`.output_of()`:
+`.value()`:
 
 ```rb
 class BuildGreeting < Actor
@@ -136,7 +136,7 @@ class BuildGreeting < Actor
   end
 end
 
-BuildGreeting.output_of(name: "Fred") # => "Have a wonderful day, Fred!"
+BuildGreeting.value(name: "Fred") # => "Have a wonderful day, Fred!"
 ```
 
 ### Fail
@@ -199,7 +199,7 @@ Calling this actor will now call every actor along the way. Inputs and outputs
 will go from one actor to the next, all sharing the same result set until it is
 finally returned.
 
-If you use `.output_of()` to call this actor, it will give the return value of
+If you use `.value()` to call this actor, it will give the return value of
 the final actor in the play chain.
 
 ### Rollback

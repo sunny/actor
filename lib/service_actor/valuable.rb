@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Adds the `output` method to actors. This allows you to call `.output` and get
+# Adds the `value` method to actors. This allows you to call `.value` and get
 # back the return value of that actor's `call` method.
 #
 # In the case of play actors, it will return the value of the final actor's
@@ -12,9 +12,9 @@
 #     end
 #   end
 #
-#   > MyActor.output
+#   > MyActor.value
 #   => "foo"
-module ServiceActor::Outputable
+module ServiceActor::Valuable
   class << self
     def included(base)
       base.extend(ClassMethods)
@@ -23,7 +23,7 @@ module ServiceActor::Outputable
   end
 
   module ClassMethods
-    def output_of(result = nil, **arguments)
+    def value(result = nil, **arguments)
       call(result, **arguments)[:_default_output]
     end
   end

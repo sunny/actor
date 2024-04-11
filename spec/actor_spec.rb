@@ -5,44 +5,44 @@ RSpec.describe Actor do
     before { allow(Kernel).to receive(:warn).with(kind_of(String)) }
   end
 
-  describe "#output_of" do
+  describe "#value" do
     context "when fail! is not called" do
-      let(:output) { DoNothing.output_of }
+      let(:output) { DoNothing.value }
 
       it { expect(output).to be_nil }
     end
 
     context "when fail! is called" do
       it "raises the error message" do
-        expect { FailWithError.output_of }
+        expect { FailWithError.value }
           .to raise_error(ServiceActor::Failure, "Ouch")
       end
 
       context "when a custom class is specified" do
         it "raises the error message" do
-          expect { FailWithErrorWithCustomFailureClass.output_of }
+          expect { FailWithErrorWithCustomFailureClass.value }
             .to raise_error(MyCustomFailure, "Ouch")
         end
       end
     end
 
-    context "when an actor updates the context using output_of" do
+    context "when an actor updates the context using value" do
       it "returns the value of the context change" do
-        output = AddNameToContext.output_of
+        output = AddNameToContext.value
         expect(output).to eq("Jim")
       end
     end
 
-    context "when an actor updates the context with a hash using output_of" do
+    context "when an actor updates the context with a hash using value" do
       it "returns the hash value of the context change" do
-        output = AddHashToContext.output_of
+        output = AddHashToContext.value
         expect(output).to eq(name: "Jim")
       end
     end
 
     context "when an actor uses a method named after the input" do
       it "returns what is assigned to the context" do
-        output = SetNameToDowncase.output_of(name: "JIM")
+        output = SetNameToDowncase.value(name: "JIM")
         expect(output).to eq("jim")
       end
     end
@@ -51,27 +51,27 @@ RSpec.describe Actor do
       it "returns the value of the context" do
         actor = ServiceActor::Result.new(name: "Jim")
 
-        expect(AddNameToContext.output_of(actor)).to eq("Jim")
+        expect(AddNameToContext.value(actor)).to eq("Jim")
       end
     end
 
     context "when an actor changes a value" do
       it "returns the updated value" do
-        expect(IncrementValue.output_of(value: 1)).to eq(2)
+        expect(IncrementValue.value(value: 1)).to eq(2)
       end
     end
 
     context "when an input has a default" do
       it "can use it" do
-        expect(AddGreetingWithDefault.output_of).to eq("Hello, world!")
+        expect(AddGreetingWithDefault.value).to eq("Hello, world!")
       end
 
       it "is overridden by values added to call" do
-        expect(AddGreetingWithDefault.output_of(name: "Jim")).to eq("Hello, Jim!")
+        expect(AddGreetingWithDefault.value(name: "Jim")).to eq("Hello, Jim!")
       end
 
       it "is overridden by values already in the context" do
-        output = AddGreetingWithDefault.output_of(
+        output = AddGreetingWithDefault.value(
           ServiceActor::Result.new(name: "jim"),
         )
         expect(output).to eq("Hello, jim!")
@@ -80,16 +80,16 @@ RSpec.describe Actor do
 
     context "when an input has a default that is a hash" do
       it "can use it" do
-        expect(AddGreetingWithHashDefault.output_of).to eq("Hello, world!")
+        expect(AddGreetingWithHashDefault.value).to eq("Hello, world!")
       end
 
       it "is overridden by values added to call" do
-        output = AddGreetingWithHashDefault.output_of(options: {name: "Alice"})
+        output = AddGreetingWithHashDefault.value(options: {name: "Alice"})
         expect(output).to eq("Hello, Alice!")
       end
 
       it "is overridden by values already in the context" do
-        output = AddGreetingWithHashDefault.output_of(
+        output = AddGreetingWithHashDefault.value(
           ServiceActor::Result.new(options: {name: "Alice"}),
         )
         expect(output).to eq("Hello, Alice!")
@@ -98,21 +98,21 @@ RSpec.describe Actor do
 
     context "when an input has a lambda default" do
       it "can use it" do
-        output = AddGreetingWithLambdaDefault.output_of
+        output = AddGreetingWithLambdaDefault.value
         expect(output).to eq("Hello, world!")
       end
     end
 
     context "when a lambda default references other inputs" do
       it "adds the computed default" do
-        output = LambdaDefaultWithReference.output_of(old_project_id: 77_392)
+        output = LambdaDefaultWithReference.value(old_project_id: 77_392)
         expect(output).to eq(project_id: "77392.0")
       end
     end
 
     context "when an input has not been given" do
       it "raises an error" do
-        expect { SetNameToDowncase.output_of }
+        expect { SetNameToDowncase.value }
           .to raise_error(
             ServiceActor::ArgumentError,
             "The \"name\" input on \"SetNameToDowncase\" is missing",
@@ -122,43 +122,43 @@ RSpec.describe Actor do
 
     context "when playing several actors" do
       it "returns the result of the last actor" do
-        expect(PlayActors.output_of(value: 1)).to eq(3)
+        expect(PlayActors.value(value: 1)).to eq(3)
       end
 
       context "when not providing arguments" do
         it "uses defaults from the inner actors" do
-          expect(PlayActors.output_of).to eq(2)
+          expect(PlayActors.value).to eq(2)
         end
       end
     end
 
     context "when playing actors and lambdas" do
       it "calls the actors and lambdas in order and returns the final value" do
-        expect(PlayLambdas.output_of).to eq("jim number 4")
+        expect(PlayLambdas.value).to eq("jim number 4")
       end
     end
 
     context "when playing actors and symbols" do
       it "calls the actors and symbols in order and returns the final value" do
-        expect(PlayInstanceMethods.output_of).to eq("jim number 4")
+        expect(PlayInstanceMethods.value).to eq("jim number 4")
       end
     end
 
     context "when using `play` several times" do
       it "shares the result between actors and returns the final value" do
-        expect(PlayMultipleTimes.output_of(value: 1)).to eq(3)
+        expect(PlayMultipleTimes.value(value: 1)).to eq(3)
       end
     end
 
     context "when using `play` with conditions" do
       it "does not trigger actors with conditions and returns the final value" do
-        expect(PlayMultipleTimesWithConditions.output_of).to eq(3)
+        expect(PlayMultipleTimesWithConditions.value).to eq(3)
       end
     end
 
     context "when using `play` with evaluated conditions" do
       let(:output) do
-        PlayMultipleTimesWithEvaluatedConditions.output_of(callable: callable)
+        PlayMultipleTimesWithEvaluatedConditions.value(callable: callable)
       end
       let(:callable) { -> {} }
 
@@ -176,14 +176,14 @@ RSpec.describe Actor do
       let(:actor) { ServiceActor::Result.new(value: 0) }
 
       it "raises with the message" do
-        expect { FailPlayingActionsWithRollback.output_of(actor) }
+        expect { FailPlayingActionsWithRollback.value(actor) }
           .to raise_error(ServiceActor::Failure, "Ouch")
       end
     end
 
     context "when playing actors and alias_input" do
       it "calls the actors and can be referenced by alias" do
-        expect(PlayAliasInput.output_of).to eq("jim number 1")
+        expect(PlayAliasInput.value).to eq("jim number 1")
       end
     end
   end
