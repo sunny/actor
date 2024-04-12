@@ -979,4 +979,441 @@ RSpec.describe Actor do
       end
     end
   end
+
+  describe "#value" do
+    context "when fail! is not called" do
+      let(:output) { DoNothing.value }
+
+      it { expect(output).to be_nil }
+    end
+
+    context "when fail! is called" do
+      it "raises the error message" do
+        expect { FailWithError.value }
+          .to raise_error(ServiceActor::Failure, "Ouch")
+      end
+
+      context "when a custom class is specified" do
+        it "raises the error message" do
+          expect { FailWithErrorWithCustomFailureClass.value }
+            .to raise_error(MyCustomFailure, "Ouch")
+        end
+      end
+    end
+
+    context "when an actor updates the context using value" do
+      it "returns the value of the context change" do
+        output = AddNameToContext.value
+        expect(output).to eq("Jim")
+      end
+    end
+
+    context "when an actor updates the context with a hash using value" do
+      it "returns the hash value of the context change" do
+        output = AddHashToContext.value
+        expect(output).to eq(name: "Jim")
+      end
+    end
+
+    context "when an actor uses a method named after the input" do
+      it "returns what is assigned to the context" do
+        output = SetNameToDowncase.value(name: "JIM")
+        expect(output).to eq("jim")
+      end
+    end
+
+    context "when given a context instead of a hash" do
+      it "returns the value of the context" do
+        actor = ServiceActor::Result.new(name: "Jim")
+
+        expect(AddNameToContext.value(actor)).to eq("Jim")
+      end
+    end
+
+    context "when an actor changes a value" do
+      it "returns the updated value" do
+        expect(IncrementValue.value(value: 1)).to eq(2)
+      end
+    end
+
+    context "when an input has a default" do
+      it "can use it" do
+        expect(AddGreetingWithDefault.value).to eq("Hello, world!")
+      end
+
+      it "is overridden by values added to call" do
+        expect(AddGreetingWithDefault.value(name: "Jim")).to eq("Hello, Jim!")
+      end
+
+      it "is overridden by values already in the context" do
+        output = AddGreetingWithDefault.value(
+          ServiceActor::Result.new(name: "jim"),
+        )
+        expect(output).to eq("Hello, jim!")
+      end
+    end
+
+    context "when an input has a default that is a hash" do
+      it "can use it" do
+        expect(AddGreetingWithHashDefault.value).to eq("Hello, world!")
+      end
+
+      it "is overridden by values added to call" do
+        output = AddGreetingWithHashDefault.value(options: {name: "Alice"})
+        expect(output).to eq("Hello, Alice!")
+      end
+
+      it "is overridden by values already in the context" do
+        output = AddGreetingWithHashDefault.value(
+          ServiceActor::Result.new(options: {name: "Alice"}),
+        )
+        expect(output).to eq("Hello, Alice!")
+      end
+    end
+
+    context "when an input has a lambda default" do
+      it "can use it" do
+        output = AddGreetingWithLambdaDefault.value
+        expect(output).to eq("Hello, world!")
+      end
+    end
+
+    context "when a lambda default references other inputs" do
+      it "adds the computed default" do
+        output = LambdaDefaultWithReference.value(old_project_id: 77_392)
+        expect(output).to eq(project_id: "77392.0")
+      end
+    end
+
+    context "when an input has not been given" do
+      it "raises an error" do
+        expect { SetNameToDowncase.value }
+          .to raise_error(
+            ServiceActor::ArgumentError,
+            "The \"name\" input on \"SetNameToDowncase\" is missing",
+          )
+      end
+    end
+
+    context "when playing several actors" do
+      it "returns the result of the last actor" do
+        expect(PlayActors.value(value: 1)).to eq(3)
+      end
+
+      context "when not providing arguments" do
+        it "uses defaults from the inner actors" do
+          expect(PlayActors.value).to eq(2)
+        end
+      end
+    end
+
+    context "when playing actors and lambdas" do
+      it "calls the actors and lambdas in order and returns the final value" do
+        expect(PlayLambdas.value).to eq("jim number 4")
+      end
+    end
+
+    context "when playing actors and symbols" do
+      it "calls the actors and symbols in order and returns the final value" do
+        expect(PlayInstanceMethods.value).to eq("jim number 4")
+      end
+    end
+
+    context "when using `play` several times" do
+      it "shares the result between actors and returns the final value" do
+        expect(PlayMultipleTimes.value(value: 1)).to eq(3)
+      end
+    end
+
+    context "when using `play` with conditions" do
+      it "does not trigger actors with conditions and returns the final value" do
+        expect(PlayMultipleTimesWithConditions.value).to eq(3)
+      end
+    end
+
+    context "when using `play` with evaluated conditions" do
+      let(:output) do
+        PlayMultipleTimesWithEvaluatedConditions.value(callable: callable)
+      end
+      let(:callable) { -> {} }
+
+      before do
+        allow(callable).to receive(:call).and_return(true)
+      end
+
+      it "does not evaluate conditions multiple times" do
+        expect(output).to eq(4)
+        expect(callable).to have_received(:call).once
+      end
+    end
+
+    context "when playing several actors and one fails" do
+      let(:actor) { ServiceActor::Result.new(value: 0) }
+
+      it "raises with the message" do
+        expect { FailPlayingActionsWithRollback.value(actor) }
+          .to raise_error(ServiceActor::Failure, "Ouch")
+      end
+    end
+
+    context "when playing actors and alias_input" do
+      it "calls the actors and can be referenced by alias" do
+        expect(PlayAliasInput.value).to eq("jim number 1")
+      end
+    end
+
+    context "when value'd with a matching condition" do
+      context "when normal mode" do
+        it "suceeds" do
+          expect(SetNameWithInputCondition.value(name: "joe")).to eq("JOE")
+        end
+      end
+
+      context "when advanced mode" do
+        it "suceeds" do
+          expect(SetNameWithInputConditionAdvanced.value(name: "joe"))
+            .to eq("JOE")
+        end
+      end
+    end
+
+    context "when value'd with the wrong condition" do
+      context "when normal mode" do
+        it "raises" do
+          expected_error =
+            "The \"name\" input on \"SetNameWithInputCondition\" " \
+              "must \"be_lowercase\" but was \"42\""
+
+          expect { SetNameWithInputCondition.value(name: "42") }
+            .to raise_error(ServiceActor::ArgumentError, expected_error)
+        end
+      end
+
+      context "when advanced mode" do
+        it "raises" do
+          expected_error = "Failed to apply `be_lowercase`"
+
+          expect { SetNameWithInputConditionAdvanced.value(name: "42") }
+            .to raise_error(ServiceActor::ArgumentError, expected_error)
+        end
+      end
+    end
+
+    context "when value'd with an error in the code" do
+      describe "and type is first" do
+        context "when advanced mode" do
+          let(:expected_message) do
+            "The \"per_page\" input on " \
+              "\"ExpectedFailInMustWhenTypeIsFirstAdvanced\" must be " \
+              "of type \"Integer\" but was \"String\""
+          end
+
+          it "raises" do
+            expect do
+              ExpectedFailInMustWhenTypeIsFirstAdvanced.value(per_page: "6")
+            end.to raise_error(ServiceActor::ArgumentError, expected_message)
+          end
+        end
+      end
+
+      describe "and type is last" do
+        context "when advanced mode" do
+          let(:expected_message) do
+            "The \"per_page\" input on " \
+              "\"ExpectedFailInMustWhenTypeIsLastAdvanced\" has an error " \
+              "in the code inside \"be_in_range\": " \
+              "[ArgumentError] comparison of String with 3 failed"
+          end
+
+          it "raises" do
+            expect do
+              ExpectedFailInMustWhenTypeIsLastAdvanced.value(per_page: "6")
+            end.to raise_error(ServiceActor::ArgumentError, expected_message)
+          end
+        end
+      end
+    end
+
+    context "when value'd with the wrong type of argument" do
+      let(:expected_message) do
+        "The \"name\" input on \"SetNameToDowncase\" must be of " \
+          "type \"String\" but was \"Integer\""
+      end
+
+      it "raises" do
+        expect { SetNameToDowncase.value(name: 1) }
+          .to raise_error(ServiceActor::ArgumentError, expected_message)
+      end
+    end
+
+    context "when a type is defined but the argument is nil" do
+      let(:expected_message) do
+        'The "name" input on "SetNameToDowncase" does not allow nil values'
+      end
+
+      it "raises" do
+        expect { SetNameToDowncase.value(name: nil) }
+          .to raise_error(ServiceActor::ArgumentError, expected_message)
+      end
+    end
+
+    context "when called with a type as a string instead of a class" do
+      it "succeeds" do
+        expect(DoubleWithTypeAsString.value(value: 2.0)).to eq(4.0)
+      end
+
+      context "when normal mode" do
+        it "does not allow other types" do
+          expected_error =
+            "The \"value\" input on \"DoubleWithTypeAsString\" must " \
+              "be of type \"Integer, Float\" but was \"String\""
+          expect { DoubleWithTypeAsString.value(value: "2.0") }
+            .to raise_error(ServiceActor::ArgumentError, expected_error)
+        end
+      end
+
+      context "when advanced mode" do
+        it "does not allow other types" do
+          expected_error =
+            "Wrong type `String` for `value`. Expected: `Integer, Float`"
+          expect { DoubleWithTypeAsStringAdvanced.value(value: "2.0") }
+            .to raise_error(ServiceActor::ArgumentError, expected_error)
+        end
+      end
+    end
+
+    context "when disallowing nil on an input" do
+      context "when normal mode" do
+        context "when given the input" do
+          it "does not fail" do
+            expect(DisallowNilOnInput.value(name: "Jim")).to be_nil
+          end
+        end
+
+        context "without the input" do
+          it "fails" do
+            expected_error =
+              "The \"name\" input on \"DisallowNilOnInput\" does not " \
+                "allow nil values"
+
+            expect { DisallowNilOnInput.value(name: nil) }
+              .to raise_error(ServiceActor::ArgumentError, expected_error)
+          end
+        end
+      end
+
+      context "when advanced mode" do
+        context "when given the input" do
+          it "does not fail" do
+            expect(DisallowNilOnInputAdvanced.value(name: "Jim")).to be_nil
+          end
+        end
+
+        context "without the input" do
+          it "fails" do
+            expected_error = "The value `name` cannot be empty"
+
+            expect { DisallowNilOnInputAdvanced.value(name: nil) }
+              .to raise_error(ServiceActor::ArgumentError, expected_error)
+          end
+        end
+      end
+    end
+
+    context "when disallowing nil on an output" do
+      context "when set correctly" do
+        it "succeeds" do
+          expect(DisallowNilOnOutput.value).to be "Jim"
+        end
+      end
+
+      context "without the output" do
+        it "fails" do
+          expected_error =
+            "The \"name\" output on \"DisallowNilOnOutput\" " \
+              "does not allow nil values"
+
+          expect { DisallowNilOnOutput.value(test_without_output: true) }
+            .to raise_error(ServiceActor::ArgumentError, expected_error)
+        end
+      end
+    end
+
+    context "when inheriting" do
+      it "calls both the parent and child" do
+        expect(InheritFromIncrementValue.value(value: 0)).to eq(2)
+      end
+    end
+
+    context "when inheriting from play" do
+      it "calls both the parent and child" do
+        expect(InheritFromPlay.value(value: 0)).to eq(3)
+      end
+    end
+
+    context "when playing interactors" do
+      it "succeeds" do
+        expect(PlayInteractor.value(value: 5).value).to eq(5 + 2)
+      end
+    end
+
+    context "when using advanced mode with checks and not adding message key" do
+      context "when using inclusion check" do
+        let(:expected_alert) do
+          'The "provider" input must be included ' \
+            'in ["MANGOPAY", "PayPal", "Stripe"] on ' \
+            '"PayWithProviderAdvancedNoMessage" ' \
+            'instead of "Paypal2"'
+        end
+
+        it "returns the default message" do
+          expect { PayWithProviderAdvancedNoMessage.value(provider: "Paypal2") }
+            .to raise_error(ServiceActor::ArgumentError, expected_alert)
+        end
+      end
+
+      context "when using type check" do
+        let(:expected_error) do
+          "The \"name\" input on \"CheckTypeAdvanced\" must " \
+            "be of type \"String\" but was \"Integer\""
+        end
+
+        it "returns the default message" do
+          expect { CheckTypeAdvanced.value(name: 2) }
+            .to raise_error(ServiceActor::ArgumentError, expected_error)
+        end
+      end
+
+      context "when using must check" do
+        let(:expected_error) do
+          "The \"num\" input on \"CheckMustAdvancedNoMessage\" " \
+            "must \"be_smaller\" " \
+            "but was 6"
+        end
+
+        it "returns the default message" do
+          expect { CheckMustAdvancedNoMessage.value(num: 6) }
+            .to raise_error(ServiceActor::ArgumentError, expected_error)
+        end
+      end
+
+      context "when using nil check" do
+        let(:expected_error) do
+          "The \"name\" input on \"CheckNilAdvancedNoMessage\" " \
+            "does not allow nil values"
+        end
+
+        it "returns the default message" do
+          expect { CheckNilAdvancedNoMessage.value(name: nil) }
+            .to raise_error(ServiceActor::ArgumentError, expected_error)
+        end
+      end
+    end
+
+    context "with unset output and allow_nil: true" do
+      it "does not fail" do
+        expect(WithUnsetOutput.value).to be_nil
+      end
+    end
+  end
 end

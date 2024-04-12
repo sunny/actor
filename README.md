@@ -123,6 +123,22 @@ actor.greeting # => "Have a wonderful day!"
 actor.greeting? # => true
 ```
 
+If you only have one value you want from an actor, you can skip defining an
+output by making it the return value of `.call()` and calling your actor with
+`.value()`:
+
+```rb
+class BuildGreeting < Actor
+  input :name
+
+  def call
+    "Have a wonderful day, #{name}!"
+  end
+end
+
+BuildGreeting.value(name: "Fred") # => "Have a wonderful day, Fred!"
+```
+
 ### Fail
 
 To stop the execution and mark an actor as having failed, use `fail!`:
@@ -182,6 +198,9 @@ end
 Calling this actor will now call every actor along the way. Inputs and outputs
 will go from one actor to the next, all sharing the same result set until it is
 finally returned.
+
+If you use `.value()` to call this actor, it will give the return value of
+the final actor in the play chain.
 
 ### Rollback
 

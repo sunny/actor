@@ -54,11 +54,17 @@ module ServiceActor::Playable
 
   module PrependedMethods
     def call
+      default_output = nil
+
       self.class.play_actors.each do |options|
         next unless callable_actor?(options)
 
-        options[:actors].each { |actor| play_actor(actor) }
+        options[:actors].each do |actor|
+          default_output = play_actor(actor)
+        end
       end
+
+      default_output
     rescue self.class.failure_class
       rollback
       raise
@@ -95,17 +101,18 @@ module ServiceActor::Playable
       return unless actor.ancestors.include?(ServiceActor::Core)
 
       actor = actor.new(result)
-      actor._call
+      call_output = actor._call
 
       (@played_actors ||= []).unshift(actor)
+
+      call_output
     end
 
     def play_method(actor)
       return unless actor.is_a?(Symbol)
 
-      send(actor)
-
-      true
+      # return truthy method value, or true as fallback
+      send(actor) || true
     end
 
     def play_interactor(actor)
