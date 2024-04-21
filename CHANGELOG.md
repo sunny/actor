@@ -5,8 +5,11 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## unreleased
 
-Features:
+Feature:
 - Add support for `value()` method on actors (#152)
+
+Fix:
+- Allow setting `failure?: true` on a result as well as `failure: true` (#153)
 
 ## v3.8.1
 

@@ -173,4 +173,40 @@ RSpec.describe ServiceActor::Result do
       end
     end
   end
+
+  describe "#success?" do
+    it "returns true if the result is not a failure" do
+      expect(result).to be_a_success
+    end
+
+    it "returns false after a failure" do
+      expect { result.fail! }.to raise_error(ServiceActor::Failure)
+
+      expect(result).not_to be_a_success
+    end
+  end
+
+  describe "#failure?" do
+    it "returns false if the result is not a failure" do
+      expect(result).not_to be_a_failure
+    end
+
+    it "returns true after a failure" do
+      expect { result.fail! }.to raise_error(ServiceActor::Failure)
+
+      expect(result).to be_a_failure
+    end
+
+    it "returns true when setting failure" do
+      result = described_class.new(failure: true)
+
+      expect(result).to be_a_failure
+    end
+
+    it "returns true when setting a failure with a question mark" do
+      result = described_class.new(failure?: true)
+
+      expect(result).to be_a_failure
+    end
+  end
 end
