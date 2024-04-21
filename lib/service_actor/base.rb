@@ -15,6 +15,7 @@ module ServiceActor::Base
       base.include(ServiceActor::Checkable)
       base.include(ServiceActor::Defaultable)
       base.include(ServiceActor::Failable)
+      base.include(ServiceActor::Valuable)
     end
   end
 end

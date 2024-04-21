@@ -20,8 +20,9 @@ module ServiceActor::Checkable
       self.service_actor_argument_errors = []
 
       service_actor_checks_for(:input)
-      super
+      return_val = super
       service_actor_checks_for(:output)
+      return_val
     end
 
     private
