@@ -5,6 +5,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## unreleased
 
+Fix:
+- Allow setting `failure?: true` on a result as well as `failure: true` (#153)
+
 ## v3.8.1
 
 Fix:

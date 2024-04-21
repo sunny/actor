@@ -59,7 +59,7 @@ class ServiceActor::Result < BasicObject
   end
 
   def failure?
-    data[:failure] || false
+    data[:failure] || data[:failure?] || false
   end
 
   def error
