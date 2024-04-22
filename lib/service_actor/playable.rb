@@ -90,16 +90,19 @@ module ServiceActor::Playable
     end
 
     def play_actor(actor)
-      play_service_actor(actor) ||
-        play_method(actor) ||
-        play_interactor(actor) ||
+      if actor.is_a?(Class) && actor.ancestors.include?(ServiceActor::Core)
+        play_service_actor(actor)
+      elsif actor.is_a?(Symbol)
+        play_method(actor)
+      elsif actor.is_a?(Class) &&
+          actor.ancestors.map(&:name).include?("Interactor")
+        play_interactor(actor)
+      else
         actor.call(result)
+      end
     end
 
     def play_service_actor(actor)
-      return unless actor.is_a?(Class)
-      return unless actor.ancestors.include?(ServiceActor::Core)
-
       actor = actor.new(result)
       call_output = actor._call
 
@@ -109,16 +112,10 @@ module ServiceActor::Playable
     end
 
     def play_method(actor)
-      return unless actor.is_a?(Symbol)
-
-      # return truthy method value, or true as fallback
-      send(actor) || true
+      send(actor)
     end
 
     def play_interactor(actor)
-      return unless actor.is_a?(Class)
-      return unless actor.ancestors.map(&:name).include?("Interactor")
-
       result.merge!(actor.call(result.to_h).to_h)
     end
   end

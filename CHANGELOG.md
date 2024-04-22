@@ -5,6 +5,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## unreleased
 
+Fix:
+- Fix repeated `play` calls when the element is an actor that returns nil (#155)
+
 ## v3.9.0
 
 Feature:

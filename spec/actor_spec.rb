@@ -1416,4 +1416,14 @@ RSpec.describe Actor do
       end
     end
   end
+
+  context "when playing something that returns nil" do
+    let(:call_counter) { double :call_counter, trigger: nil }
+
+    it "does not fail" do
+      expect(PlayReturnsNil.call(call_counter: call_counter)).to be_a_success
+
+      expect(call_counter).to have_received(:trigger).once
+    end
+  end
 end
