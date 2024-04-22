@@ -90,10 +90,10 @@ module ServiceActor::Playable
     end
 
     def play_actor(actor)
-      if actor.is_a?(Class) && actor.ancestors.include?(ServiceActor::Core)
+      if actor.is_a?(Symbol)
+        send(actor)
+      elsif actor.is_a?(Class) && actor.ancestors.include?(ServiceActor::Core)
         play_service_actor(actor)
-      elsif actor.is_a?(Symbol)
-        play_method(actor)
       elsif actor.is_a?(Class) &&
           actor.ancestors.map(&:name).include?("Interactor")
         play_interactor(actor)
