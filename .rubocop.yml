@@ -78,6 +78,9 @@ RSpec/NestedGroups:
 RSpec/MultipleExpectations:
   Enabled: false
 
+RSpec/VerifiedDoubles:
+  Enabled: false
+
 # Style
 
 Style/AsciiComments:
