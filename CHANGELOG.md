@@ -5,8 +5,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## unreleased
 
-Fix:
+Fixes:
 - Add `#nil?` method to `ServiceActor::Result` (#146)
+- Accept inputs called `error` (#146)
 
 ## v3.9.1
 
