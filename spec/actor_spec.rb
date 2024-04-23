@@ -1426,4 +1426,10 @@ RSpec.describe Actor do
       expect(call_counter).to have_received(:trigger).once
     end
   end
+
+  context "when an input is called :error" do
+    it "does not fail" do
+      expect(HandleInputCalledError.call(error: "A message")).to be_a_success
+    end
+  end
 end
