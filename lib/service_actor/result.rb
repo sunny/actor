@@ -23,6 +23,7 @@ class ServiceActor::Result < BasicObject
     send
     tap
     then
+    methods
   ].each do |method_name|
     define_method(method_name, ::Kernel.instance_method(method_name))
   end
