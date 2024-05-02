@@ -36,6 +36,7 @@ RSpec.describe ServiceActor::Result do
         :key?,
         :kind_of?,
         :merge!,
+        :methods,
         :nil?,
         :object_id,
         :pretty_print,
