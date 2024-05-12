@@ -123,7 +123,7 @@ RSpec.describe ServiceActor::Result do
   end
 
   context "when input is FalseClass" do
-    it "returns true" do
+    it "returns false" do
       result.name = false
 
       expect(result.name?).to be false
