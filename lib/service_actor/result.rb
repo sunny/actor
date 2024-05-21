@@ -19,6 +19,7 @@ class ServiceActor::Result < BasicObject
     kind_of?
     nil?
     object_id
+    private_methods
     public_send
     send
     tap
@@ -28,6 +29,7 @@ class ServiceActor::Result < BasicObject
   end
 
   alias_method :yield_self, :then
+  alias_method :blank?, :nil?
 
   def initialize(data = {})
     @data = data.to_h
