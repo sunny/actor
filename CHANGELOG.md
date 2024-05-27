@@ -6,8 +6,8 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## unreleased
 
 Fixes:
-- Add `#nil?`, `#blank?` and `#private_methods` to `ServiceActor::Result`
-  (#146 and #162)
+- Add `#nil?` method to `ServiceActor::Result` (#146)
+- Add `#methods` method to `ServiceActor::Result` (#146)
 - Accept inputs called `error` (#146)
 
 ## v3.9.1
