@@ -5,6 +5,8 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## unreleased
 
+## v3.9.2
+
 Fixes:
 - Add `#nil?` method to `ServiceActor::Result` (#146)
 - Add `#methods` method to `ServiceActor::Result` (#146)
