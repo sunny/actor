@@ -5,6 +5,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## unreleased
 
+Fixes:
+- Fail actor when playing a failing Interactor (#164)
+
 ## v3.9.2
 
 Fixes:
