@@ -31,10 +31,9 @@ On a pull request, you can add an entry to the
 
 ## Releases
 
-To release a new version, update the version number in `version.rb`, and in the
-`CHANGELOG.md`. Update the `README.md` if there are missing segments, make sure
-tests and linting are pristine by calling `bundle && bin/rake`, then create a
-commit for this version, for example with:
+To release a new version, update the version number in the `CHANGELOG.md` and in
+`version.rb`. Make sure tests and linting are pristine by calling
+`bundle && bin/rake`, then create a commit for this version, for example with:
 
 ```sh
 git add --patch
