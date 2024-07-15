@@ -673,6 +673,15 @@ RSpec.describe Actor do
       end
     end
 
+    context "when playing a failing interactor" do
+      it "fails" do
+        actor = PlayInteractorFailure.result(value: 5)
+        expect(actor).to be_a_failure
+        expect(actor.error).to eq("Failed with Interactor")
+        expect(actor.value).to eq(5 + 1)
+      end
+    end
+
     context "when using advanced mode with checks and not adding message key" do
       context "when using inclusion check" do
         let(:expected_alert) do

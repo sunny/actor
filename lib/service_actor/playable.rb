@@ -116,7 +116,10 @@ module ServiceActor::Playable
     end
 
     def play_interactor(actor)
-      result.merge!(actor.call(result.to_h).to_h)
+      interactor = actor.call(result.to_h)
+      result.merge!(interactor.to_h)
+      fail! if interactor.failure?
+      result
     end
   end
 end
