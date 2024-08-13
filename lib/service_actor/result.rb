@@ -14,9 +14,12 @@ class ServiceActor::Result < BasicObject
   %i[
     block_given?
     class
+    hash
+    instance_of?
     instance_variables
     is_a?
     kind_of?
+    methods
     nil?
     object_id
     private_methods
@@ -24,7 +27,6 @@ class ServiceActor::Result < BasicObject
     send
     tap
     then
-    methods
   ].each do |method_name|
     define_method(method_name, ::Kernel.instance_method(method_name))
   end
