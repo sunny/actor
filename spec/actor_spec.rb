@@ -71,6 +71,18 @@ RSpec.describe Actor do
 
         expect(actor.name).to eq("jim")
       end
+
+      it "accepts implicit hashes" do
+        actor = SetNameToDowncase.call("name" => "ImplicitJim")
+
+        expect(actor.name).to eq("implicitjim")
+      end
+
+      it "accepts splatted hashes" do
+        actor = SetNameToDowncase.call(**{"name" => "SplattedJim"})
+
+        expect(actor.name).to eq("splattedjim")
+      end
     end
 
     context "when an actor changes a value" do
