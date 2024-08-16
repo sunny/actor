@@ -5,6 +5,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## unreleased
 
+Fixes:
+- Add `#hash` and `#instance_of?` to `ServiceActor::Result` (#168)
+
 ## v3.9.3
 
 Fixes:
