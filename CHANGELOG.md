@@ -9,6 +9,7 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 Fixes:
 - Fail actor when playing a failing Interactor (#164)
+- Accept a Hash with String keys as arguments (#170)
 
 ## v3.9.2
 
