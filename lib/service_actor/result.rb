@@ -7,7 +7,7 @@ class ServiceActor::Result < BasicObject
     def to_result(data)
       return data if data.is_a?(self)
 
-      new(data.to_h)
+      new(data.to_h.transform_keys(&:to_sym))
     end
   end
 

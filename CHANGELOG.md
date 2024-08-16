@@ -12,6 +12,7 @@ Fixes:
 
 Fixes:
 - Fail actor when playing a failing Interactor (#164)
+- Accept a Hash with String keys as arguments (#170)
 
 ## v3.9.2
 

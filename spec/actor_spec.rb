@@ -65,6 +65,14 @@ RSpec.describe Actor do
       end
     end
 
+    context "when given a hash with string keys" do
+      it "accepts them" do
+        actor = SetNameToDowncase.call({"name" => "Jim"})
+
+        expect(actor.name).to eq("jim")
+      end
+    end
+
     context "when an actor changes a value" do
       it "returns a context with the updated value" do
         actor = IncrementValue.call(value: 1)
