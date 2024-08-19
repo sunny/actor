@@ -9,6 +9,13 @@ RSpec.describe ServiceActor::Result do
     expect(result.respond_to?(:name?)).to be true
   end
 
+  it "has indifferent access" do
+    result.name = "Sunny"
+
+    expect(result[:name]).to eq("Sunny")
+    expect(result["name"]).to eq("Sunny")
+  end
+
   describe ".instance_methods" do
     it "stays the same across supported Rubies" do # rubocop:disable RSpec/ExampleLength
       expect(described_class.instance_methods).to contain_exactly(

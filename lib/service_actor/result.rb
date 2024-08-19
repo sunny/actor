@@ -7,7 +7,7 @@ class ServiceActor::Result < BasicObject
     def to_result(data)
       return data if data.is_a?(self)
 
-      new(data.to_h.transform_keys(&:to_sym))
+      new(data.to_h)
     end
   end
 
@@ -35,7 +35,7 @@ class ServiceActor::Result < BasicObject
   alias_method :blank?, :nil?
 
   def initialize(data = {})
-    @data = data.to_h
+    @data = data.to_h.transform_keys(&:to_sym)
   end
 
   def to_h
@@ -73,24 +73,32 @@ class ServiceActor::Result < BasicObject
   end
 
   def merge!(result)
-    data.merge!(result)
+    data.merge!(result.transform_keys(&:to_sym))
 
     self
   end
 
   def key?(name)
+    name = name.to_sym
+
     to_h.key?(name)
   end
 
   def [](name)
+    name = name.to_sym
+
     data[name]
   end
 
   def []=(key, value)
+    key = key.to_sym
+
     data[key] = value
   end
 
   def delete!(key)
+    key = key.to_sym
+
     data.delete(key)
   end
 
