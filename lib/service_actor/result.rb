@@ -35,7 +35,7 @@ class ServiceActor::Result < BasicObject
   alias_method :blank?, :nil?
 
   def initialize(data = {})
-    @data = data.to_h.transform_keys { |key| convert_key(key) }
+    @data = data.to_h.transform_keys(&:to_sym)
   end
 
   def to_h
@@ -73,31 +73,31 @@ class ServiceActor::Result < BasicObject
   end
 
   def merge!(result)
-    data.merge!(result.transform_keys { |key| convert_key(key) })
+    data.merge!(result.transform_keys(&:to_sym))
 
     self
   end
 
   def key?(name)
-    name = convert_key(name)
+    name = name.to_sym
 
     to_h.key?(name)
   end
 
   def [](name)
-    name = convert_key(name)
+    name = name.to_sym
 
     data[name]
   end
 
   def []=(key, value)
-    key = convert_key(key)
+    key = key.to_sym
 
     data[key] = value
   end
 
   def delete!(key)
-    key = convert_key(key)
+    key = key.to_sym
 
     data.delete(key)
   end
@@ -116,10 +116,6 @@ class ServiceActor::Result < BasicObject
   private
 
   attr_reader :data
-
-  def convert_key(key)
-    key.to_sym
-  end
 
   # Key `_default_output` is an internal datum used by actor class
   # method `.valuable`. Don't expose it with the rest of the result.
