@@ -1,5 +1,17 @@
 # frozen_string_literal: true
 
+CustomArgumentError = Class.new(StandardError)
+
+class CustomFailureError < StandardError
+  attr_reader :result
+
+  def initialize(result)
+    @result = result
+
+    super("Custom failure")
+  end
+end
+
 RSpec.describe Actor do
   shared_context "with mocked `Kernel.warn` method" do
     before { allow(Kernel).to receive(:warn).with(kind_of(String)) }
@@ -1459,6 +1471,24 @@ RSpec.describe Actor do
   context "when an input is called :error" do
     it "does not fail" do
       expect(HandleInputCalledError.call(error: "A message")).to be_a_success
+    end
+  end
+
+  context "when calling result with fail_on" do
+    let(:actor) do
+      Class.new(Actor) do
+        fail_on CustomArgumentError
+        self.argument_error_class = CustomArgumentError
+        self.failure_class = CustomFailureError
+
+        input :value, type: Integer
+      end
+    end
+
+    it "does not raise" do
+      result = actor.result(value: "boop")
+      expect(result).to be_a_failure
+      expect(result.error).to start_with('The "value" input on')
     end
   end
 end

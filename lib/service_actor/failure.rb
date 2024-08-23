@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Error raised when using `fail!` inside an actor.
+# Default error raised when using `fail!` inside an actor.
 class ServiceActor::Failure < ServiceActor::Error
   def initialize(result)
     @result = result
