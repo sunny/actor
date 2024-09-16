@@ -7,6 +7,7 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 Fixes:
 - Add `#hash` and `#instance_of?` to `ServiceActor::Result` (#168)
+- Fix "An error occurred when inspecting the object" - `ArgumentError` for `ServiceActor::Result` when using `IRB`
 
 ## v3.9.3
 
