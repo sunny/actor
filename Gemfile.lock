@@ -140,6 +140,7 @@ DEPENDENCIES
   rubocop-performance (>= 1.0)
   rubocop-rake (>= 0.1)
   rubocop-rspec (>= 2.0)
+  rubocop-thread_safety (>= 0.1)
   service_actor!
   simplecov
   standard-rubocop-lts (>= 1.0.10)
