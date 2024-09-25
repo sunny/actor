@@ -222,4 +222,20 @@ RSpec.describe ServiceActor::Result do
       expect(result).to be_a_failure
     end
   end
+
+  describe "#pretty_print" do
+    context "without nested attributes" do
+      it "correctly pretty prints the result" do
+        expect(PP.pp(result, +"")).to eq("#<ServiceActor::Result {}>\n")
+      end
+    end
+
+    context "with nested attributes" do
+      let(:result) { described_class.new(a: 1, b: "hello") }
+
+      it "correctly pretty prints the result" do
+        expect(PP.pp(result, +"")).to eq("#<ServiceActor::Result {:a=>1, :b=>\"hello\"}>\n")
+      end
+    end
+  end
 end

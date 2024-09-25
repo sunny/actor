@@ -46,7 +46,11 @@ class ServiceActor::Result < BasicObject
     "<#{self.class.name} #{to_h}>"
   end
 
-  alias_method :pretty_print, :inspect
+  def pretty_print(pp)
+    pp.text "#<#{self.class.name} "
+    pp.pp to_h
+    pp.text ">"
+  end
 
   def fail!(failure_class = nil, result = {})
     if failure_class.nil? || failure_class.is_a?(::Hash)
