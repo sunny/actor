@@ -28,7 +28,10 @@ Gem::Specification.new do |spec|
     README.md
   ]
 
-  spec.files = IO.popen(%w[git ls-files -z lib], chdir: __dir__, err: IO::NULL) { |ls| ls.readlines("\x0", chomp: true) }
+  files = %w[git ls-files -z lib]
+  spec.files = IO.popen(files, chdir: __dir__, err: IO::NULL) do |ls|
+    ls.readlines("\x0", chomp: true)
+  end
 
   spec.required_ruby_version = [">= 2.7"]
 
