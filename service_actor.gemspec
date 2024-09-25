@@ -28,8 +28,9 @@ Gem::Specification.new do |spec|
     README.md
   ]
 
-  spec.files = Dir.chdir(File.expand_path(__dir__)) do
-    %x(git ls-files -z lib).split("\x0")
+  files = %w[git ls-files -z lib]
+  spec.files = IO.popen(files, chdir: __dir__, err: IO::NULL) do |ls|
+    ls.readlines("\x0", chomp: true)
   end
 
   spec.required_ruby_version = [">= 2.7"]
