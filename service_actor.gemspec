@@ -69,6 +69,9 @@ Gem::Specification.new do |spec|
   # Add Rakefile linting
   spec.add_development_dependency "rubocop-rake", ">= 0.1"
 
+  # Thread-safety checks
+  spec.add_development_dependency "rubocop-thread_safety", ">= 0.1"
+
   # Formatter for GitHub’s code scanning
   spec.add_development_dependency "code-scanning-rubocop", ">= 0.6"
 
