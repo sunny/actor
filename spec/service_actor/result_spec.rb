@@ -17,7 +17,8 @@ RSpec.describe ServiceActor::Result do
   end
 
   describe ".instance_methods" do
-    it "stays the same across supported Rubies" do # rubocop:disable RSpec/ExampleLength
+    # rubocop:disable RSpec/ExampleLength
+    it "stays the same across supported Rubies" do
       expect(described_class.instance_methods).to contain_exactly(
         :__binding__,
         :__id__,
@@ -61,6 +62,7 @@ RSpec.describe ServiceActor::Result do
         :yield_self,
       )
     end
+    # rubocop:enable RSpec/ExampleLength
   end
 
   context "when input is String" do
@@ -233,8 +235,19 @@ RSpec.describe ServiceActor::Result do
     context "with nested attributes" do
       let(:result) { described_class.new(a: 1, b: "hello") }
 
+      # Test for the new hash syntax introduced in Ruby 3.4.0dev
+      let(:new_pp_ruby_syntax?) { PP.pp({hash: "test"}, +"").include?("hash:") }
+
+      let(:expected_result) do
+        if new_pp_ruby_syntax?
+          "#<ServiceActor::Result {a: 1, b: \"hello\"}>\n"
+        else
+          "#<ServiceActor::Result {:a=>1, :b=>\"hello\"}>\n"
+        end
+      end
+
       it "correctly pretty prints the result" do
-        expect(PP.pp(result, +"")).to eq("#<ServiceActor::Result {:a=>1, :b=>\"hello\"}>\n")
+        expect(PP.pp(result, +"")).to eq(expected_result)
       end
     end
   end
