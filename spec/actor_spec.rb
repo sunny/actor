@@ -1364,7 +1364,7 @@ RSpec.describe Actor do
     context "when disallowing nil on an output" do
       context "when set correctly" do
         it "succeeds" do
-          expect(DisallowNilOnOutput.value).to be "Jim"
+          expect(DisallowNilOnOutput.value).to eq("Jim")
         end
       end
 
