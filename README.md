@@ -322,12 +322,12 @@ class BuildGreeting < Actor
   input :adjective, default: "wonderful"
   input :length_of_time, default: -> { ["day", "week", "month"].sample }
   input :article,
-        default: -> context { context.adjective.match?(/^aeiou/) ? "an" : "a" }
+        default: -> context { context.adjective.match?(/^[aeiou]/) ? "an" : "a" }
 
   output :greeting
 
   def call
-    self.greeting = "Have #{article} #{length_of_time}, #{name}!"
+    self.greeting = "Have #{article} #{adjective} #{length_of_time}, #{name}!"
   end
 end
 
