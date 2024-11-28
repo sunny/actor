@@ -90,7 +90,15 @@ module ServiceActor::Playable
     end
 
     def play_actor(actor)
-      if actor.is_a?(Symbol)
+      actor_includes_kernel = begin
+        actor.respond_to?(:is_a?)
+      rescue NoMethodError
+        false
+      end
+
+      if !actor_includes_kernel
+        actor.call(result)
+      elsif actor.is_a?(Symbol)
         send(actor)
       elsif actor.is_a?(Class) && actor.ancestors.include?(ServiceActor::Core)
         play_service_actor(actor)
