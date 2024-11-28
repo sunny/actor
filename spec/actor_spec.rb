@@ -1491,4 +1491,37 @@ RSpec.describe Actor do
       expect(result.error).to start_with('The "value" input on')
     end
   end
+
+  context "when actor inherits from `BasicObject`" do
+    t = Class.new(BasicObject) do
+      class << self
+        def [](attribute, value)
+          new(attribute, value)
+        end
+      end
+
+      def initialize(attribute, value)
+        @attribute, @value = attribute, value
+      end
+
+      def call(actor)
+        actor.__send__(:"#{@attribute}=", @value)
+      end
+    end
+
+    let(:actor) do
+      Class.new(Actor) do
+        output :value, type: Integer
+
+        play t[:value, 42]
+      end
+    end
+
+    it "does not raise" do
+      result = actor.result
+
+      expect(result).to be_a_success
+      expect(result.value).to eq(42)
+    end
+  end
 end

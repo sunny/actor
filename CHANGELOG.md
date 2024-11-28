@@ -5,6 +5,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## unreleased
 
+Feature:
+- Allow objects without `Kernel` inclusion to function with the `play` DSL. (#180)
+
 ## v3.9.4
 
 Fixes:
