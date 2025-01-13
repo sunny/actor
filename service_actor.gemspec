@@ -80,4 +80,7 @@ Gem::Specification.new do |spec|
 
   # Code coverage reporter
   spec.add_development_dependency "simplecov", ">= 0.0"
+
+  # https://github.com/ruby/ruby/pull/12531
+  spec.add_development_dependency "ostruct", ">= 0.0"
 end
