@@ -466,6 +466,18 @@ RSpec.describe Actor do
       end
     end
 
+    context "when not touching an output" do
+      it "returns the default" do
+        expect(AddOutputWithDefault.call.fruits).to eq([])
+      end
+
+      it "does not share the same object" do
+        actor1 = AddOutputWithDefault.call
+        actor2 = AddOutputWithDefault.call
+        expect(actor1.fruits.object_id).not_to eq(actor2.fruits.object_id)
+      end
+    end
+
     context "when setting an unknown output" do
       it "raises" do
         expect { SetUnknownOutput.call }
