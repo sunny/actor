@@ -489,6 +489,46 @@ RSpec.describe Actor do
       end
     end
 
+    context "with generic type" do
+      before do
+        stub_const(
+          "InternType",
+          Object.new.tap do |object|
+            class << object
+              def ===(value)
+                value.is_a?(String) || value.is_a?(Symbol)
+              end
+
+              def name
+                "InternType"
+              end
+            end
+          end,
+        )
+      end
+
+      let(:actor) do
+        Class.new(Actor) do
+          input :value, type: InternType
+          output :value, type: InternType
+
+          play -> actor { actor.value = actor.value.succ }
+        end
+      end
+
+      it "acceps value satisfying generic type" do
+        expect(actor.call(value: :foo).value).to eq(:foo.succ)
+        expect(actor.call(value: "foo").value).to eq("foo".succ)
+      end
+
+      it "raises if provided value does not match generic type" do
+        expect { actor.call(value: 1) }.to raise_error(
+          ServiceActor::ArgumentError,
+          /The "value" input on .+ must be of type "InternType" but was "Integer"/,
+        )
+      end
+    end
+
     context "with accessing origins multiple times" do
       it "returns expected value" do
         expect(AccessOriginsMultipleTimes.call(value: 0).value_result).to eq(2)
