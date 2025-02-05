@@ -314,8 +314,7 @@ end
 
 ### Defaults
 
-Inputs and outputs can become optional by providing a `default` value in a
-lambda.
+Inputs can become optional by providing a `default` value in a lambda.
 
 ```rb
 class BuildGreeting < Actor
