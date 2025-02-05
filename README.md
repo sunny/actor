@@ -314,15 +314,16 @@ end
 
 ### Defaults
 
-Inputs can be optional by providing a `default` value or lambda.
+Inputs and outputs can become optional by providing a `default` value in a
+lambda.
 
 ```rb
 class BuildGreeting < Actor
   input :name
-  input :adjective, default: "wonderful"
+  input :adjective, default: -> { "wonderful" }
   input :length_of_time, default: -> { ["day", "week", "month"].sample }
   input :article,
-        default: -> context { context.adjective.match?(/^[aeiou]/) ? "an" : "a" }
+        default: -> actor { actor.adjective.match?(/^[aeiou]/) ? "an" : "a" }
 
   output :greeting
 
