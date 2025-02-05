@@ -164,6 +164,36 @@ RSpec.describe Actor do
       end
     end
 
+    context "when an output has a lambda default" do
+      it "adds it to the context" do
+        actor = AddGreetingWithOutputLambdaDefault.call
+
+        expect(actor.zero_arity_output_default).to eq(42)
+        expect(actor.one_arity_output_default).to eq("world!")
+        expect(actor.nested_lambda_default.call).to eq(43)
+        expect(actor.complex_lambda_default).to eq(142)
+      end
+
+      it "evaluates lambda default before an actor is executed" do
+        actor = Class.new(Actor) do
+          output :value, default: -> { raise "Reached" }
+
+          play -> actor { actor.value = 42 }
+        end
+
+        expect { actor.call }.to raise_error(RuntimeError, "Reached")
+      end
+
+      it "raises error on type mismatch between output and default lambda" do
+        actor = Class.new(Actor) { output :value, type: Integer, default: -> { "42" } }
+
+        expect { actor.call }.to raise_error(
+          ServiceActor::ArgumentError,
+          /The "value" output on .+ must be of type "Integer" but was "String"/,
+        )
+      end
+    end
+
     context "when a lambda default references other inputs" do
       it "adds the computed default" do
         actor = LambdaDefaultWithReference.call(old_project_id: 77_392)

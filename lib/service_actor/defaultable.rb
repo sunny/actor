@@ -43,25 +43,29 @@ module ServiceActor::Defaultable
           )
         end
 
-        default = input[:default]
-
-        if default.is_a?(Hash) && default[:is]
-          default_for_advanced_mode_with(result, key, default)
-        else
-          default_for_normal_mode_with(result, key, default)
-        end
+        apply_default_for_origin(key, input)
       end
 
-      self.class.outputs.each do |key, options|
-        unless result.key?(key)
-          result.send(:"#{key}=", options[:default])
-        end
+      self.class.outputs.each do |key, output|
+        next if result.key?(key)
+
+        apply_default_for_origin(key, output)
       end
 
       super
     end
 
     private
+
+    def apply_default_for_origin(origin_name, origin_options)
+      default = origin_options[:default]
+
+      if default.is_a?(Hash) && default[:is]
+        default_for_advanced_mode_with(result, origin_name, default)
+      else
+        default_for_normal_mode_with(result, origin_name, default)
+      end
+    end
 
     def default_for_normal_mode_with(result, key, default)
       result[key] = reify_default(result, default)
