@@ -72,14 +72,14 @@ class ServiceActor::Checks::TypeCheck < ServiceActor::Checks::Base
 
     types, message = define_types_and_message
 
-    return if types.any? { |type| @given_type.is_a?(type) }
+    return if types.any? { |type| type === @given_type }
 
     add_argument_error(
       message,
       origin: @origin,
       input_key: @input_key,
       actor: @actor,
-      expected_type: types.join(", "),
+      expected_type: types.map(&:name).join(", "),
       given_type: @given_type.class,
     )
   end
