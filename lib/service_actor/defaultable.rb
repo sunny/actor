@@ -9,22 +9,6 @@
 #     input :counter, default: 1
 #     input :multiplier, default: -> { rand(1..10) }
 #   end
-#
-#   class MultiplyThing < Actor
-#     input :counter,
-#           default: {
-#             is: 1,
-#             message: "Counter is required"
-#           }
-#
-#     input :multiplier,
-#           default: {
-#             is: -> { rand(1..10) },
-#             message: (lambda do |input_key:, actor:|
-#               "Input \"#{input_key}\" is required"
-#             end)
-#           }
-#   end
 module ServiceActor::Defaultable
   class << self
     def included(base)
@@ -60,33 +44,10 @@ module ServiceActor::Defaultable
     def apply_default_for_origin(origin_name, origin_options)
       default = origin_options[:default]
 
-      if default.is_a?(Hash) && default[:is]
-        default_for_advanced_mode_with(result, origin_name, default)
-      else
-        default_for_normal_mode_with(result, origin_name, default)
-      end
+      result[origin_name] = reify_default(result, default)
     end
 
-    def default_for_normal_mode_with(result, key, default)
-      result[key] = reify_default(result, default)
-    end
-
-    def default_for_advanced_mode_with(result, key, content)
-      default, message = content.values_at(:is, :message)
-
-      unless default
-        raise_error_with(message, input_key: key, actor: self.class)
-      end
-
-      result[key] = reify_default(result, default)
-
-      message.call(key, self.class)
-    end
-
-    # Raises an error depending on the mode
-    def raise_error_with(message, **arguments)
-      message = message.call(**arguments) if message.is_a?(Proc)
-
+    def raise_error_with(message)
       raise self.class.argument_error_class, message
     end
 

@@ -171,7 +171,6 @@ RSpec.describe Actor do
         expect(actor.zero_arity_output_default).to eq(42)
         expect(actor.one_arity_output_default).to eq("world!")
         expect(actor.nested_lambda_default.call).to eq(43)
-        expect(actor.complex_lambda_default).to eq(142)
       end
 
       it "evaluates lambda default before an actor is executed" do
