@@ -471,20 +471,6 @@ end
   end
   ```
 
-  #### Default
-
-  ```ruby
-  class MultiplyThing < Actor
-    input :multiplier,
-          default: {
-            is: -> { rand(1..10) },
-            message: (lambda do |input_key:, **|
-              "Input \"#{input_key}\" is required"
-            end)
-          }
-  end
-  ```
-
   #### Type
 
   ```ruby
