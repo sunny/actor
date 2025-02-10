@@ -26,6 +26,10 @@ module ServiceActor::Attributable
         name, origin: :input
       )
 
+      ServiceActor::ArgumentsValidator.validate_default_value(
+        arguments[:default], actor: self, origin_type: :input, origin_name: name
+      )
+
       inputs[name] = arguments
 
       define_method(name) do
@@ -45,6 +49,10 @@ module ServiceActor::Attributable
     def output(name, **arguments)
       ServiceActor::ArgumentsValidator.validate_origin_name(
         name, origin: :output
+      )
+
+      ServiceActor::ArgumentsValidator.validate_default_value(
+        arguments[:default], actor: self, origin_type: :output, origin_name: name
       )
 
       outputs[name] = arguments

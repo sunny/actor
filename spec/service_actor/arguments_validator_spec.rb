@@ -40,4 +40,49 @@ RSpec.describe ServiceActor::ArgumentsValidator do
         )
     end
   end
+
+  describe ".validate_default_value" do
+    include_context "with mocked `Kernel.warn` method"
+
+    [[], {}, {a: 1}, {a: []}.freeze, Struct.new(:a).new].each do |mutable_value|
+      context "when `Ractor` API is supported" do
+        it "emits a warning if default value `#{mutable_value}` is mutable" do # rubocop:disable RSpec/ExampleLength
+          described_class.validate_default_value(mutable_value, origin_type: :input, origin_name: :value, actor: "actor_name")
+
+          if engine_mri?
+            expect(Kernel).to have_received(:warn)
+              .with("DEPRECATED: Actor `actor_name` has input `value` with default which is not a Proc or an immutable object.")
+              .once
+          else
+            expect(Kernel).not_to have_received(:warn)
+          end
+        end
+      end
+
+      context "when `Ractor` API is not supported" do
+        before { hide_const("Ractor") }
+
+        it "does not emit a warning" do
+          described_class.validate_default_value(mutable_value, origin_type: :input, origin_name: :value, actor: "actor_name")
+
+          expect(Kernel).not_to have_received(:warn)
+        end
+      end
+    end
+
+    [[].freeze, {}.freeze, {a: 1}.freeze, {a: [].freeze}.freeze, Struct.new(:a).new.freeze].each do |immutable_value|
+      it "does not emit a warning if default value `#{immutable_value}` is immutable" do
+        described_class.validate_default_value(immutable_value, origin_type: :input, origin_name: :value, actor: "actor_name")
+
+        expect(Kernel).not_to have_received(:warn)
+      end
+    end
+
+    it "does not emit a warning for a lambda default" do
+      described_class.validate_default_value(-> {}, origin_type: :input, origin_name: :value, actor: "actor_name")
+      described_class.validate_default_value(-> a { a }, origin_type: :input, origin_name: :value, actor: "actor_name")
+
+      expect(Kernel).not_to have_received(:warn)
+    end
+  end
 end
