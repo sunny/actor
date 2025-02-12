@@ -6,7 +6,8 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## unreleased
 
 Feature:
-- Add support for JRuby. (#191)
+- Drop Ruby MRI 2.7 support. (#194)
+- Add support for JRuby. (#193)
 - Allow `output` to accept procs as defaults. (#188)
 - Allow any object that responds to `===` to be used as a type. (#187)
 - Allow objects without `Kernel` inclusion to function with the `play` DSL. (#180)

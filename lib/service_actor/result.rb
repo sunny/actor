@@ -124,9 +124,7 @@ class ServiceActor::Result < BasicObject
   # Key `_default_output` is an internal datum used by actor class
   # method `.valuable`. Don't expose it with the rest of the result.
   def filter_default_output(h)
-    # using `filter` instead of `except` to maintain Ruby 2.7 compatibility
-    # update once support for 2.7 is dropped
-    h.filter { |k| k != :_default_output }
+    h.except(:_default_output)
   end
 
   def respond_to_missing?(method_name, _include_private = false)

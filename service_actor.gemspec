@@ -33,7 +33,7 @@ Gem::Specification.new do |spec|
     ls.readlines("\x0", chomp: true)
   end
 
-  spec.required_ruby_version = [">= 2.7"]
+  spec.required_ruby_version = ">= 3.0"
 
   # Loader
   spec.add_runtime_dependency "zeitwerk", ">= 1.0"
