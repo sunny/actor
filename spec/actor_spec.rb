@@ -13,10 +13,6 @@ class CustomFailureError < StandardError
 end
 
 RSpec.describe Actor do
-  shared_context "with mocked `Kernel.warn` method" do
-    before { allow(Kernel).to receive(:warn).with(kind_of(String)) }
-  end
-
   describe "#call" do
     context "when fail! is not called" do
       let(:actor) { DoNothing.call }
@@ -1591,6 +1587,50 @@ RSpec.describe Actor do
 
       expect(result).to be_a_success
       expect(result.value).to eq(42)
+    end
+  end
+
+  context "when actor has origin with default which is not a proc or an immutable object" do
+    include_context "with mocked `Kernel.warn` method"
+
+    context "with input origin" do
+      let(:actor) do
+        Class.new(Actor) do
+          input :options, default: {}
+        end
+      end
+
+      it "emits a warning on MRI" do # rubocop:disable RSpec/ExampleLength
+        actor
+
+        if engine_mri?
+          expect(Kernel).to have_received(:warn)
+            .with(/DEPRECATED: Actor .+ has input `options` with default which is not a Proc or an immutable object./)
+            .once
+        else
+          expect(Kernel).not_to have_received(:warn)
+        end
+      end
+    end
+
+    context "with output origin" do
+      let(:actor) do
+        Class.new(Actor) do
+          output :options, default: {}
+        end
+      end
+
+      it "emits a warning" do # rubocop:disable RSpec/ExampleLength
+        actor
+
+        if engine_mri?
+          expect(Kernel).to have_received(:warn)
+            .with(/DEPRECATED: Actor .+ has output `options` with default which is not a Proc or an immutable object./)
+            .once
+        else
+          expect(Kernel).not_to have_received(:warn)
+        end
+      end
     end
   end
 end

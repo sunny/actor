@@ -338,6 +338,33 @@ actor = BuildGreeting.call(name: "Siobhan", adjective: "elegant")
 actor.greeting # => "Have an elegant week, Siobhan!"
 ```
 
+While lambdas are the preferred way to specify defaults, you can also provide
+a default value without using lambdas by using an immutable object.
+
+```rb
+# frozen_string_literal: true
+
+class ExampleActor < Actor
+  input :options, default: {
+    names: {male: "Iaroslav", female: "Anna"}.freeze,
+    country_codes: %w[gb ru].freeze
+  }.freeze
+end
+```
+
+Note that default values might be mutated if the values returned by the lambda
+are references to mutable objects, e.g.
+
+```rb
+class ExampleActor < Actor
+  input :options, default: -> { Registry::DEFAULT_OPTIONS } # `Registry::DEFAULT_OPTIONS` is not frozen
+
+  def call
+    options[:names] = nil
+  end
+end
+```
+
 ### Allow nil
 
 By default inputs accept `nil` values. To raise an error instead:

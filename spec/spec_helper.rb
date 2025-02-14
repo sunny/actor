@@ -10,6 +10,8 @@ require "bundler/setup"
 require "service_actor"
 require "pry"
 
+Dir["#{__dir__}/support/**/*.rb"].each { |path| require path }
+
 # Autoload examples
 loader = Zeitwerk::Loader.new
 loader.push_dir(File.expand_path("examples", __dir__))
@@ -25,4 +27,8 @@ RSpec.configure do |config|
   config.expect_with :rspec do |c|
     c.syntax = :expect
   end
+end
+
+def engine_mri?
+  RUBY_ENGINE == "ruby"
 end

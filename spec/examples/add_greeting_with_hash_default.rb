@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class AddGreetingWithHashDefault < Actor
-  input :options, default: {name: "world"}
+  input :options, default: -> { {name: "world"} }
   output :greeting, type: String
 
   def call

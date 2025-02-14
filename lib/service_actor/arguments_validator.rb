@@ -16,4 +16,13 @@ module ServiceActor::ArgumentsValidator
 
     raise ArgumentError, "Expected #{value} to be a subclass of Exception"
   end
+
+  def validate_default_value(value, origin_type:, origin_name:, actor:)
+    return if value.is_a?(Proc) || !defined?(Ractor.shareable?) || Ractor.shareable?(value)
+
+    ::Kernel.warn(
+      "DEPRECATED: Actor `#{actor}` has #{origin_type} `#{origin_name}` with default " \
+        "which is not a Proc or an immutable object.",
+    )
+  end
 end
