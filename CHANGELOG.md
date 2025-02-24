@@ -5,19 +5,25 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## unreleased
 
-Feature:
+## v4.0.0
+
+Breaking change:
 - Drop Ruby MRI 2.7 support. (#194)
+
+Features:
 - Add support for JRuby. (#193)
 - Emit a warning unless default value is a proc or an immutable object. (#191)
 - Allow `output` to accept procs as defaults. (#188)
 - Allow any object that responds to `===` to be used as a type. (#187)
-- Allow objects without `Kernel` inclusion to function with the `play` DSL. (#180)
+- Allow objects without `Kernel` inclusion to function with the `play` DSL.
+  (#180)
 
 ## v3.9.4
 
 Fixes:
 - Add `#hash` and `#instance_of?` to `ServiceActor::Result` (#168)
-- Fix "An error occurred when inspecting the object" - `ArgumentError` for `ServiceActor::Result` when using `IRB` (#174)
+- Fix "An error occurred when inspecting the object" - `ArgumentError` for
+  `ServiceActor::Result` when using `IRB` (#174)
 
 ## v3.9.3
 
@@ -28,7 +34,8 @@ Fixes:
 ## v3.9.2
 
 Fixes:
-- Add `#nil?`, `#methods`, `#blank?` and `#private_methods`to `ServiceActor::Result` (#146, #162)
+- Add `#nil?`, `#methods`, `#blank?` and `#private_methods` to
+  `ServiceActor::Result` (#146, #162)
 - Accept inputs called `error` (#146)
 
 ## v3.9.1

@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    service_actor (3.9.4)
+    service_actor (4.0.0)
       zeitwerk (>= 1.0)
 
 GEM
@@ -123,7 +123,7 @@ GEM
       version_gem (>= 1.1.4, < 3)
     unicode-display_width (2.5.0)
     version_gem (1.1.4)
-    zeitwerk (2.6.18)
+    zeitwerk (2.7.2)
 
 PLATFORMS
   ruby
