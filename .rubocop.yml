@@ -137,5 +137,5 @@ Style/StabbyLambdaParentheses:
 
 # ThreadSafety
 
-ThreadSafety/InstanceVariableInClassMethod:
+ThreadSafety/ClassInstanceVariable:
   Enabled: false
