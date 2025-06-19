@@ -5,6 +5,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## unreleased
 
+Breaking change:
+- Drop Ruby MRI 3.0 and 3.1 support. (#198)
+
 ## v4.0.0
 
 Breaking change:
