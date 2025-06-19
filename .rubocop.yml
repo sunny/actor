@@ -1,4 +1,4 @@
-require:
+plugins:
   - rubocop-rspec
   - rubocop-rake
   - rubocop-performance
@@ -7,7 +7,7 @@ inherit_gem:
   rubocop-lts: rubocop-lts.yml
 
 AllCops:
-  TargetRubyVersion: 3.0
+  TargetRubyVersion: 3.2
   Exclude:
     - bin/rake
     - bin/rspec
@@ -137,5 +137,5 @@ Style/StabbyLambdaParentheses:
 
 # ThreadSafety
 
-ThreadSafety/InstanceVariableInClassMethod:
+ThreadSafety/ClassInstanceVariable:
   Enabled: false

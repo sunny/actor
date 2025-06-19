@@ -33,7 +33,7 @@ Gem::Specification.new do |spec|
     ls.readlines("\x0", chomp: true)
   end
 
-  spec.required_ruby_version = ">= 3.0"
+  spec.required_ruby_version = ">= 3.2"
 
   # Loader
   spec.add_runtime_dependency "zeitwerk", ">= 1.0"
@@ -50,7 +50,7 @@ Gem::Specification.new do |spec|
   # Linting rubocop-lts is a RuboCop wrapper for Ruby
   #   and should only be bumped when dropping old Ruby support
   # see: https://rubocop-lts.gitlab.io/HOW_TO_UPGRADE_RUBY/
-  spec.add_development_dependency "rubocop-lts", "~> 18.2"
+  spec.add_development_dependency "rubocop-lts", "~> 24.0"
 
   # rubocop-lts dependency. Can be removed when RuboCop LTS is upgraded.
   # https://github.com/sunny/actor/pull/126#issuecomment-1966682674
