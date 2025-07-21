@@ -181,6 +181,10 @@ class UsersController < ApplicationController
 end
 ```
 
+> [!WARNING]
+> If you specify the type option for output fields, it will not be enforced for failed actors.
+> As a result, their output might not match the specified type.
+
 ## Play actors in a sequence
 
 To help you create actors that are small, single-responsibility actions, an
