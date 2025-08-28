@@ -647,6 +647,25 @@ RSpec.describe Actor do
       end
     end
 
+    context "when using type, allow_nil and must" do
+      context "when not given a value" do
+        it do
+          expect { AllowNil.call }.to raise_error(ServiceActor::ArgumentError)
+        end
+      end
+
+      context "when given a nil value" do
+        it "accepts it" do
+          actor = AllowNil.call(
+            message_with_inclusion: nil,
+            message_with_must: nil,
+          )
+          expect(actor.message_with_inclusion).to be_nil
+          expect(actor.message_with_must).to be_nil
+        end
+      end
+    end
+
     context 'when using "inclusion"' do
       context "when normal mode" do
         context "when given a correct value" do
@@ -1600,7 +1619,7 @@ RSpec.describe Actor do
         end
       end
 
-      it "emits a warning on MRI" do # rubocop:disable RSpec/ExampleLength
+      it "emits a warning on MRI" do
         actor
 
         if engine_mri?
@@ -1620,7 +1639,7 @@ RSpec.describe Actor do
         end
       end
 
-      it "emits a warning" do # rubocop:disable RSpec/ExampleLength
+      it "emits a warning" do
         actor
 
         if engine_mri?

@@ -75,22 +75,24 @@ class ServiceActor::Checks::NilCheck < ServiceActor::Checks::Base
   end
 
   def check
-    return unless @value.nil?
+    return unless value.nil?
 
     allow_nil, message =
-      define_allow_nil_and_message_from(@input_options[:allow_nil])
+      define_allow_nil_and_message_from(input_options[:allow_nil])
 
     return if allow_nil?(allow_nil)
 
     add_argument_error(
       message,
-      origin: @origin,
-      input_key: @input_key,
-      actor: @actor,
+      origin: origin,
+      input_key: input_key,
+      actor: actor,
     )
   end
 
   private
+
+  attr_reader :origin, :input_key, :input_options, :actor, :allow_nil, :value
 
   def define_allow_nil_and_message_from(allow_nil)
     if allow_nil.is_a?(Hash)
@@ -104,10 +106,10 @@ class ServiceActor::Checks::NilCheck < ServiceActor::Checks::Base
   def allow_nil?(tmp_allow_nil)
     return tmp_allow_nil unless tmp_allow_nil.nil?
 
-    if @input_options.key?(:default) && @input_options[:default].nil?
+    if input_options.key?(:default) && input_options[:default].nil?
       return true
     end
 
-    !@input_options[:type]
+    !input_options[:type]
   end
 end
