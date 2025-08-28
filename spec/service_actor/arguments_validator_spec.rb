@@ -2,7 +2,7 @@
 
 RSpec.describe ServiceActor::ArgumentsValidator do
   describe ".validate_origin_name" do
-    it "raises if collision present" do # rubocop:disable RSpec/ExampleLength
+    it "raises if collision present" do
       expect do
         described_class.validate_origin_name(:fail!, origin: :input)
       end.to raise_error(
@@ -46,7 +46,7 @@ RSpec.describe ServiceActor::ArgumentsValidator do
 
     [[], {}, {a: 1}, {a: []}.freeze, Struct.new(:a).new].each do |mutable_value|
       context "when `Ractor` API is supported" do
-        it "emits a warning if default value `#{mutable_value}` is mutable" do # rubocop:disable RSpec/ExampleLength
+        it "emits a warning if default value `#{mutable_value}` is mutable" do
           described_class.validate_default_value(mutable_value, origin_type: :input, origin_name: :value, actor: "actor_name")
 
           if engine_mri?

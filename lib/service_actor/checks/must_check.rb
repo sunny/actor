@@ -34,7 +34,15 @@ class ServiceActor::Checks::MustCheck < ServiceActor::Checks::Base
   private_constant :DEFAULT_MESSAGE
 
   class << self
-    def check(check_name:, input_key:, actor:, conditions:, result:, **)
+    def check(
+      check_name:,
+      input_key:,
+      actor:,
+      conditions:,
+      result:,
+      input_options:,
+      **
+    )
       return unless check_name == :must
 
       new(
@@ -42,47 +50,56 @@ class ServiceActor::Checks::MustCheck < ServiceActor::Checks::Base
         actor: actor,
         nested_checks: conditions,
         value: result[input_key],
+        input_options: input_options,
       ).check
     end
   end
 
-  def initialize(input_key:, actor:, nested_checks:, value:)
+  def initialize(input_key:, actor:, nested_checks:, value:, input_options:)
     super()
 
     @input_key = input_key
     @actor = actor
     @nested_checks = nested_checks
     @value = value
+    @input_options = input_options
   end
 
   def check
-    @nested_checks.each do |nested_check_name, nested_check_conditions|
-      message = prepared_message_with(nested_check_name, nested_check_conditions) # rubocop:disable Layout/LineLength
+    return if input_options[:allow_nil] && value.nil?
+
+    nested_checks.each do |nested_check_name, nested_check_conditions|
+      message = prepared_message_with(
+        nested_check_name,
+        nested_check_conditions,
+      )
 
       next unless message
 
       add_argument_error(
         message,
-        input_key: @input_key,
-        actor: @actor,
+        input_key: input_key,
+        actor: actor,
         check_name: nested_check_name,
-        value: @value,
+        value: value,
       )
     end
 
-    @argument_errors
+    argument_errors
   end
 
   private
 
+  attr_reader :input_key, :actor, :nested_checks, :value, :input_options
+
   def prepared_message_with(nested_check_name, nested_check_conditions)
     check, message = define_check_and_message_from(nested_check_conditions)
 
-    return if check.call(@value)
+    return if check.call(value)
 
     message
   rescue StandardError => e
-    "The \"#{@input_key}\" input on \"#{@actor}\" has an error in the code " \
+    "The \"#{input_key}\" input on \"#{actor}\" has an error in the code " \
       "inside \"#{nested_check_name}\": [#{e.class}] #{e.message}"
   end
 

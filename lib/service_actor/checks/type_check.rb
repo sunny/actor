@@ -67,36 +67,39 @@ class ServiceActor::Checks::TypeCheck < ServiceActor::Checks::Base
   end
 
   def check
-    return if @type_definition.nil?
-    return if @given_type.nil?
+    return if type_definition.nil?
+    return if given_type.nil?
 
     types, message = define_types_and_message
 
-    return if types.any? { |type| type === @given_type }
+    return if types.any? { |type| type === given_type }
 
     add_argument_error(
       message,
-      origin: @origin,
-      input_key: @input_key,
-      actor: @actor,
+      origin: origin,
+      input_key: input_key,
+      actor: actor,
       expected_type: types.map(&:name).join(", "),
-      given_type: @given_type.class,
+      given_type: given_type.class,
     )
   end
 
   private
 
-  def define_types_and_message
-    if @type_definition.is_a?(Hash)
-      @type_definition[:message] ||= DEFAULT_MESSAGE
+  attr_reader :origin, :input_key, :actor, :type_definition, :given_type
 
-      @type_definition, message =
-        @type_definition.values_at(:is, :message)
+  def define_types_and_message
+    definition = type_definition
+
+    if definition.is_a?(Hash)
+      definition[:message] ||= DEFAULT_MESSAGE
+
+      definition, message = definition.values_at(:is, :message)
     else
       message = DEFAULT_MESSAGE
     end
 
-    types = Array(@type_definition).map do |name|
+    types = Array(definition).map do |name|
       name.is_a?(String) ? Object.const_get(name) : name
     end
 

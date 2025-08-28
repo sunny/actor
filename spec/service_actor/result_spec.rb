@@ -17,9 +17,8 @@ RSpec.describe ServiceActor::Result do
   end
 
   describe ".instance_methods" do
-    # rubocop:disable RSpec/ExampleLength
-    it "stays the same across supported Rubies" do
-      expect(described_class.instance_methods).to contain_exactly(
+    let(:expected_methods) do
+      [
         :__binding__,
         :__id__,
         :__send__,
@@ -60,9 +59,13 @@ RSpec.describe ServiceActor::Result do
         :then,
         :to_h,
         :yield_self,
-      )
+      ]
     end
-    # rubocop:enable RSpec/ExampleLength
+
+    it "stays the same across supported Rubies" do
+      expect(described_class.instance_methods)
+        .to match_array(expected_methods)
+    end
   end
 
   context "when input is String" do

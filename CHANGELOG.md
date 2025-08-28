@@ -8,6 +8,10 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Breaking change:
 - Drop Ruby MRI 3.0 and 3.1 support. (#198)
 
+Features:
+- The `inclusion:` and `must:` checks are ignored on nil values when
+  `allow_nil: true`. (#202)
+
 ## v4.0.0
 
 Breaking change:
