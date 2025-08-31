@@ -73,6 +73,9 @@ Metrics/MethodLength:
 
 # RSpec
 
+RSpec/DescribedClass:
+  Enabled: false
+
 RSpec/ExampleLength:
   Max: 10
 
@@ -80,6 +83,9 @@ RSpec/NestedGroups:
   Max: 5
 
 RSpec/MultipleExpectations:
+  Enabled: false
+
+RSpec/RepeatedExample:
   Enabled: false
 
 RSpec/VerifiedDoubles:

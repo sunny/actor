@@ -13,135 +13,187 @@ class CustomFailureError < StandardError
 end
 
 RSpec.describe Actor do
-  describe "#call" do
+  describe ".call" do
     context "when fail! is not called" do
-      let(:actor) { DoNothing.call }
+      let(:actor_class) { Class.new(Actor) }
 
-      it { expect(actor).to be_a(ServiceActor::Result) }
-      it { expect(actor).to be_a_success }
-      it { expect(actor).not_to be_a_failure }
+      it { expect(actor_class.call).to be_a(ServiceActor::Result) }
+      it { expect(actor_class.call).to be_a_success }
+      it { expect(actor_class.call).not_to be_a_failure }
     end
 
     context "when fail! is called" do
-      it "raises the error message" do
-        expect { FailWithError.call }
+      let(:actor_class) do
+        Class.new(Actor) do
+          def call
+            fail!(error: "Ouch", some_other_key: 42)
+          end
+        end
+      end
+
+      it do
+        expect { actor_class.call }
           .to raise_error(ServiceActor::Failure, "Ouch")
       end
 
       context "when a custom class is specified" do
-        it "raises the error message" do
-          expect { FailWithErrorWithCustomFailureClass.call }
-            .to raise_error(MyCustomFailure, "Ouch")
+        let(:actor_class) do
+          Class.new(Actor) do
+            self.failure_class = MyCustomFailure
+
+            def call
+              fail!(error: "Ouch", some_other_key: 42)
+            end
+          end
+        end
+
+        it do
+          expect { actor_class.call }.to raise_error(MyCustomFailure, "Ouch")
         end
       end
     end
 
-    context "when an actor updates the context" do
-      it "returns the context with the change" do
-        actor = AddNameToContext.call
-        expect(actor.name).to eq("Jim")
+    context "when updating the context" do
+      let(:actor_class) do
+        Class.new(Actor) do
+          output :name
+
+          def call
+            self.name = "Jim"
+          end
+        end
       end
+
+      it { expect(actor_class.call.name).to eq("Jim") }
     end
 
-    context "when an actor updates the context with a hash" do
-      it "returns the hash with the change" do
-        actor = AddHashToContext.call
-        expect(actor.stuff).to eq(name: "Jim")
+    context "when updating the context with a hash" do
+      let(:actor_class) do
+        Class.new(Actor) do
+          output :stuff, type: Hash
+
+          def call
+            self.stuff = {name: "Jim"}
+          end
+        end
       end
+
+      it { expect(actor_class.call.stuff).to eq(name: "Jim") }
     end
 
-    context "when an actor uses a method named after the input" do
-      it "returns what is in the context" do
-        actor = SetNameToDowncase.call(name: "JIM")
-        expect(actor.name).to eq("jim")
+    context "when using the same name for the input and output" do
+      let(:actor_class) do
+        Class.new(Actor) do
+          input :name
+          output :name
+
+          def call
+            self.name = name.downcase
+          end
+        end
       end
+
+      it { expect(actor_class.call(name: "JIM").name).to eq("jim") }
     end
 
     context "when given a context instead of a hash" do
-      it "returns the same context" do
-        actor = ServiceActor::Result.new(name: "Jim")
+      let(:actor_class) do
+        Class.new(Actor) do
+          output :name
 
-        expect(AddNameToContext.call(actor)).to eq(actor)
+          def call
+            self.name = "Jim"
+          end
+        end
       end
 
-      it "can update the given context" do
-        actor = ServiceActor::Result.new(name: "Jim")
+      let(:context) { ServiceActor::Result.new(name: "Boo") }
 
-        SetNameToDowncase.call(actor)
-
-        expect(actor.name).to eq("jim")
+      it do
+        result = actor_class.call(context)
+        expect(result.object_id).to eq(context.object_id)
+        expect(result.name)
+          .to eq(context.name)
+          .and eq("Jim")
       end
     end
 
     context "when given a hash with string keys" do
-      it "accepts them" do
-        actor = SetNameToDowncase.call({"name" => "Jim"})
+      let(:actor_class) do
+        Class.new(Actor) do
+          input :name, type: String
+          output :name, type: String
 
-        expect(actor.name).to eq("jim")
+          def call
+            self.name = name.downcase
+          end
+        end
       end
 
-      it "accepts implicit hashes" do
-        actor = SetNameToDowncase.call("name" => "ImplicitJim")
-
-        expect(actor.name).to eq("implicitjim")
-      end
-
-      it "accepts splatted hashes" do
-        actor = SetNameToDowncase.call(**{"name" => "SplattedJim"})
-
-        expect(actor.name).to eq("splattedjim")
-      end
+      it { expect(actor_class.call({"name" => "Jim"}).name).to eq("jim") }
+      it { expect(actor_class.call("name" => "Jim").name).to eq("jim") }
+      it { expect(actor_class.call(**{"name" => "Jim"}).name).to eq("jim") }
     end
 
     context "when an actor changes a value" do
-      it "returns a context with the updated value" do
-        actor = IncrementValue.call(value: 1)
-        expect(actor.value).to eq(2)
+      let(:actor_class) do
+        Class.new(Actor) do
+          input :value, type: Integer, default: 0
+          output :value, type: Integer
+
+          def call
+            self.value += 1
+          end
+        end
       end
+
+      it { expect(actor_class.call(value: 1).value).to eq(2) }
     end
 
     context "when an input has a default" do
-      it "adds it to the context" do
-        actor = AddGreetingWithDefault.call
-        expect(actor.name).to eq("world")
+      let(:actor_class) do
+        Class.new(Actor) do
+          input :name, default: "world", type: String
+          output :greeting, type: String
+
+          def call
+            self.greeting = "Hello, #{name}!"
+          end
+        end
       end
 
-      it "can use it" do
-        actor = AddGreetingWithDefault.call
-        expect(actor.greeting).to eq("Hello, world!")
-      end
+      it { expect(actor_class.call.name).to eq("world") }
+      it { expect(actor_class.call.greeting).to eq("Hello, world!") }
+      it { expect(actor_class.call(name: "jim").name).to eq("jim") }
 
-      it "is overridden by values added to call" do
-        actor = AddGreetingWithDefault.call(name: "jim")
-        expect(actor.name).to eq("jim")
-      end
-
-      it "is overridden by values already in the context" do
-        actor = AddGreetingWithDefault.call(
-          ServiceActor::Result.new(name: "jim"),
-        )
+      it do
+        actor = actor_class.call(ServiceActor::Result.new(name: "jim"))
         expect(actor.name).to eq("jim")
       end
     end
 
     context "when an input has a default that is a hash" do
-      it "adds it to the context" do
-        actor = AddGreetingWithHashDefault.call
-        expect(actor.options).to eq({name: "world"})
+      let(:actor_class) do
+        Class.new(Actor) do
+          input :options, default: -> { {name: "world"} }
+          output :greeting, type: String
+
+          def call
+            self.greeting = "Hello, #{options[:name]}!"
+          end
+        end
       end
 
-      it "can use it" do
-        actor = AddGreetingWithHashDefault.call
-        expect(actor.greeting).to eq("Hello, world!")
+      it { expect(actor_class.call.options).to eq({name: "world"}) }
+      it { expect(actor_class.call.greeting).to eq("Hello, world!") }
+
+      it do
+        expect(actor_class.call(options: {name: "Alice"}).options)
+          .to eq({name: "Alice"})
       end
 
-      it "is overridden by values added to call" do
-        actor = AddGreetingWithHashDefault.call(options: {name: "Alice"})
-        expect(actor.options).to eq({name: "Alice"})
-      end
-
-      it "is overridden by values already in the context" do
-        actor = AddGreetingWithHashDefault.call(
+      it do
+        actor = actor_class.call(
           ServiceActor::Result.new(options: {name: "Alice"}),
         )
         expect(actor.options).to eq({name: "Alice"})
@@ -149,135 +201,320 @@ RSpec.describe Actor do
     end
 
     context "when an input has a lambda default" do
-      it "adds it to the context" do
-        actor = AddGreetingWithLambdaDefault.call
-        expect(actor.name).to eq("world")
+      let(:actor_class) do
+        Class.new(Actor) do
+          input :name, default: -> { "world" }, type: String
+          output :greeting, type: String
+
+          def call
+            self.greeting = "Hello, #{name}!"
+          end
+        end
       end
 
-      it "can use it" do
-        actor = AddGreetingWithLambdaDefault.call
-        expect(actor.greeting).to eq("Hello, world!")
-      end
+      it { expect(actor_class.call.name).to eq("world") }
+      it { expect(actor_class.call.greeting).to eq("Hello, world!") }
     end
 
     context "when an output has a lambda default" do
-      it "adds it to the context" do
-        actor = AddGreetingWithOutputLambdaDefault.call
+      let(:actor_class) do
+        Class.new(Actor) do
+          input :name, default: "world", type: String
+
+          output :greeting, type: String
+          output :zero_arity_output_default, type: Integer, default: -> { 42 }
+          output :one_arity_output_default,
+                 type: String,
+                 default: -> actor { actor.name + "!" }
+          output :nested_lambda_default, type: Proc, default: -> { -> { 43 } }
+
+          def call
+            self.greeting = "Hello, #{name}!"
+          end
+        end
+      end
+
+      it do
+        actor = actor_class.call
 
         expect(actor.zero_arity_output_default).to eq(42)
         expect(actor.one_arity_output_default).to eq("world!")
         expect(actor.nested_lambda_default.call).to eq(43)
       end
 
-      it "evaluates lambda default before an actor is executed" do
-        actor = Class.new(Actor) do
-          output :value, default: -> { raise "Reached" }
+      context "when evaluating when lambda is executed" do
+        let(:actor_class) do
+          Class.new(Actor) do
+            output :value, default: -> { raise "Reached" }
 
-          play -> actor { actor.value = 42 }
+            play -> actor { actor.value = 42 }
+          end
         end
 
-        expect { actor.call }.to raise_error(RuntimeError, "Reached")
+        it "evaluates lambda default before the actor is executed" do
+          expect { actor_class.call }.to raise_error(RuntimeError, "Reached")
+        end
       end
 
-      it "raises error on type mismatch between output and default lambda" do
-        actor = Class.new(Actor) { output :value, type: Integer, default: -> { "42" } }
+      context "when there is a mismatch between output and default lambda" do
+        let(:actor_class) do
+          Class.new(Actor) do
+            output :value, type: Integer, default: -> { "42" }
+          end
+        end
 
-        expect { actor.call }.to raise_error(
-          ServiceActor::ArgumentError,
-          /The "value" output on .+ must be of type "Integer" but was "String"/,
-        )
+        it do
+          expect { actor_class.call }.to raise_error(
+            ServiceActor::ArgumentError,
+            /The "value" output on ".+" must be of type "Integer" but was "String"/,
+          )
+        end
       end
     end
 
     context "when a lambda default references other inputs" do
-      it "adds the computed default" do
-        actor = LambdaDefaultWithReference.call(old_project_id: 77_392)
-        expect(actor.project_id).to eq("77392.0")
+      let(:actor_class) do
+        Class.new(Actor) do
+          input :num, type: Integer
+          input :thingy, default: -> actor { "#{actor.num}.0" }, type: String
+        end
       end
+
+      it { expect(actor_class.call(num: 42).thingy).to eq("42.0") }
     end
 
     context "when an input has not been given" do
-      it "raises an error" do
-        expect { SetNameToDowncase.call }
+      let(:actor_class) do
+        Class.new(Actor) do
+          input :name
+        end
+      end
+
+      it do
+        expect { actor_class.call }
           .to raise_error(
             ServiceActor::ArgumentError,
-            "The \"name\" input on \"SetNameToDowncase\" is missing",
+            /\AThe "name" input on ".+" is missing\z/,
           )
       end
     end
 
     context "when playing several actors" do
-      let(:actor) { PlayActors.call(value: 1) }
+      let(:actor_class) do
+        increment_value_class = Class.new(Actor) do
+          input :value, type: Integer, default: 0
+          output :value, type: Integer
 
-      it "shares the result between actors" do
-        expect(actor.value).to eq(3)
-      end
+          def call
+            self.value += 1
+          end
+        end
 
-      it "calls the actors in order" do
-        expect(actor.name).to eq("jim")
-      end
-
-      context "when not providing arguments" do
-        let(:actor) { PlayActors.call }
-
-        it "uses defaults from the inner actors" do
-          expect(actor.value).to eq(2)
+        Class.new(Actor) do
+          play increment_value_class,
+               increment_value_class
         end
       end
+
+      it { expect(actor_class.call(value: 1).value).to eq(3) }
+      it { expect(actor_class.call.value).to eq(2) }
+    end
+
+    context "when playing several actors where order is important" do
+      let(:actor_class) do
+        add_name_class = Class.new(Actor) do
+          output :name
+
+          def call
+            self.name = "JIM"
+          end
+        end
+
+        downcase_name_class = Class.new(Actor) do
+          input :name
+          output :name
+
+          def call
+            self.name = name.downcase
+          end
+        end
+
+        Class.new(Actor) do
+          play add_name_class,
+               downcase_name_class
+        end
+      end
+
+      it { expect(actor_class.call.name).to eq("jim") }
+    end
+
+    context "when using a parent that includes ServiceActor::Base" do
+      let(:actor_class) do
+        stripped_down_parent = Class.new do
+          include ServiceActor::Base
+        end
+
+        stripped_down_class = Class.new(stripped_down_parent) do
+          output :stripped_down_actor
+
+          def call
+            self.stripped_down_actor = true
+          end
+        end
+
+        Class.new(Actor) do
+          play stripped_down_class
+        end
+      end
+
+      it { expect(actor_class.call.stripped_down_actor).to be(true) }
     end
 
     context "when playing actors and lambdas" do
-      let(:actor) { PlayLambdas.call }
+      let(:actor_class) do
+        increment_value_class = Class.new(Actor) do
+          input :value, type: Integer, default: 0
+          output :value, type: Integer
 
-      it "calls the actors and lambdas in order" do
-        expect(actor.name).to eq("jim number 4")
+          def call
+            self.value += 1
+          end
+        end
+
+        Class.new(Actor) do
+          play -> actor { actor.value = 3 },
+               increment_value_class,
+               -> actor { actor.value *= 2 },
+               -> _ { {value: "Does nothing"} },
+               increment_value_class
+        end
       end
+
+      it { expect(actor_class.call.value).to eq((3 + 1) * 2 + 1) }
     end
 
     context "when playing actors and symbols" do
-      let(:actor) { PlayInstanceMethods.call }
+      let(:actor_class) do
+        increment_value_class = Class.new(Actor) do
+          input :value, type: Integer, default: 0
+          output :value, type: Integer
 
-      it "calls the actors and symbols in order" do
-        expect(actor.name).to eq("jim number 4")
+          def call
+            self.value += 1
+          end
+        end
+
+        Class.new(Actor) do
+          output :value, type: Integer
+
+          play :set_value,
+               increment_value_class,
+               :double_value,
+               :do_nothing,
+               increment_value_class
+
+          private
+
+          def set_value
+            self.value = 3
+          end
+
+          def double_value
+            self.value *= 2
+          end
+
+          def do_nothing
+            {value: "Does nothing"}
+          end
+        end
       end
-    end
 
-    context "when playing actors that do not inherit from Actor" do
-      let(:actor) { PlayActors.call }
-
-      it "merges the result" do
-        expect(actor.stripped_down_actor).to be(true)
-      end
+      it { expect(actor_class.call.value).to eq((3 + 1) * 2 + 1) }
     end
 
     context "when using `play` several times" do
-      let(:actor) { PlayMultipleTimes.call(value: 1) }
+      let(:actor_class) do
+        increment_value_class = Class.new(Actor) do
+          input :value
+          output :value
 
-      it "shares the result between actors" do
-        expect(actor.value).to eq(3)
+          def call
+            self.value += 1
+          end
+        end
+
+        double_value_class = Class.new(Actor) do
+          input :value
+          output :value
+
+          def call
+            self.value *= 2
+          end
+        end
+
+        Class.new(Actor) do
+          output :value
+
+          play increment_value_class,
+               double_value_class
+
+          play increment_value_class,
+               double_value_class
+
+          play increment_value_class
+        end
       end
 
-      it "calls the actors in order" do
-        expect(actor.name).to eq("jim")
+      it do
+        expect(actor_class.call(value: 1).value)
+          .to eq((((1 + 1) * 2) + 1) * 2 + 1)
       end
     end
 
     context "when using `play` with conditions" do
-      let(:actor) { PlayMultipleTimesWithConditions.call }
+      let(:actor_class) do
+        increment_value_class = Class.new(Actor) do
+          input :value
+          output :value
 
-      it "does not trigger actors with conditions" do
-        expect(actor.name).to eq("Jim")
+          def call
+            self.value += 1
+          end
+        end
+
+        Class.new(Actor) do
+          input :value, default: 0
+          input :name
+
+          play increment_value_class
+
+          play increment_value_class,
+               if: -> actor { actor.name == "Jim" }
+
+          play increment_value_class,
+               increment_value_class,
+               unless: -> actor { actor.name == "Tom" }
+        end
       end
 
-      it "shares the result between actors" do
-        expect(actor.value).to eq(3)
-      end
+      it { expect(actor_class.call(name: "Jim").value).to eq(4) }
+      it { expect(actor_class.call(name: "Tom").value).to eq(1) }
     end
 
     context "when using `play` with evaluated conditions" do
-      let(:actor) do
-        PlayMultipleTimesWithEvaluatedConditions.call(callable: callable)
+      let(:actor_class) do
+        Class.new(Actor) do
+          input :callable
+          input :value, default: 1
+
+          play -> actor { actor.value += 1 },
+               -> actor { actor.value += 1 },
+               -> actor { actor.value += 1 },
+               if: -> actor { actor.callable.call }
+        end
       end
+
+      let(:actor) { actor_class.call(callable: callable) }
       let(:callable) { -> {} }
 
       before do
@@ -584,16 +821,22 @@ RSpec.describe Actor do
     end
 
     context "when setting a default to nil and a type on an input" do
+      let(:actor_class) do
+        Class.new(Actor) do
+          input :name, type: String, default: nil
+        end
+      end
+
       context "when given the input" do
         it "succeeds" do
-          expect(AllowNilOnInputWithTypeAndDefaultNil.call(name: "Jim"))
+          expect(actor_class.call(name: "Jim"))
             .to be_a_success
         end
       end
 
       context "when not given any input" do
         it "succeeds" do
-          expect(AllowNilOnInputWithTypeAndDefaultNil.call).to be_a_success
+          expect(actor_class.call).to be_a_success
         end
       end
     end
@@ -631,42 +874,7 @@ RSpec.describe Actor do
       end
     end
 
-    context "when using type, default, allow_nil and must" do
-      context "when not given a value" do
-        it "uses the default" do
-          actor = ValidateWeekdays.call
-          expect(actor.weekdays).to eq([0, 1, 2, 3, 4])
-        end
-      end
-
-      context "when given a nil value" do
-        it "returns nil" do
-          actor = ValidateWeekdays.call(weekdays: nil)
-          expect(actor.weekdays).to be_nil
-        end
-      end
-    end
-
-    context "when using type, allow_nil and must" do
-      context "when not given a value" do
-        it do
-          expect { AllowNil.call }.to raise_error(ServiceActor::ArgumentError)
-        end
-      end
-
-      context "when given a nil value" do
-        it "accepts it" do
-          actor = AllowNil.call(
-            message_with_inclusion: nil,
-            message_with_must: nil,
-          )
-          expect(actor.message_with_inclusion).to be_nil
-          expect(actor.message_with_must).to be_nil
-        end
-      end
-    end
-
-    context 'when using "inclusion"' do
+    context "with inclusion" do
       context "when normal mode" do
         context "when given a correct value" do
           it "returns the message" do
@@ -722,6 +930,85 @@ RSpec.describe Actor do
           end
         end
       end
+
+      context "when using allow_nil" do
+        let(:actor_class) do
+          Class.new(Actor) do
+            input :name, inclusion: %w[abc def], allow_nil: true
+          end
+        end
+
+        context "when not given a value" do
+          it do
+            expect { actor_class.call }
+              .to raise_error(ServiceActor::ArgumentError)
+          end
+        end
+
+        context "when given a nil value" do
+          it "accepts it" do
+            actor = actor_class.call(name: nil)
+            expect(actor.name).to be_nil
+          end
+        end
+
+        context "when given an allowed value" do
+          it "accepts it" do
+            actor = actor_class.call(name: "abc")
+            expect(actor.name).to eq("abc")
+          end
+        end
+      end
+    end
+
+    context "with must" do
+      context "when using type, default and allow_nil" do
+        context "when not given a value" do
+          it "uses the default" do
+            actor = ValidateWeekdays.call
+            expect(actor.weekdays).to eq([0, 1, 2, 3, 4])
+          end
+        end
+
+        context "when given a nil value" do
+          it "returns nil" do
+            actor = ValidateWeekdays.call(weekdays: nil)
+            expect(actor.weekdays).to be_nil
+          end
+        end
+      end
+    end
+
+    context "when using type, inclusion, allow_nil and nil default" do
+      let(:actor_class) do
+        Class.new(Actor) do
+          input :name,
+                type: String,
+                inclusion: %w[abc def],
+                allow_nil: true,
+                default: nil
+        end
+      end
+
+      it { expect(actor_class.call.name).to be_nil }
+      it { expect(actor_class.call(name: nil).name).to be_nil }
+      it { expect(actor_class.call(name: "abc").name).to eq("abc") }
+    end
+
+    context "when using type, inclusion, must and nil default" do
+      let(:actor_class) do
+        Class.new(Actor) do
+          input :name,
+                type: String,
+                must: {be_valid: -> v { v == "abc" }},
+                allow_nil: true,
+                default: nil
+        end
+      end
+
+      it { expect(actor_class.call.name).to be_nil }
+      it { expect(actor_class.call(name: nil).name).to be_nil }
+      it { expect(actor_class.call(name: "abc").name).to eq("abc") }
     end
 
     context 'when using "in"' do
@@ -1008,7 +1295,8 @@ RSpec.describe Actor do
 
   describe "#result" do
     context "when fail! is not called" do
-      let(:actor) { DoNothing.result }
+      let(:actor_class) { Class.new(Actor) }
+      let(:actor) { actor_class.result }
 
       it { expect(actor).to be_a(ServiceActor::Result) }
       it { expect(actor).to be_a_success }
@@ -1037,11 +1325,23 @@ RSpec.describe Actor do
     end
 
     context "when playing several actors" do
-      let(:actor) { PlayActors.result(value: 1) }
+      let(:actor_class) do
+        increment_value_class = Class.new(Actor) do
+          input :value, type: Integer, default: 0
+          output :value, type: Integer
 
-      it { expect(actor).to be_a_success }
-      it { expect(actor.name).to eq("jim") }
-      it { expect(actor.value).to eq(3) }
+          def call
+            self.value += 1
+          end
+        end
+
+        Class.new(Actor) do
+          play increment_value_class,
+               increment_value_class
+        end
+      end
+
+      it { expect(actor_class.result(value: 1).value).to eq(3) }
     end
 
     context "when playing several actors with a rollback and one fails" do
@@ -1119,9 +1419,18 @@ RSpec.describe Actor do
       end
 
       context "when a custom class is specified" do
+        let(:actor_class) do
+          Class.new(Actor) do
+            self.failure_class = MyCustomFailure
+
+            def call
+              fail!(error: "Ouch", some_other_key: 42)
+            end
+          end
+        end
+
         it "raises the error message" do
-          expect { FailWithErrorWithCustomFailureClass.value }
-            .to raise_error(MyCustomFailure, "Ouch")
+          expect { actor_class.value }.to raise_error(MyCustomFailure, "Ouch")
         end
       end
     end
@@ -1133,11 +1442,18 @@ RSpec.describe Actor do
       end
     end
 
-    context "when an actor updates the context with a hash using value" do
-      it "returns the hash value of the context change" do
-        output = AddHashToContext.value
-        expect(output).to eq(name: "Jim")
+    context "when updating the context with a hash" do
+      let(:actor_class) do
+        Class.new(Actor) do
+          output :stuff, type: Hash
+
+          def call
+            self.stuff = {name: "Jim"}
+          end
+        end
       end
+
+      it { expect(actor_class.value).to eq(name: "Jim") }
     end
 
     context "when an actor uses a method named after the input" do
@@ -1162,34 +1478,47 @@ RSpec.describe Actor do
     end
 
     context "when an input has a default" do
-      it "can use it" do
-        expect(AddGreetingWithDefault.value).to eq("Hello, world!")
+      let(:actor_class) do
+        Class.new(Actor) do
+          input :name, type: String, default: "world"
+          output :greeting, type: String
+
+          def call
+            self.greeting = "Hello, #{name}!"
+          end
+        end
       end
 
-      it "is overridden by values added to call" do
-        expect(AddGreetingWithDefault.value(name: "Jim")).to eq("Hello, Jim!")
-      end
+      it { expect(actor_class.value).to eq("Hello, world!") }
+      it { expect(actor_class.value(name: "Jim")).to eq("Hello, Jim!") }
 
-      it "is overridden by values already in the context" do
-        output = AddGreetingWithDefault.value(
-          ServiceActor::Result.new(name: "jim"),
-        )
-        expect(output).to eq("Hello, jim!")
+      it do
+        expect(actor_class.value(ServiceActor::Result.new(name: "jim")))
+          .to eq("Hello, jim!")
       end
     end
 
     context "when an input has a default that is a hash" do
-      it "can use it" do
-        expect(AddGreetingWithHashDefault.value).to eq("Hello, world!")
+      let(:actor_class) do
+        Class.new(Actor) do
+          input :options, default: -> { {name: "world"} }
+          output :greeting, type: String
+
+          def call
+            self.greeting = "Hello, #{options[:name]}!"
+          end
+        end
       end
 
-      it "is overridden by values added to call" do
-        output = AddGreetingWithHashDefault.value(options: {name: "Alice"})
-        expect(output).to eq("Hello, Alice!")
+      it { expect(actor_class.value).to eq("Hello, world!") }
+
+      it do
+        expect(actor_class.value(options: {name: "Alice"}))
+          .to eq("Hello, Alice!")
       end
 
-      it "is overridden by values already in the context" do
-        output = AddGreetingWithHashDefault.value(
+      it do
+        output = actor_class.value(
           ServiceActor::Result.new(options: {name: "Alice"}),
         )
         expect(output).to eq("Hello, Alice!")
@@ -1197,17 +1526,33 @@ RSpec.describe Actor do
     end
 
     context "when an input has a lambda default" do
-      it "can use it" do
-        output = AddGreetingWithLambdaDefault.value
-        expect(output).to eq("Hello, world!")
+      let(:actor_class) do
+        Class.new(Actor) do
+          input :name, default: -> { "world" }, type: String
+          output :greeting, type: String
+
+          def call
+            self.greeting = "Hello, #{name}!"
+          end
+        end
       end
+
+      it { expect(actor_class.value).to eq("Hello, world!") }
     end
 
     context "when a lambda default references other inputs" do
-      it "adds the computed default" do
-        output = LambdaDefaultWithReference.value(old_project_id: 77_392)
-        expect(output).to eq(project_id: "77392.0")
+      let(:actor_class) do
+        Class.new(Actor) do
+          input :num, type: Integer
+          input :thingy, default: -> actor { "#{actor.num}.0" }, type: String
+
+          def call
+            thingy
+          end
+        end
       end
+
+      it { expect(actor_class.value(num: 42)).to eq("42.0") }
     end
 
     context "when an input has not been given" do
@@ -1233,9 +1578,26 @@ RSpec.describe Actor do
     end
 
     context "when playing actors and lambdas" do
-      it "calls the actors and lambdas in order and returns the final value" do
-        expect(PlayLambdas.value).to eq("jim number 4")
+      let(:actor_class) do
+        increment_value_class = Class.new(Actor) do
+          input :value, type: Integer, default: 0
+          output :value, type: Integer
+
+          def call
+            self.value += 1
+          end
+        end
+
+        Class.new(Actor) do
+          play -> actor { actor.value = 3 },
+               increment_value_class,
+               -> actor { actor.value *= 2 },
+               -> _ { {value: "Does nothing"} },
+               increment_value_class
+        end
       end
+
+      it { expect(actor_class.value).to eq((3 + 1) * 2 + 1) }
     end
 
     context "when playing actors and symbols" do
