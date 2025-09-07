@@ -1,21 +1,11 @@
 # frozen_string_literal: true
 
-require "simplecov"
-SimpleCov.start do
-  enable_coverage :branch
-  add_filter "/spec"
-end
-
+require_relative "support/coverage"
 require "bundler/setup"
 require "service_actor"
 require "pry"
 
 Dir["#{__dir__}/support/**/*.rb"].each { |path| require path }
-
-# Autoload examples
-loader = Zeitwerk::Loader.new
-loader.push_dir(File.expand_path("examples", __dir__))
-loader.setup
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
@@ -27,8 +17,4 @@ RSpec.configure do |config|
   config.expect_with :rspec do |c|
     c.syntax = :expect
   end
-end
-
-def engine_mri?
-  RUBY_ENGINE == "ruby"
 end

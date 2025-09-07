@@ -12,6 +12,9 @@ class CustomFailureError < StandardError
   end
 end
 
+MyCustomArgumentError = Class.new(ServiceActor::ArgumentError)
+MyCustomFailure = Class.new(ServiceActor::Failure)
+
 RSpec.describe Actor do
   describe ".call" do
     context "when fail! is not called" do
@@ -575,9 +578,19 @@ RSpec.describe Actor do
     end
 
     context "when playing actors and alias_input" do
-      let(:actor) { PlayAliasInput.call }
+      let(:actor_class) do
+        Class.new(Actor) do
+          output :name, type: String
+
+          play IncrementValue,
+               -> actor { actor.orig_name = "Jim number #{actor.value}" },
+               alias_input(name: :orig_name),
+               SetNameToDowncase
+        end
+      end
 
       it "calls the actors and can be referenced by alias" do
+        actor = actor_class.call
         expect(actor.name).to eq("jim number 1")
       end
     end
@@ -924,34 +937,52 @@ RSpec.describe Actor do
 
     context "when disallowing nil on an input" do
       context "when normal mode" do
-        context "when given the input" do
-          it "succeeds" do
-            expect(DisallowNilOnInput.call(name: "Jim")).to be_a_success
+        let(:actor_class) do
+          Class.new(Actor) do
+            input :name, type: String, allow_nil: false
+
+            def call; end
           end
+        end
+
+        context "when given the input" do
+          it { expect(actor_class.call(name: "Jim")).to be_a_success }
         end
 
         context "without the input" do
           it "fails" do
-            expect { DisallowNilOnInput.call(name: nil) }
+            expect { actor_class.call(name: nil) }
               .to raise_error(
                 ServiceActor::ArgumentError,
-                "The \"name\" input on \"DisallowNilOnInput\" does not " \
-                  "allow nil values",
+                /\AThe "name" input on ".+" does not allow nil values\z/,
               )
           end
         end
       end
 
       context "when advanced mode" do
-        context "when given the input" do
-          it "succeeds" do
-            expect(DisallowNilOnInputAdvanced.call(name: "Jim")).to be_a_success
+        let(:actor_class) do
+          Class.new(Actor) do
+            input :name,
+                  type: String,
+                  allow_nil: {
+                    is: false,
+                    message: (lambda do |input_key:, **|
+                      "The value `#{input_key}` cannot be empty"
+                    end),
+                  }
+
+            def call; end
           end
         end
 
+        context "when given the input" do
+          it { expect(actor_class.call(name: "Jim")).to be_a_success }
+        end
+
         context "without the input" do
-          it "fails" do
-            expect { DisallowNilOnInputAdvanced.call(name: nil) }
+          it do
+            expect { actor_class.call(name: nil) }
               .to raise_error(
                 ServiceActor::ArgumentError,
                 "The value `name` cannot be empty",
@@ -1001,16 +1032,30 @@ RSpec.describe Actor do
     end
 
     context "when inheriting" do
+      let(:actor_class) do
+        Class.new(IncrementValue) do
+          def call
+            super
+
+            self.value += 1
+          end
+        end
+      end
+
       it "calls both the parent and child" do
-        actor = InheritFromIncrementValue.call(value: 0)
-        expect(actor.value).to eq(2)
+        expect(actor_class.call(value: 0).value).to eq(2)
       end
     end
 
     context "when inheriting from play" do
+      let(:actor_class) do
+        Class.new(PlayActors) do
+          play IncrementValue
+        end
+      end
+
       it "calls both the parent and child" do
-        actor = InheritFromPlay.call(value: 0)
-        expect(actor.value).to eq(3)
+        expect(actor_class.call(value: 0).value).to eq(3)
       end
     end
 
@@ -1045,27 +1090,42 @@ RSpec.describe Actor do
       end
 
       context "when advanced mode" do
+        let(:actor_class) do
+          Class.new(Actor) do
+            input :provider,
+                  inclusion: {
+                    in: %w[MANGOPAY PayPal Stripe],
+                    message: (lambda do |value:, **|
+                      "Payment system \"#{value}\" is not supported"
+                    end),
+                  },
+                  default: "Stripe"
+
+            output :message, type: String
+
+            def call
+              self.message = "Money transferred to #{provider}!"
+            end
+          end
+        end
+
         context "when given a correct value" do
-          it "returns the message" do
-            actor = PayWithProviderInclusionAdvanced.call(provider: "PayPal")
+          it do
+            actor = actor_class.call(provider: "PayPal")
             expect(actor.message).to eq("Money transferred to PayPal!")
           end
         end
 
         context "when given an incorrect value" do
-          let(:expected_alert) do
-            "Payment system \"Paypal\" is not supported"
-          end
-
-          it "fails" do
-            expect { PayWithProviderInclusionAdvanced.call(provider: "Paypal") }
-              .to raise_error(expected_alert)
+          it do
+            expect { actor_class.call(provider: "Paypal") }
+              .to raise_error("Payment system \"Paypal\" is not supported")
           end
         end
 
         context "when it has a default" do
-          it "uses it" do
-            actor = PayWithProviderInclusionAdvanced.call
+          it do
+            actor = actor_class.call
             expect(actor.message).to eq("Money transferred to Stripe!")
           end
         end
@@ -1195,27 +1255,45 @@ RSpec.describe Actor do
       end
 
       context "when advanced mode" do
+        let(:actor_class) do
+          Class.new(Actor) do
+            input :provider,
+                  inclusion: {
+                    in: %w[MANGOPAY PayPal Stripe],
+                    message: (lambda do |value:, **|
+                      "Payment system \"#{value}\" is not supported"
+                    end),
+                  },
+                  default: "Stripe"
+
+            output :message, type: String
+
+            def call
+              self.message = "Money transferred to #{provider}!"
+            end
+          end
+        end
+
         context "when given a correct value" do
-          it "returns the message" do
-            actor = PayWithProviderAdvanced.call(provider: "PayPal")
+          it do
+            actor = actor_class.call(provider: "PayPal")
             expect(actor.message).to eq("Money transferred to PayPal!")
           end
         end
 
         context "when given an incorrect value" do
-          let(:expected_alert) do
-            "Payment system \"Paypal\" is not supported"
-          end
-
-          it "fails" do
-            expect { PayWithProviderAdvanced.call(provider: "Paypal") }
-              .to raise_error(ServiceActor::ArgumentError, expected_alert)
+          it do
+            expect { actor_class.call(provider: "Paypal") }
+              .to raise_error(
+                ServiceActor::ArgumentError,
+                "Payment system \"Paypal\" is not supported",
+              )
           end
         end
 
         context "when it has a default" do
-          it "uses it" do
-            actor = PayWithProviderAdvanced.call
+          it do
+            actor = actor_class.call
             expect(actor.message).to eq("Money transferred to Stripe!")
           end
         end
@@ -1223,10 +1301,17 @@ RSpec.describe Actor do
     end
 
     context "when playing interactors" do
-      it "succeeds" do
-        actor = PlayInteractor.call(value: 5)
-        expect(actor.value).to eq(5 + 2)
+      let(:actor_class) do
+        Class.new(Actor) do
+          input :value, default: 1
+          output :value
+
+          play IncrementValueWithInteractor,
+               IncrementValueWithInteractor
+        end
       end
+
+      it { expect(actor_class.call(value: 5).value).to eq(5 + 2) }
     end
 
     context "when playing a failing interactor" do
@@ -1251,51 +1336,66 @@ RSpec.describe Actor do
 
     context "when using advanced mode with checks and not adding message key" do
       context "when using inclusion check" do
-        let(:expected_alert) do
-          'The "provider" input must be included ' \
-            'in ["MANGOPAY", "PayPal", "Stripe"] on ' \
-            '"PayWithProviderAdvancedNoMessage" ' \
-            'instead of "Paypal2"'
+        let(:actor_class) do
+          Class.new(Actor) do
+            input :provider, inclusion: {in: %w[MANGOPAY PayPal Stripe]}
+          end
         end
 
-        it "returns the default message" do
-          expect { PayWithProviderAdvancedNoMessage.call(provider: "Paypal2") }
-            .to raise_error(ServiceActor::ArgumentError, expected_alert)
+        it do
+          expect { actor_class.call(provider: "Paypal2") }
+            .to raise_error(
+              ServiceActor::ArgumentError,
+              /\AThe "provider" input must be included in \["MANGOPAY", "PayPal", "Stripe"\] on ".+" instead of "Paypal2"\z/,
+            )
         end
       end
 
       context "when using type check" do
-        it "returns the default message" do
-          expect { CheckTypeAdvanced.call(name: 2) }
+        let(:actor_class) do
+          Class.new(Actor) do
+            input :name, type: {is: String}
+          end
+        end
+
+        it do
+          expect { actor_class.call(name: 2) }
             .to raise_error(
               ServiceActor::ArgumentError,
-              "The \"name\" input on \"CheckTypeAdvanced\" must be of type \"String\" but was \"Integer\"",
+              /\AThe "name" input on ".+" must be of type "String" but was "Integer"\z/,
             )
         end
       end
 
       context "when using must check" do
-        let(:expected_error) do
-          "The \"num\" input on \"CheckMustAdvancedNoMessage\" " \
-            "must \"be_smaller\" " \
-            "but was 6"
+        let(:actor_class) do
+          Class.new(Actor) do
+            input :num, must: {be_smaller: {is: -> name { name < 5 }}}
+          end
         end
 
-        it "returns the default message" do
-          expect { CheckMustAdvancedNoMessage.call(num: 6) }
-            .to raise_error(ServiceActor::ArgumentError, expected_error)
+        it do
+          expect { actor_class.call(num: 6) }
+            .to raise_error(
+              ServiceActor::ArgumentError,
+              /\AThe "num" input on ".+" must "be_smaller" but was 6\z/,
+            )
         end
       end
 
       context "when using nil check" do
-        let(:expected_error) do
-          "The \"name\" input on \"CheckNilAdvancedNoMessage\" " \
-            "does not allow nil values"
+        let(:actor_class) do
+          Class.new(Actor) do
+            input :name, allow_nil: {is: false}
+          end
         end
 
-        it "returns the default message" do
-          expect { CheckNilAdvancedNoMessage.call(name: nil) }
-            .to raise_error(ServiceActor::ArgumentError, expected_error)
+        it do
+          expect { actor_class.call(name: nil) }
+            .to raise_error(
+              ServiceActor::ArgumentError,
+              /\AThe "name" input on ".+" does not allow nil values\z/,
+            )
         end
       end
     end
@@ -1325,7 +1425,7 @@ RSpec.describe Actor do
         end
       end
 
-      specify do
+      it do
         expect { actor }.to raise_error(
           ArgumentError,
           "input `kind_of?` overrides `ServiceActor::Result` instance method",
@@ -1343,7 +1443,7 @@ RSpec.describe Actor do
         end
       end
 
-      specify do
+      it do
         expect { actor }.to raise_error(
           ArgumentError,
           "output `fail!` overrides `ServiceActor::Result` instance method",
@@ -1362,7 +1462,7 @@ RSpec.describe Actor do
         end
       end
 
-      specify do
+      it do
         expect { actor }.to raise_error(
           ArgumentError,
           "alias `merge!` overrides `ServiceActor::Result` instance method",
@@ -1482,14 +1582,24 @@ RSpec.describe Actor do
     end
 
     context "with an argument error, caught by fail_on" do
-      let(:actor) { FailOnArgumentError.result(name: 42) }
-      let(:expected_error_message) do
-        "The \"name\" input on \"FailOnArgumentError\" must " \
-          "be of type \"String\" but was \"Integer\""
+      let(:actor_class) do
+        Class.new(Actor) do
+          fail_on ServiceActor::ArgumentError
+
+          input :name, type: String, allow_nil: false
+
+          def call; end
+        end
       end
 
-      it { expect(actor).to be_a_failure }
-      it { expect(actor.error).to eq(expected_error_message) }
+      it do
+        actor = actor_class.result(name: 42)
+
+        expect(actor).to be_a_failure
+        expect(actor.error).to match(
+          /\AThe "name" input on ".+" must be of type "String" but was "Integer"\z/,
+        )
+      end
     end
 
     context "when playing several actors" do
@@ -1769,14 +1879,57 @@ RSpec.describe Actor do
     end
 
     context "when playing actors and symbols" do
+      let(:actor_class) do
+        Class.new(Actor) do
+          output :value, type: Integer
+          output :name, type: String
+
+          play :set_value,
+               IncrementValue,
+               :set_name,
+               :do_nothing,
+               SetNameToDowncase
+
+          private
+
+          def set_value
+            self.value = 3
+          end
+
+          def set_name
+            self.name = "Jim number #{value}"
+          end
+
+          def do_nothing
+            {name: "Does nothing"}
+          end
+        end
+      end
+
       it "calls the actors and symbols in order and returns the final value" do
-        expect(PlayInstanceMethods.value).to eq("jim number 4")
+        expect(actor_class.value).to eq("jim number 4")
       end
     end
 
     context "when using `play` several times" do
+      let(:actor_class) do
+        Class.new(Actor) do
+          input :value, default: 1
+          output :value
+          output :name
+
+          play IncrementValue,
+               DoNothing
+
+          play AddNameToContext,
+               SetNameToDowncase
+
+          play IncrementValue
+        end
+      end
+
       it "shares the result between actors and returns the final value" do
-        expect(PlayMultipleTimes.value(value: 1)).to eq(3)
+        expect(actor_class.value(value: 1)).to eq(3)
       end
     end
 
@@ -1833,8 +1986,19 @@ RSpec.describe Actor do
     end
 
     context "when playing actors and alias_input" do
+      let(:actor_class) do
+        Class.new(Actor) do
+          output :name, type: String
+
+          play IncrementValue,
+               -> actor { actor.orig_name = "Jim number #{actor.value}" },
+               alias_input(name: :orig_name),
+               SetNameToDowncase
+        end
+      end
+
       it "calls the actors and can be referenced by alias" do
-        expect(PlayAliasInput.value).to eq("jim number 1")
+        expect(actor_class.value).to eq("jim number 1")
       end
     end
 
@@ -2016,37 +2180,56 @@ RSpec.describe Actor do
 
     context "when disallowing nil on an input" do
       context "when normal mode" do
-        context "when given the input" do
-          it "does not fail" do
-            expect(DisallowNilOnInput.value(name: "Jim")).to be_nil
+        let(:actor_class) do
+          Class.new(Actor) do
+            input :name, type: String, allow_nil: false
+
+            def call; end
           end
         end
 
-        context "without the input" do
-          it "fails" do
-            expected_error =
-              "The \"name\" input on \"DisallowNilOnInput\" does not " \
-                "allow nil values"
+        context "when given the input" do
+          it { expect(actor_class.value(name: "Jim")).to be_nil }
+        end
 
-            expect { DisallowNilOnInput.value(name: nil) }
-              .to raise_error(ServiceActor::ArgumentError, expected_error)
+        context "without the input" do
+          it do
+            expect { actor_class.value(name: nil) }
+              .to raise_error(
+                ServiceActor::ArgumentError,
+                /\AThe "name" input on ".+" does not allow nil values\z/,
+              )
           end
         end
       end
 
       context "when advanced mode" do
-        context "when given the input" do
-          it "does not fail" do
-            expect(DisallowNilOnInputAdvanced.value(name: "Jim")).to be_nil
+        let(:actor_class) do
+          Class.new(Actor) do
+            input :name,
+                  type: String,
+                  allow_nil: {
+                    is: false,
+                    message: (lambda do |input_key:, **|
+                      "The value `#{input_key}` cannot be empty"
+                    end),
+                  }
+
+            def call; end
           end
         end
 
-        context "without the input" do
-          it "fails" do
-            expected_error = "The value `name` cannot be empty"
+        context "when given the input" do
+          it { expect(actor_class.value(name: "Jim")).to be_nil }
+        end
 
-            expect { DisallowNilOnInputAdvanced.value(name: nil) }
-              .to raise_error(ServiceActor::ArgumentError, expected_error)
+        context "without the input" do
+          it do
+            expect { actor_class.value(name: nil) }
+              .to raise_error(
+                ServiceActor::ArgumentError,
+                "The value `name` cannot be empty",
+              )
           end
         end
       end
@@ -2072,72 +2255,95 @@ RSpec.describe Actor do
     end
 
     context "when inheriting" do
+      let(:actor_class) do
+        Class.new(IncrementValue) do
+          def call
+            super
+
+            self.value += 1
+          end
+        end
+      end
+
       it "calls both the parent and child" do
-        expect(InheritFromIncrementValue.value(value: 0)).to eq(2)
+        expect(actor_class.value(value: 0)).to eq(2)
       end
     end
 
     context "when inheriting from play" do
-      it "calls both the parent and child" do
-        expect(InheritFromPlay.value(value: 0)).to eq(3)
+      let(:actor_class) do
+        Class.new(PlayActors) do
+          play IncrementValue
+        end
       end
-    end
 
-    context "when playing interactors" do
-      it "succeeds" do
-        expect(PlayInteractor.value(value: 5).value).to eq(5 + 2)
+      it "calls both the parent and child" do
+        expect(actor_class.value(value: 0)).to eq(3)
       end
     end
 
     context "when using advanced mode with checks and not adding message key" do
       context "when using inclusion check" do
-        let(:expected_alert) do
-          'The "provider" input must be included ' \
-            'in ["MANGOPAY", "PayPal", "Stripe"] on ' \
-            '"PayWithProviderAdvancedNoMessage" ' \
-            'instead of "Paypal2"'
+        let(:actor_class) do
+          Class.new(Actor) do
+            input :provider, inclusion: {in: %w[MANGOPAY PayPal Stripe]}
+          end
         end
 
-        it "returns the default message" do
-          expect { PayWithProviderAdvancedNoMessage.value(provider: "Paypal2") }
-            .to raise_error(ServiceActor::ArgumentError, expected_alert)
+        it do
+          expect { actor_class.value(provider: "Paypal2") }
+            .to raise_error(
+              ServiceActor::ArgumentError,
+              /\AThe "provider" input must be included in \["MANGOPAY", "PayPal", "Stripe"\] on ".+" instead of "Paypal2"\z/,
+            )
         end
       end
 
       context "when using type check" do
-        let(:expected_error) do
-          "The \"name\" input on \"CheckTypeAdvanced\" must " \
-            "be of type \"String\" but was \"Integer\""
+        let(:actor_class) do
+          Class.new(Actor) do
+            input :name, type: {is: String}
+          end
         end
 
-        it "returns the default message" do
-          expect { CheckTypeAdvanced.value(name: 2) }
-            .to raise_error(ServiceActor::ArgumentError, expected_error)
+        it do
+          expect { actor_class.value(name: 2) }
+            .to raise_error(
+              ServiceActor::ArgumentError,
+              /\AThe "name" input on ".+" must be of type "String" but was "Integer"\z/,
+            )
         end
       end
 
       context "when using must check" do
-        let(:expected_error) do
-          "The \"num\" input on \"CheckMustAdvancedNoMessage\" " \
-            "must \"be_smaller\" " \
-            "but was 6"
+        let(:actor_class) do
+          Class.new(Actor) do
+            input :num, must: {be_smaller: {is: -> name { name < 5 }}}
+          end
         end
 
-        it "returns the default message" do
-          expect { CheckMustAdvancedNoMessage.value(num: 6) }
-            .to raise_error(ServiceActor::ArgumentError, expected_error)
+        it do
+          expect { actor_class.value(num: 6) }
+            .to raise_error(
+              ServiceActor::ArgumentError,
+              /\AThe "num" input on ".+" must "be_smaller" but was 6\z/,
+            )
         end
       end
 
       context "when using nil check" do
-        let(:expected_error) do
-          "The \"name\" input on \"CheckNilAdvancedNoMessage\" " \
-            "does not allow nil values"
+        let(:actor_class) do
+          Class.new(Actor) do
+            input :name, allow_nil: {is: false}
+          end
         end
 
-        it "returns the default message" do
-          expect { CheckNilAdvancedNoMessage.value(name: nil) }
-            .to raise_error(ServiceActor::ArgumentError, expected_error)
+        it do
+          expect { actor_class.value(name: nil) }
+            .to raise_error(
+              ServiceActor::ArgumentError,
+              /\AThe "name" input on ".+" does not allow nil values\z/,
+            )
         end
       end
     end

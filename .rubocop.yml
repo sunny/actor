@@ -77,7 +77,7 @@ RSpec/DescribedClass:
   Enabled: false
 
 RSpec/ExampleLength:
-  Max: 10
+  Max: 12
 
 RSpec/NestedGroups:
   Max: 5
