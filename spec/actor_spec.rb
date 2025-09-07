@@ -545,9 +545,29 @@ RSpec.describe Actor do
     end
 
     context "when playing several actors, one fails, one rolls back" do
-      let(:actor) { PlayErrorAndCatchItInRollback.result }
+      let(:actor_class) do
+        catch_error_in_rollback = Class.new(Actor) do
+          output :called
+          output :found_error
+
+          def call
+            self.called = true
+          end
+
+          def rollback
+            self.found_error = "Found “#{result.error}”"
+          end
+        end
+
+        Class.new(Actor) do
+          play catch_error_in_rollback,
+               FailWithError
+        end
+      end
 
       it "catches the error inside the rollback" do
+        actor = actor_class.result
+
         expect(actor.called).to be(true)
         expect(actor.found_error).to eq("Found “Ouch”")
         expect(actor.some_other_key).to eq(42)
@@ -564,59 +584,113 @@ RSpec.describe Actor do
 
     context "when called with a matching condition" do
       context "when normal mode" do
-        it "suceeds" do
-          expect(SetNameWithInputCondition.call(name: "joe").name).to eq("JOE")
+        let(:actor_class) do
+          Class.new(Actor) do
+            input :name, must: {be_lowercase: -> name { name =~ /\A[a-z]+\z/ }}
+            output :name
+
+            def call
+              self.name = name.upcase
+            end
+          end
         end
+
+        it { expect(actor_class.call(name: "joe").name).to eq("JOE") }
       end
 
       context "when advanced mode" do
-        it "suceeds" do
-          expect(SetNameWithInputConditionAdvanced.call(name: "joe").name)
-            .to eq("JOE")
+        let(:actor_class) do
+          Class.new(Actor) do
+            input :name,
+                  must: {be_lowercase: {is: -> name { name =~ /\A[a-z]+\z/ }}}
+            output :name
+
+            def call
+              self.name = name.upcase
+            end
+          end
         end
+
+        it { expect(actor_class.call(name: "joe").name).to eq("JOE") }
       end
     end
 
     context "when called with the wrong condition" do
       context "when normal mode" do
-        it "raises" do
-          expected_error =
-            "The \"name\" input on \"SetNameWithInputCondition\" " \
-              "must \"be_lowercase\" but was \"42\""
+        let(:actor_class) do
+          Class.new(Actor) do
+            input :name, must: {be_lowercase: -> name { name =~ /\A[a-z]+\z/ }}
+            output :name
 
-          expect { SetNameWithInputCondition.call(name: "42") }
-            .to raise_error(ServiceActor::ArgumentError, expected_error)
+            def call
+              self.name = name.upcase
+            end
+          end
+        end
+
+        it do
+          expect { actor_class.call(name: "42") }
+            .to raise_error(
+              ServiceActor::ArgumentError,
+              /\AThe "name" input on ".+" must "be_lowercase" but was "42"\z/,
+            )
         end
       end
 
       context "when advanced mode" do
-        it "raises" do
-          expected_error = "Failed to apply `be_lowercase`"
+        let(:actor_class) do
+          Class.new(Actor) do
+            input :name,
+                  must: {
+                    be_lowercase: {
+                      is: -> name { name =~ /\A[a-z]+\z/ },
+                      message: (lambda do |check_name:, **|
+                        "Failed to apply `#{check_name}`"
+                      end),
+                    },
+                  }
 
-          expect { SetNameWithInputConditionAdvanced.call(name: "42") }
-            .to raise_error(ServiceActor::ArgumentError, expected_error)
+            output :name
+          end
+        end
+
+        it do
+          expect { actor_class.call(name: "42") }
+            .to raise_error(
+              ServiceActor::ArgumentError,
+              "Failed to apply `be_lowercase`",
+            )
         end
       end
     end
 
     context "when called with an error in the code" do
-      describe "and type is first" do
-        context "when advanced mode" do
-          let(:expected_message) do
-            "The \"per_page\" input on " \
-              "\"ExpectedFailInMustWhenTypeIsFirstAdvanced\" must be " \
-              "of type \"Integer\" but was \"String\""
-          end
+      let(:actor_class) do
+        Class.new(Actor) do
+          input :per_page,
+                type: Integer,
+                must: {
+                  be_in_range: {
+                    is: -> per_page { per_page.between?(3, 9) },
+                    message: -> value:, ** { "Wrong range (3-9): #{value}" },
+                  },
+                }
+        end
+      end
 
+      context "when type is first" do
+        context "when advanced mode" do
           it "raises" do
-            expect do
-              ExpectedFailInMustWhenTypeIsFirstAdvanced.call(per_page: "6")
-            end.to raise_error(ServiceActor::ArgumentError, expected_message)
+            expect { actor_class.call(per_page: "6") }
+              .to raise_error(
+                ServiceActor::ArgumentError,
+                /\AThe "per_page" input on ".*" must be of type "Integer" but was "String"\z/,
+              )
           end
         end
       end
 
-      describe "and type is last" do
+      context "when type is last" do
         context "when advanced mode" do
           let(:expected_message) do
             "The \"per_page\" input on " \
@@ -685,37 +759,72 @@ RSpec.describe Actor do
 
     context "when setting the wrong type of output" do
       context "when normal mode" do
-        let(:expected_message) do
-          "The \"name\" output on \"SetWrongTypeOfOutput\" must " \
-            "be of type \"String\" but was \"Integer\""
+        let(:actor_class) do
+          Class.new(Actor) do
+            output :name, type: String
+
+            def call
+              self.name = 42
+            end
+          end
         end
 
-        it "raises" do
-          expect { SetWrongTypeOfOutput.call }
+        let(:expected_message) do
+          /\AThe "name" output on ".+" must be of type "String" but was "Integer"\z/
+        end
+
+        it do
+          expect { actor_class.call }
             .to raise_error(ServiceActor::ArgumentError, expected_message)
         end
       end
 
       context "when advanced mode" do
+        let(:actor_class) do
+          Class.new(Actor) do
+            output :name,
+                   type: {
+                     is: String,
+                     message: (lambda do |input_key:, expected_type:, given_type:, **|
+                       "Wrong type `#{given_type}` for `#{input_key}`. " \
+                         "Expected: `#{expected_type}`"
+                     end),
+                   }
+            def call
+              self.name = 42
+            end
+          end
+        end
+
         let(:expected_message) do
           "Wrong type `Integer` for `name`. Expected: `String`"
         end
 
-        it "raises" do
-          expect { SetWrongTypeOfOutputAdvanced.call }
+        it do
+          expect { actor_class.call }
             .to raise_error(ServiceActor::ArgumentError, expected_message)
         end
       end
 
       context "when a custom class is specified" do
-        let(:expected_message) do
-          "The \"name\" output on " \
-            "\"SetWrongTypeOfOutputWithCustomArgumentErrorClass\" must " \
-            "be of type \"String\" but was \"Integer\""
+        let(:actor_class) do
+          Class.new(Actor) do
+            self.argument_error_class = MyCustomArgumentError
+
+            output :name, type: String
+
+            def call
+              self.name = 42
+            end
+          end
         end
 
-        it "raises" do
-          expect { SetWrongTypeOfOutputWithCustomArgumentErrorClass.call }
+        let(:expected_message) do
+          /\AThe "name" output on ".+" must be of type "String" but was "Integer"\z/
+        end
+
+        it do
+          expect { actor_class.call }
             .to raise_error(MyCustomArgumentError, expected_message)
         end
       end
@@ -761,25 +870,56 @@ RSpec.describe Actor do
       end
     end
 
-    context "with accessing origins multiple times" do
-      it "returns expected value" do
-        expect(AccessOriginsMultipleTimes.call(value: 0).value_result).to eq(2)
-        expect(AccessOriginsMultipleTimes.call(value: 0).output_with_default).to eq(42)
+    context "when accessing origins multiple times" do
+      let(:actor_class) do
+        Class.new(Actor) do
+          input :value
+
+          output :value_result
+          output :output_with_default, allow_nil: true, default: 42
+
+          play -> actor { actor.value_result = actor.value.succ }
+          play -> actor { actor.value_result += 1 }
+        end
+      end
+
+      it do
+        expect(actor_class.call(value: 0).value_result).to eq(2)
+        expect(actor_class.call(value: 0).output_with_default).to eq(42)
       end
     end
 
     context "when setting an unknown output" do
-      it "raises" do
-        expect { SetUnknownOutput.call }
+      let(:actor_class) do
+        Class.new(Actor) do
+          output :name
+
+          def call
+            self.foobar = 42
+          end
+        end
+      end
+
+      it do
+        expect { actor_class.call }
           .to raise_error(NoMethodError, /undefined method ['`]foobar='/)
       end
     end
 
     context "when reading an output" do
-      it "succeeds" do
-        actor = SetAndAccessOutput.result
-        expect(actor.email).to eq("jim@example.org")
+      let(:actor_class) do
+        Class.new(Actor) do
+          output :nickname
+          output :email
+
+          def call
+            self.nickname = "jim"
+            self.email = "#{nickname}@example.org"
+          end
+        end
       end
+
+      it { expect(actor_class.result.email).to eq("jim@example.org") }
     end
 
     context "when disallowing nil on an input" do
@@ -792,12 +932,12 @@ RSpec.describe Actor do
 
         context "without the input" do
           it "fails" do
-            expected_error =
-              "The \"name\" input on \"DisallowNilOnInput\" does not " \
-                "allow nil values"
-
             expect { DisallowNilOnInput.call(name: nil) }
-              .to raise_error(ServiceActor::ArgumentError, expected_error)
+              .to raise_error(
+                ServiceActor::ArgumentError,
+                "The \"name\" input on \"DisallowNilOnInput\" does not " \
+                  "allow nil values",
+              )
           end
         end
       end
@@ -811,10 +951,11 @@ RSpec.describe Actor do
 
         context "without the input" do
           it "fails" do
-            expected_error = "The value `name` cannot be empty"
-
             expect { DisallowNilOnInputAdvanced.call(name: nil) }
-              .to raise_error(ServiceActor::ArgumentError, expected_error)
+              .to raise_error(
+                ServiceActor::ArgumentError,
+                "The value `name` cannot be empty",
+              )
           end
         end
       end
@@ -850,12 +991,11 @@ RSpec.describe Actor do
 
       context "without the output" do
         it "fails" do
-          expected_error =
-            "The \"name\" output on \"DisallowNilOnOutput\" " \
-              "does not allow nil values"
-
           expect { DisallowNilOnOutput.call(test_without_output: true) }
-            .to raise_error(ServiceActor::ArgumentError, expected_error)
+            .to raise_error(
+              ServiceActor::ArgumentError,
+              "The \"name\" output on \"DisallowNilOnOutput\" does not allow nil values",
+            )
         end
       end
     end
@@ -961,20 +1101,33 @@ RSpec.describe Actor do
       end
     end
 
-    context "with must" do
-      context "when using type, default and allow_nil" do
-        context "when not given a value" do
-          it "uses the default" do
-            actor = ValidateWeekdays.call
-            expect(actor.weekdays).to eq([0, 1, 2, 3, 4])
-          end
+    context "with must, type, default and allow_nil" do
+      let(:actor_class) do
+        Class.new(Actor) do
+          input :weekdays,
+                type: Array,
+                allow_nil: true,
+                default: [0, 1, 2, 3, 4].freeze,
+                must: {
+                  be_valid: lambda do |numbers|
+                    numbers.nil? || numbers.all? { |number| (0..6).cover?(number) }
+                  end,
+                }
+          def call; end
         end
+      end
 
-        context "when given a nil value" do
-          it "returns nil" do
-            actor = ValidateWeekdays.call(weekdays: nil)
-            expect(actor.weekdays).to be_nil
-          end
+      context "when not given a value" do
+        it do
+          actor = actor_class.call
+          expect(actor.weekdays).to eq([0, 1, 2, 3, 4])
+        end
+      end
+
+      context "when given a nil value" do
+        it do
+          actor = actor_class.call(weekdays: nil)
+          expect(actor.weekdays).to be_nil
         end
       end
     end
@@ -1077,8 +1230,19 @@ RSpec.describe Actor do
     end
 
     context "when playing a failing interactor" do
-      it "fails" do
-        actor = PlayInteractorFailure.result(value: 5)
+      let(:actor_class) do
+        Class.new(Actor) do
+          input :value, default: 1
+          output :value
+
+          play IncrementValueWithInteractor,
+               FailWithInteractor,
+               IncrementValueWithInteractor
+        end
+      end
+
+      it do
+        actor = actor_class.result(value: 5)
         expect(actor).to be_a_failure
         expect(actor.error).to eq("Failed with Interactor")
         expect(actor.value).to eq(5 + 1)
@@ -1101,14 +1265,12 @@ RSpec.describe Actor do
       end
 
       context "when using type check" do
-        let(:expected_error) do
-          "The \"name\" input on \"CheckTypeAdvanced\" must " \
-            "be of type \"String\" but was \"Integer\""
-        end
-
         it "returns the default message" do
           expect { CheckTypeAdvanced.call(name: 2) }
-            .to raise_error(ServiceActor::ArgumentError, expected_error)
+            .to raise_error(
+              ServiceActor::ArgumentError,
+              "The \"name\" input on \"CheckTypeAdvanced\" must be of type \"String\" but was \"Integer\"",
+            )
         end
       end
 
@@ -1139,8 +1301,14 @@ RSpec.describe Actor do
     end
 
     context "with unset output and allow_nil: true" do
-      it "succeeds" do
-        actor = WithUnsetOutput.result
+      let(:actor_class) do
+        Class.new(Actor) do
+          output :value, type: String, allow_nil: true
+        end
+      end
+
+      it do
+        actor = actor_class.result
 
         expect(actor).to be_a_success
         expect(actor.value).to be_nil
@@ -1613,23 +1781,44 @@ RSpec.describe Actor do
     end
 
     context "when using `play` with conditions" do
+      let(:actor_class) do
+        Class.new(Actor) do
+          input :value, default: 1
+
+          play AddNameToContext
+          play IncrementValue, if: -> actor { actor.name == "Jim" }
+          play IncrementValue, unless: -> actor { actor.name == "Tom" }
+          play FailWithError, if: -> _ { false }
+          play FailWithError, unless: -> _ { true }
+        end
+      end
+
       it "does not trigger actors with conditions and returns the final value" do
-        expect(PlayMultipleTimesWithConditions.value).to eq(3)
+        expect(actor_class.value).to eq(3)
       end
     end
 
     context "when using `play` with evaluated conditions" do
-      let(:output) do
-        PlayMultipleTimesWithEvaluatedConditions.value(callable: callable)
+      let(:actor_class) do
+        Class.new(Actor) do
+          input :callable
+          input :value, default: 1
+
+          play -> actor { actor.value += 1 },
+               -> actor { actor.value += 1 },
+               -> actor { actor.value += 1 },
+               if: -> actor { actor.callable.call }
+        end
       end
-      let(:callable) { -> {} }
+
+      let(:callable) { double :callable }
 
       before do
         allow(callable).to receive(:call).and_return(true)
       end
 
       it "does not evaluate conditions multiple times" do
-        expect(output).to eq(4)
+        expect(actor_class.value(callable: callable)).to eq(4)
         expect(callable).to have_received(:call).once
       end
     end
@@ -1651,59 +1840,115 @@ RSpec.describe Actor do
 
     context "when value'd with a matching condition" do
       context "when normal mode" do
-        it "suceeds" do
-          expect(SetNameWithInputCondition.value(name: "joe")).to eq("JOE")
+        let(:actor_class) do
+          Class.new(Actor) do
+            input :name, must: {be_lowercase: -> name { name =~ /\A[a-z]+\z/ }}
+            output :name
+
+            def call
+              self.name = name.upcase
+            end
+          end
         end
+
+        it { expect(actor_class.value(name: "joe")).to eq("JOE") }
       end
 
       context "when advanced mode" do
-        it "suceeds" do
-          expect(SetNameWithInputConditionAdvanced.value(name: "joe"))
-            .to eq("JOE")
+        let(:actor_class) do
+          Class.new(Actor) do
+            input :name,
+                  must: {be_lowercase: {is: -> name { name =~ /\A[a-z]+\z/ }}}
+            output :name
+
+            def call
+              name.upcase
+            end
+          end
         end
+
+        it { expect(actor_class.value(name: "joe")).to eq("JOE") }
       end
     end
 
     context "when value'd with the wrong condition" do
       context "when normal mode" do
-        it "raises" do
-          expected_error =
-            "The \"name\" input on \"SetNameWithInputCondition\" " \
-              "must \"be_lowercase\" but was \"42\""
+        let(:actor_class) do
+          Class.new(Actor) do
+            input :name, must: {be_lowercase: -> name { name =~ /\A[a-z]+\z/ }}
+            output :name
 
-          expect { SetNameWithInputCondition.value(name: "42") }
-            .to raise_error(ServiceActor::ArgumentError, expected_error)
+            def call
+              self.name = name.upcase
+            end
+          end
+        end
+
+        it do
+          expect { actor_class.value(name: "42") }
+            .to raise_error(
+              ServiceActor::ArgumentError,
+              /\AThe "name" input on ".+" must "be_lowercase" but was "42"\z/,
+            )
         end
       end
 
       context "when advanced mode" do
-        it "raises" do
+        let(:actor_class) do
+          Class.new(Actor) do
+            input :name,
+                  must: {
+                    be_lowercase: {
+                      is: -> name { name =~ /\A[a-z]+\z/ },
+                      message: (lambda do |check_name:, **|
+                        "Failed to apply `#{check_name}`"
+                      end),
+                    },
+                  }
+            output :name
+
+            def call
+              self.name = name.upcase
+            end
+          end
+        end
+
+        it do
           expected_error = "Failed to apply `be_lowercase`"
 
-          expect { SetNameWithInputConditionAdvanced.value(name: "42") }
+          expect { actor_class.value(name: "42") }
             .to raise_error(ServiceActor::ArgumentError, expected_error)
         end
       end
     end
 
     context "when value'd with an error in the code" do
-      describe "and type is first" do
-        context "when advanced mode" do
-          let(:expected_message) do
-            "The \"per_page\" input on " \
-              "\"ExpectedFailInMustWhenTypeIsFirstAdvanced\" must be " \
-              "of type \"Integer\" but was \"String\""
-          end
+      let(:actor_class) do
+        Class.new(Actor) do
+          input :per_page,
+                type: Integer,
+                must: {
+                  be_in_range: {
+                    is: -> per_page { per_page.between?(3, 9) },
+                    message: -> value:, ** { "Wrong range (3-9): #{value}" },
+                  },
+                }
+        end
+      end
 
-          it "raises" do
-            expect do
-              ExpectedFailInMustWhenTypeIsFirstAdvanced.value(per_page: "6")
-            end.to raise_error(ServiceActor::ArgumentError, expected_message)
+      context "when type is first" do
+        context "when advanced mode" do
+          it do
+            expect { actor_class.value(per_page: "6") }
+              .to raise_error(
+                ServiceActor::ArgumentError,
+                /The "per_page" input on ".+" must be of type "Integer" but was "String"/,
+              )
           end
         end
       end
 
-      describe "and type is last" do
+      context "when type is last" do
         context "when advanced mode" do
           let(:expected_message) do
             "The \"per_page\" input on " \
@@ -1898,17 +2143,37 @@ RSpec.describe Actor do
     end
 
     context "with unset output and allow_nil: true" do
-      it "does not fail" do
-        expect(WithUnsetOutput.value).to be_nil
+      let(:actor_class) do
+        Class.new(Actor) do
+          output :value, type: String, allow_nil: true
+        end
       end
+
+      it { expect(actor_class.value).to be_nil }
     end
   end
 
   context "when playing something that returns nil" do
+    let(:actor_class) do
+      returns_nil = Class.new(Actor) do
+        input :call_counter
+
+        def call
+          call_counter.trigger
+
+          nil
+        end
+      end
+
+      Class.new(Actor) do
+        play returns_nil
+      end
+    end
+
     let(:call_counter) { double :call_counter, trigger: nil }
 
     it "does not fail" do
-      expect(PlayReturnsNil.call(call_counter: call_counter)).to be_a_success
+      expect(actor_class.call(call_counter: call_counter)).to be_a_success
 
       expect(call_counter).to have_received(:trigger).once
     end
