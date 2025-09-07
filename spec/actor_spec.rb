@@ -755,7 +755,7 @@ RSpec.describe Actor do
 
       context "when type is first" do
         context "when advanced mode" do
-          it "raises" do
+          it do
             expect { actor_class.call(per_page: "6") }
               .to raise_error(
                 ServiceActor::ArgumentError,
@@ -984,12 +984,12 @@ RSpec.describe Actor do
         end
       end
 
-      it "acceps value satisfying generic type" do
+      it "acceptss value satisfying generic type" do
         expect(actor.call(value: :foo).value).to eq(:foo.succ)
         expect(actor.call(value: "foo").value).to eq("foo".succ)
       end
 
-      it "raises if provided value does not match generic type" do
+      it "raises when provided value does not match generic type" do
         expect { actor.call(value: 1) }.to raise_error(
           ServiceActor::ArgumentError,
           /The "value" input on .+ must be of type "InternType" but was "Integer"/,
@@ -2036,7 +2036,7 @@ RSpec.describe Actor do
         end
       end
 
-      it "raises the error message" do
+      it do
         expect { actor_class.value }
           .to raise_error(ServiceActor::Failure, "Ouch")
       end
@@ -2052,7 +2052,7 @@ RSpec.describe Actor do
           end
         end
 
-        it "raises the error message" do
+        it do
           expect { actor_class.value }.to raise_error(MyCustomFailure, "Ouch")
         end
       end
@@ -2224,7 +2224,7 @@ RSpec.describe Actor do
         end
       end
 
-      it "raises an error" do
+      it do
         expect { actor_class.value }
           .to raise_error(
             ServiceActor::ArgumentError,
@@ -2661,7 +2661,7 @@ RSpec.describe Actor do
         end
       end
 
-      it "raises" do
+      it do
         expect { actor_class.value(name: nil) }
           .to raise_error(
             ServiceActor::ArgumentError,
