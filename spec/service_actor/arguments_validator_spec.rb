@@ -1,6 +1,42 @@
 # frozen_string_literal: true
 
 RSpec.describe ServiceActor::ArgumentsValidator do
+  describe "input on Actor" do
+    let(:actor_class) { Class.new(Actor) { input :age } }
+
+    it { expect(actor_class.call(age: 40).age).to eq(40) }
+
+    context "when called result" do
+      let(:actor_class) { Class.new(Actor) { input :result } }
+
+      it { expect { actor_class.call(result: 1) }.to raise_error(ArgumentError) }
+    end
+
+    context "when called call" do
+      let(:actor_class) { Class.new(Actor) { input :call } }
+
+      it { expect { actor_class.call(call: 1) }.to raise_error(ArgumentError) }
+    end
+
+    context "when called fail!" do
+      let(:actor_class) { Class.new(Actor) { input :fail! } }
+
+      it { expect { actor_class.call(fail!: 1) }.to raise_error(ArgumentError) }
+    end
+
+    context "when called rollback" do
+      let(:actor_class) { Class.new(Actor) { input :rollback } }
+
+      it { expect { actor_class.call(rollback: 1) }.to raise_error(ArgumentError) }
+    end
+
+    context "when called error" do
+      let(:actor_class) { Class.new(Actor) { input :error } }
+
+      it { expect(actor_class.call(error: 42).error).to eq(42) }
+    end
+  end
+
   describe ".validate_origin_name" do
     it "raises on name collision" do
       expect do

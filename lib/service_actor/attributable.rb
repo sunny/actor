@@ -23,11 +23,15 @@ module ServiceActor::Attributable
 
     def input(name, **arguments)
       ServiceActor::ArgumentsValidator.validate_origin_name(
-        name, origin: :input
+        name,
+        origin: :input,
       )
 
       ServiceActor::ArgumentsValidator.validate_default_value(
-        arguments[:default], actor: self, origin_type: :input, origin_name: name
+        arguments[:default],
+        actor: self,
+        origin_type: :input,
+        origin_name: name,
       )
 
       inputs[name] = arguments
@@ -48,11 +52,15 @@ module ServiceActor::Attributable
 
     def output(name, **arguments)
       ServiceActor::ArgumentsValidator.validate_origin_name(
-        name, origin: :output
+        name,
+        origin: :output,
       )
 
       ServiceActor::ArgumentsValidator.validate_default_value(
-        arguments[:default], actor: self, origin_type: :output, origin_name: name
+        arguments[:default],
+        actor: self,
+        origin_type: :output,
+        origin_name: name,
       )
 
       outputs[name] = arguments

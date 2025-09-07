@@ -4,8 +4,11 @@ module ServiceActor::ArgumentsValidator
   module_function
 
   def validate_origin_name(name, origin:)
-    return if name.to_sym == :error
-    return unless ServiceActor::Result.instance_methods.include?(name.to_sym)
+    name = name.to_sym
+    return if name == :error
+
+    methods = ServiceActor::Core.instance_methods + ServiceActor::Result.instance_methods
+    return unless methods.include?(name)
 
     raise ArgumentError,
           "#{origin} `#{name}` overrides `ServiceActor::Result` instance method"
