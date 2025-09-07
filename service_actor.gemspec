@@ -83,4 +83,8 @@ Gem::Specification.new do |spec|
 
   # https://github.com/ruby/ruby/pull/12531
   spec.add_development_dependency "ostruct", ">= 0.0"
+
+  spec.add_development_dependency "irb", ">= 1.14"
+
+  spec.add_development_dependency "rdoc", ">= 6.10"
 end
