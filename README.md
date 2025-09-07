@@ -539,7 +539,7 @@ end
 This gem provides a minimal API for checking the types of `input` and `output` values:
 
 - A direct class match: `input :age, type: Integer`
-- A disjunction of classes: `output :height, type: [Integer, Float]`
+- A choice between classes: `output :height, type: [Integer, Float]`
 
 More complex type checks are outside the scope of this gem. However, type checking is performed using Ruby’s `===` method.
 This means you can define a custom class with a `===` method to implement your own type logic.
