@@ -2,7 +2,7 @@
 
 RSpec.describe ServiceActor::ArgumentsValidator do
   describe ".validate_origin_name" do
-    it "raises if collision present" do
+    it "raises on name collision" do
       expect do
         described_class.validate_origin_name(:fail!, origin: :input)
       end.to raise_error(
