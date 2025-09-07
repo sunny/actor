@@ -24,6 +24,7 @@ and controllers thin.
   - [Conditions](#conditions)
   - [Types](#types)
   - [Custom input errors](#custom-input-errors)
+  - [Custom type validations](#custom-type-validations)
 - [Testing](#testing)
 - [FAQ](#faq)
 - [Thanks](#thanks)
@@ -532,6 +533,43 @@ end
   ```
 
 </details>
+
+### Custom type validations
+
+This gem provides a minimal API for checking the types of `input` and `output` values:
+
+- A direct class match: `input :age, type: Integer`
+- A disjunction of classes: `output :height, type: [Integer, Float]`
+
+More complex type checks are outside the scope of this gem. However, type checking is performed using Ruby’s `===` method.
+This means you can define a custom class with a `===` method to implement your own type logic.
+
+For example, to define a “positive integer” type, you can create a custom class:
+
+```ruby
+class PositiveInteger
+  class << self
+    def ===(value)
+      value.is_a?(Integer) && value.positive?
+    end
+  end
+end
+```
+
+Then you can use it in an actor:
+
+```ruby
+class AgeActor < Actor
+  input :age, type: PositiveInteger
+end
+
+AgeActor.call(age: 25) # => #<ServiceActor::Result {age: 25}>
+AgeActor.call(age: -42) # ServiceActor::ArgumentError: The "age" input on "AgeActor" must be of type "PositiveInteger" but was "Integer" (ServiceActor::ArgumentError)
+```
+
+This approach also allows you to define adapters for third-party validation gems, providing the flexibility to integrate custom type checks.
+
+See [more examples](./docs/examples/custom_types).
 
 ## Testing
 
