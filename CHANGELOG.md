@@ -12,6 +12,10 @@ Features:
 - The `inclusion:` and `must:` checks are ignored on nil values when
   `allow_nil: true`. (#202)
 
+Fixes:
+- Disallow inputs called `result`, `call`, `fail!` or `rollback` to avoid stack
+  overflow exceptions. (#206)
+
 ## v4.0.0
 
 Breaking change:
