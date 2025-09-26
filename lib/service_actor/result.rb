@@ -19,6 +19,7 @@ class ServiceActor::Result < BasicObject
     instance_variables
     is_a?
     kind_of?
+    method
     methods
     nil?
     object_id
