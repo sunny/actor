@@ -7,6 +7,7 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 Breaking change:
 - Drop Ruby MRI 3.0 and 3.1 support. (#198)
+- Add `method` method to the `ServiceActor::Result` class. (#208)
 
 Features:
 - The `inclusion:` and `must:` checks are ignored on nil values when
