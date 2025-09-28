@@ -4,7 +4,7 @@ This Ruby gem lets you move your application logic into small composable
 service objects. It is a lightweight framework that helps you keep your models
 and controllers thin.
 
-![Photo of theater seats](https://user-images.githubusercontent.com/132/78340166-e7567000-7595-11ea-97c0-b3e5da2de7a1.png)
+![Photo of red and black theater seats with lighting from the top](https://user-images.githubusercontent.com/132/78340166-e7567000-7595-11ea-97c0-b3e5da2de7a1.png)
 
 ## Contents
 
@@ -41,19 +41,8 @@ bundle add service_actor
 
 ### Extensions
 
-For **Rails generators**, you can use the
-[service_actor-rails](https://github.com/sunny/actor-rails) gem:
-
-```sh
-bundle add service_actor-rails
-```
-
-For **TTY prompts**, you can use the
-[service_actor-promptable](https://github.com/pboling/service_actor-promptable) gem:
-
-```sh
-bundle add service_actor-promptable
-```
+- Rails generators: [service_actor-rails](https://github.com/sunny/actor-rails)
+- TTY prompts: [service_actor-promptable](https://github.com/pboling/service_actor-promptable)
 
 ## Usage
 
@@ -76,9 +65,9 @@ Trigger them in your application with `.call`:
 SendNotification.call # => <ServiceActor::Result…>
 ```
 
-When called, an actor returns a result. Reading and writing to this result allows
-actors to accept and return multiple arguments. Let’s find out how to do that
-and then we’ll see how to
+When called, an actor returns a result. Reading and writing to this result
+allows actors to accept and return multiple arguments. Let’s find out how to do
+that and then we’ll see how to
 [chain multiple actors together](#play-actors-in-a-sequence).
 
 ### Inputs
@@ -183,7 +172,8 @@ end
 ```
 
 > [!WARNING]
-> If you specify the type option for output fields, it will not be enforced for failed actors.
+> If you specify the type option for output fields, it will not be enforced for
+> failed actors.
 > As a result, their output might not match the specified type.
 
 ## Play actors in a sequence
@@ -343,15 +333,15 @@ actor = BuildGreeting.call(name: "Siobhan", adjective: "elegant")
 actor.greeting # => "Have an elegant week, Siobhan!"
 ```
 
-While lambdas are the preferred way to specify defaults, you can also provide
-a default value without using lambdas by using an immutable object.
+While lambdas are the preferred way to specify defaults, you can also provide a
+default value without using lambdas by using an immutable object.
 
 ```rb
 # frozen_string_literal: true
 
 class ExampleActor < Actor
   input :options, default: {
-    names: {male: "Iaroslav", female: "Anna"}.freeze,
+    names: {man: "Iaroslav", woman: "Anna"}.freeze,
     country_codes: %w[gb ru].freeze
   }.freeze
 end
@@ -362,7 +352,8 @@ are references to mutable objects, e.g.
 
 ```rb
 class ExampleActor < Actor
-  input :options, default: -> { Registry::DEFAULT_OPTIONS } # `Registry::DEFAULT_OPTIONS` is not frozen
+  # `Registry::DEFAULT_OPTIONS` is not frozen
+  input :options, default: -> { Registry::DEFAULT_OPTIONS }
 
   def call
     options[:names] = nil
@@ -536,13 +527,16 @@ end
 
 ### Custom type validations
 
-This gem provides a minimal API for checking the types of `input` and `output` values:
+This gem provides a minimal API for checking the types of `input` and `output`
+values:
 
 - A direct class match: `input :age, type: Integer`
 - A choice between classes: `output :height, type: [Integer, Float]`
 
-More complex type checks are outside the scope of this gem. However, type checking is performed using Ruby’s `===` method.
-This means you can define a custom class with a `===` method to implement your own type logic.
+More complex type checks are outside the scope of this gem. However, type
+checking is performed using Ruby’s `===` method.
+This means you can define a custom class with a `===` method to implement your
+own type logic.
 
 For example, to define a “positive integer” type, you can create a custom class:
 
@@ -563,11 +557,15 @@ class AgeActor < Actor
   input :age, type: PositiveInteger
 end
 
-AgeActor.call(age: 25) # => #<ServiceActor::Result {age: 25}>
-AgeActor.call(age: -42) # ServiceActor::ArgumentError: The "age" input on "AgeActor" must be of type "PositiveInteger" but was "Integer" (ServiceActor::ArgumentError)
+AgeActor.call(age: 25)
+# => #<ServiceActor::Result {age: 25}>
+AgeActor.call(age: -42)
+# ServiceActor::ArgumentError: The "age" input on "AgeActor" must be of type
+# "PositiveInteger" but was "Integer" (ServiceActor::ArgumentError)
 ```
 
-This approach also allows you to define adapters for third-party validation gems, providing the flexibility to integrate custom type checks.
+This approach also allows you to define adapters for third-party validation
+gems, providing the flexibility to integrate custom type checks.
 
 See [more examples](./docs/examples/custom_types).
 
