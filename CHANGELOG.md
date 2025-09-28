@@ -5,15 +5,17 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## unreleased
 
-Breaking change:
+## v5.0.0
+
+Breaking changes:
 - Drop Ruby MRI 3.0 and 3.1 support. (#198)
 - Add `method` method to the `ServiceActor::Result` class. (#208)
 
-Features:
+Feature:
 - The `inclusion:` and `must:` checks are ignored on nil values when
   `allow_nil: true`. (#202)
 
-Fixes:
+Fix:
 - Disallow inputs called `result`, `call`, `fail!` or `rollback` to avoid stack
   overflow exceptions. (#206)
 
@@ -71,7 +73,7 @@ Fix:
 
 ## v3.8.0
 
-Features:
+Feature:
 - Add pattern matching support for `ServiceActor::Result` (#134)
 
 Fixes:
@@ -89,7 +91,7 @@ Fixes:
 - Skip `default` check for actor outputs (#135)
 - Remove unused `DefaultCheck` (#144)
 
-Dependencies:
+Dependency:
 - Drop support for Ruby before 2.7 (#126)
 
 ## v3.7.0
@@ -167,7 +169,7 @@ Fixes:
 
 ## v3.1.0
 
-Added:
+Feature:
 - Add `fail_on` to catch argument errors and turn them into actor failures (#30)
 
 Fixes:
@@ -175,7 +177,7 @@ Fixes:
 
 ## v3.0.0
 
-Added:
+Features:
 - Add `in:` option to inputs to ensure they match a given collection (#25)
 - Add support for instances of Interactor when using `play` (#29)
 
@@ -190,7 +192,7 @@ Breaking changes:
 Breaking changes:
 - Disallow nil when a type is set by default and the default is not nil.
 
-Added:
+Features:
 - Move all code inside `ServiceActor`, only exposing a base `Actor`, enabling
   you to change the default class name.
 - Rename `Actor::Context` to `ServiceActor::Result`.
@@ -213,12 +215,11 @@ Fixes:
 
 ## v1.1.0
 
-Added:
+Features:
 - An error is raised if inputs have not been given and have no default.
 - Fix assigning hashes and blocks to the output.
 - Add compatibility to organizers from the Interactor gem.
 
 ## v1.0.0
 
-Added:
-- First version \o/
+First version \o/
