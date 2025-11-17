@@ -255,4 +255,24 @@ RSpec.describe ServiceActor::Result do
       end
     end
   end
+
+  describe "#[]" do
+    include_context "with mocked `Kernel.warn` method"
+
+    it "returns underlying value" do
+      expect(described_class.new(a: 42)[:a]).to eq(42)
+      expect(described_class.new(a: 42)["a"]).to eq(42)
+      expect(Kernel).not_to have_received(:warn)
+    end
+
+    it "accessing missing key does not lead to a warning" do
+      expect(result[:foo]).to be_nil
+      expect(Kernel).not_to have_received(:warn)
+    end
+
+    it "does not expose internal keys" do
+      expect(result[:_default_output]).to be_nil
+      expect(Kernel).not_to have_received(:warn)
+    end
+  end
 end
