@@ -5,6 +5,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## unreleased
 
+Breaking changes:
+- Invoking undefined methods on `ServiceActor::Result` now raises an error (previously it only issued a warning). (#213)
+
 ## v5.0.0
 
 Breaking changes:
