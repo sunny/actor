@@ -150,15 +150,7 @@ class ServiceActor::Result < BasicObject
     elsif data.key?(method_name)
       data[method_name]
     else
-      warn_on_undefined_method_invocation(method_name)
+      super
     end
-  end
-
-  def warn_on_undefined_method_invocation(message)
-    ::Kernel.warn(
-      "DEPRECATED: Invoking undefined methods on `ServiceActor::Result` will " \
-        "lead to runtime errors in the next major release of Actor. " \
-        "Invoked method: `#{message}`",
-    )
   end
 end

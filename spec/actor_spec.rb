@@ -1899,8 +1899,6 @@ RSpec.describe Actor do
     end
 
     context "when sending unexpected messages" do
-      include_context "with mocked `Kernel.warn` method"
-
       let(:actor_class) do
         increment_value = Class.new(Actor) do
           input :value, type: Integer, default: 0
@@ -1962,20 +1960,14 @@ RSpec.describe Actor do
       it { expect(actor).not_to respond_to(:unknown_method) }
       it { expect(actor).not_to respond_to(:unknown_method?) }
 
-      it "warns about sending unexpected messages" do
-        actor.unknown_method
-
-        expect(Kernel).to have_received(:warn).with(
-          include("unknown_method"),
-        )
+      it "raises upon receiving unexpected messages" do
+        expect { actor.unknown_method }
+          .to raise_error(NoMethodError, /\Aundefined method ['`]unknown_method'/)
       end
 
-      it "warns about sending unexpected predicate messages" do
-        actor.unknown_method?
-
-        expect(Kernel).to have_received(:warn).with(
-          include("unknown_method?"),
-        )
+      it "raises upon receiving unexpected predicate messages" do
+        expect { actor.unknown_method? }
+          .to raise_error(NoMethodError, /\Aundefined method ['`]unknown_method\?'/)
       end
     end
 
