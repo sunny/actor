@@ -86,7 +86,7 @@ class ServiceActor::Result < BasicObject
   def key?(name)
     name = name.to_sym
 
-    to_h.key?(name)
+    name != :_default_output && data.key?(name)
   end
 
   def [](name)
