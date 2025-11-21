@@ -108,8 +108,7 @@ class ServiceActor::Result < BasicObject
   end
 
   def respond_to?(method_name, include_private = false)
-    self.class.instance_methods.include?(method_name) ||
-      respond_to_missing?(method_name, include_private)
+    self.class.method_defined?(method_name) || respond_to_missing?(method_name, include_private)
   end
 
   def deconstruct_keys(keys)
