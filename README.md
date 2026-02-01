@@ -219,9 +219,10 @@ class CreateOrder < Actor
 end
 ```
 
-Rollback is only called on the _previous_ actors in `play` and is not called on
-the failing actor itself. Actors should be kept to a single purpose and not have
-anything to clean up if they call `fail!`.
+> [!TIP]
+> Rollback is only called on the _previous_ actors in `play` and is not called on
+> the failing actor itself. Actors should be kept to a single purpose and not have
+> anything to clean up if they call `fail!`.
 
 ### Inline actors
 
