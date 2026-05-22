@@ -15,6 +15,11 @@ jobs:
       matrix:
         ruby: ["3.2", "3.3", "3.4", "4.0", head, jruby-10.0.0.1]
 
+    env:
+      # Released Bundler is broken on ruby-head due to ruby/ruby#16895.
+      # Use Ruby's bundled Bundler until rubygems/rubygems#9529 is released.
+      BUNDLER_VERSION: ${{ matrix.ruby == 'head' && '0' || '' }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6

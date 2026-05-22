@@ -785,7 +785,7 @@ RSpec.describe Actor do
           expect { actor_class.call(per_page: "6") }
             .to raise_error(
               ServiceActor::ArgumentError,
-              /\AThe "per_page" input on ".+" has an error in the code inside "be_in_range": \[ArgumentError\] comparison of String with 3 failed\z/,
+              /\AThe "per_page" input on ".+" has an error in the code inside "be_in_range": \[ArgumentError\] comparison of String with 3 failed(: comparator returned nil)?\z/,
             )
         end
       end
