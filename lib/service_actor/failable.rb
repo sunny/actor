@@ -38,7 +38,7 @@ module ServiceActor::Failable
     def _call
       super
     rescue *self.class.fail_ons => e
-      fail!(error: e.message)
+      fail!(error: e.message, exception: e)
     end
   end
 end
