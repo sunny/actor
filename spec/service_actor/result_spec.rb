@@ -59,7 +59,7 @@ RSpec.describe ServiceActor::Result do
         :tap,
         :then,
         :to_h,
-        :yield_self,
+        :yield_self
       ]
     end
 

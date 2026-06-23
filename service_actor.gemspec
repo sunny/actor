@@ -56,6 +56,8 @@ Gem::Specification.new do |spec|
   # https://github.com/sunny/actor/pull/126#issuecomment-1966682674
   spec.add_development_dependency "standard-rubocop-lts", ">= 1.0.10"
 
+  spec.add_development_dependency "rubocop-lts-rspec", ">= 1.0.3"
+
   # Update RuboCop rules gradually.
   # rubocop-lts dependency. Can be removed when RuboCop LTS is upgraded.
   spec.add_development_dependency "rubocop-gradual", ">= 0.3"

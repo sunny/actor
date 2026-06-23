@@ -37,10 +37,12 @@ module ServiceActor::Core
   end
 
   # To implement in your actors.
-  def call; end
+  def call
+  end
 
   # To implement in your actors.
-  def rollback; end
+  def rollback
+  end
 
   # This method is used internally to override behavior on call. Overriding
   # `call` instead would mean that end-users have to call `super` in their

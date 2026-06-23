@@ -12,7 +12,7 @@ module ServiceActor::Checkable
       ServiceActor::Checks::TypeCheck,
       ServiceActor::Checks::MustCheck,
       ServiceActor::Checks::InclusionCheck,
-      ServiceActor::Checks::NilCheck,
+      ServiceActor::Checks::NilCheck
     ].freeze
     private_constant :CHECK_CLASSES
 

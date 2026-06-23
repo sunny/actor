@@ -98,7 +98,7 @@ class ServiceActor::Checks::MustCheck < ServiceActor::Checks::Base
     return if check.call(value)
 
     message
-  rescue StandardError => e
+  rescue => e
     "The \"#{input_key}\" input on \"#{actor}\" has an error in the code " \
       "inside \"#{nested_check_name}\": [#{e.class}] #{e.message}"
   end

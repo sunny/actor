@@ -721,8 +721,8 @@ RSpec.describe Actor do
                       is: -> name { name =~ /\A[a-z]+\z/ },
                       message: (lambda do |check_name:, **|
                         "Failed to apply `#{check_name}`"
-                      end),
-                    },
+                      end)
+                    }
                   }
 
             output :name
@@ -747,8 +747,8 @@ RSpec.describe Actor do
                 must: {
                   be_in_range: {
                     is: -> per_page { per_page.between?(3, 9) },
-                    message: -> value:, ** { "Wrong range (3-9): #{value}" },
-                  },
+                    message: -> value:, ** { "Wrong range (3-9): #{value}" }
+                  }
                 }
         end
       end
@@ -772,12 +772,13 @@ RSpec.describe Actor do
                   must: {
                     be_in_range: {
                       is: -> per_page { per_page.between?(3, 9) },
-                      message: -> value:, ** { "Wrong range (3-9): #{value}" },
-                    },
+                      message: -> value:, ** { "Wrong range (3-9): #{value}" }
+                    }
                   },
                   type: Integer
 
-            def call; end
+            def call
+            end
           end
         end
 
@@ -864,7 +865,7 @@ RSpec.describe Actor do
                     message: (lambda do |input_key:, expected_type:, given_type:, **|
                       "Wrong type `#{given_type}` for `#{input_key}`. " \
                         "Expected: `#{expected_type}`"
-                    end),
+                    end)
                   }
             output :double
 
@@ -915,7 +916,7 @@ RSpec.describe Actor do
                      message: (lambda do |input_key:, expected_type:, given_type:, **|
                        "Wrong type `#{given_type}` for `#{input_key}`. " \
                          "Expected: `#{expected_type}`"
-                     end),
+                     end)
                    }
             def call
               self.name = 42
@@ -1055,7 +1056,8 @@ RSpec.describe Actor do
           Class.new(Actor) do
             input :name, type: String, allow_nil: false
 
-            def call; end
+            def call
+            end
           end
         end
 
@@ -1083,10 +1085,11 @@ RSpec.describe Actor do
                     is: false,
                     message: (lambda do |input_key:, **|
                       "The value `#{input_key}` cannot be empty"
-                    end),
+                    end)
                   }
 
-            def call; end
+            def call
+            end
           end
         end
 
@@ -1290,7 +1293,7 @@ RSpec.describe Actor do
                     in: %w[MANGOPAY PayPal Stripe],
                     message: (lambda do |value:, **|
                       "Payment system \"#{value}\" is not supported"
-                    end),
+                    end)
                   },
                   default: "Stripe"
 
@@ -1364,9 +1367,10 @@ RSpec.describe Actor do
                 must: {
                   be_valid: lambda do |numbers|
                     numbers.nil? || numbers.all? { |number| (0..6).cover?(number) }
-                  end,
+                  end
                 }
-          def call; end
+          def call
+          end
         end
       end
 
@@ -1456,7 +1460,7 @@ RSpec.describe Actor do
                     in: %w[MANGOPAY PayPal Stripe],
                     message: (lambda do |value:, **|
                       "Payment system \"#{value}\" is not supported"
-                    end),
+                    end)
                   },
                   default: "Stripe"
 
@@ -1814,7 +1818,8 @@ RSpec.describe Actor do
 
           input :name, type: String, allow_nil: false
 
-          def call; end
+          def call
+          end
         end
       end
 
@@ -2577,8 +2582,8 @@ RSpec.describe Actor do
                       is: -> name { name =~ /\A[a-z]+\z/ },
                       message: (lambda do |check_name:, **|
                         "Failed to apply `#{check_name}`"
-                      end),
-                    },
+                      end)
+                    }
                   }
             output :name
 
@@ -2605,8 +2610,8 @@ RSpec.describe Actor do
                 must: {
                   be_in_range: {
                     is: -> per_page { per_page.between?(3, 9) },
-                    message: -> value:, ** { "Wrong range (3-9): #{value}" },
-                  },
+                    message: -> value:, ** { "Wrong range (3-9): #{value}" }
+                  }
                 }
         end
       end
@@ -2683,7 +2688,8 @@ RSpec.describe Actor do
           Class.new(Actor) do
             input :name, type: String, allow_nil: false
 
-            def call; end
+            def call
+            end
           end
         end
 
@@ -2711,10 +2717,11 @@ RSpec.describe Actor do
                     is: false,
                     message: (lambda do |input_key:, **|
                       "The value `#{input_key}` cannot be empty"
-                    end),
+                    end)
                   }
 
-            def call; end
+            def call
+            end
           end
         end
 

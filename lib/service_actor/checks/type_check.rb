@@ -25,9 +25,7 @@
 #           }
 #   end
 class ServiceActor::Checks::TypeCheck < ServiceActor::Checks::Base
-  DEFAULT_MESSAGE = lambda do
-    |origin:, input_key:, actor:, expected_type:, given_type:|
-
+  DEFAULT_MESSAGE = lambda do |origin:, input_key:, actor:, expected_type:, given_type:|
     "The \"#{input_key}\" #{origin} on \"#{actor}\" must be of type " \
       "\"#{expected_type}\" but was \"#{given_type}\""
   end
