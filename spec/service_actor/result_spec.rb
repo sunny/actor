@@ -34,6 +34,7 @@ RSpec.describe ServiceActor::Result do
         :delete!,
         :equal?,
         :error,
+        :exception,
         :fail!,
         :failure?,
         :hash,
@@ -172,6 +173,26 @@ RSpec.describe ServiceActor::Result do
       result.error = "Something went wrong"
 
       expect(result.error).to eq("Something went wrong")
+    end
+  end
+
+  describe "#exception" do
+    it "returns the raised exception" do
+      expect { result.fail!(error: "Something went wrong!") }
+        .to raise_error(ServiceActor::Failure)
+      exception = result.exception
+      expect(exception).to be_a ServiceActor::Failure
+      expect(exception.message).to eq "Something went wrong!"
+    end
+  end
+
+  describe "#exception cause" do
+    it "returns exception passed to fail!" do
+      cause = ArgumentError.new
+      expect { result.fail!(exception: cause) }
+        .to raise_error(ServiceActor::Failure)
+      expect(result.exception).to be_a ServiceActor::Failure
+      expect(result.exception.cause).to be cause
     end
   end
 

@@ -1830,6 +1830,8 @@ RSpec.describe Actor do
         expect(actor.error).to match(
           /\AThe "name" input on ".+" must be of type "String" but was "Integer"\z/,
         )
+        expect(actor.exception).to be_a ServiceActor::Failure
+        expect(actor.exception.cause).to be_a ServiceActor::ArgumentError
       end
     end
 

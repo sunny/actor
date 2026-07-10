@@ -62,7 +62,17 @@ class ServiceActor::Result < BasicObject
     data.merge!(result)
     data[:failure] = true
 
-    ::Kernel.raise failure_class, self
+    cause = data.delete(:exception)
+    exception = failure_class.new(self)
+    data[:exception] = exception
+
+    ::Kernel.raise exception unless cause
+
+    begin
+      ::Kernel.raise cause
+    rescue
+      ::Kernel.raise exception
+    end
   end
 
   def success?
@@ -75,6 +85,10 @@ class ServiceActor::Result < BasicObject
 
   def error
     data[:error] || nil
+  end
+
+  def exception
+    data[:exception] || nil
   end
 
   def merge!(result)
