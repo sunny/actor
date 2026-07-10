@@ -205,4 +205,4 @@ DEPENDENCIES
   standard-rubocop-lts (>= 1.0.10)
 
 BUNDLED WITH
-   2.6.7
+  4.0.12
