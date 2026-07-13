@@ -1,16 +1,22 @@
 # frozen_string_literal: true
 
-require "zeitwerk"
-
 module ServiceActor; end
 
-lib = File.expand_path("../..", __dir__)
+if defined?(ServiceActor::AUTOLOADERS)
+  require "zeitwerk"
 
-loader = Zeitwerk::Loader.new
-loader.tag = "service_actor"
-loader.inflector = Zeitwerk::GemInflector.new(
-  File.expand_path("service_actor.rb", lib),
-)
-loader.push_dir(lib)
-loader.ignore(__dir__)
-loader.setup
+  lib = File.expand_path("../..", __dir__)
+
+  loader = Zeitwerk::Loader.new
+  loader.tag = "service_actor"
+  loader.inflector = Zeitwerk::GemInflector.new(
+    File.expand_path("service_actor.rb", lib),
+  )
+  loader.push_dir(lib)
+  loader.ignore(__dir__)
+  loader.setup
+
+  ServiceActor::AUTOLOADERS << loader
+else
+  require "service_actor/support/basic_loader"
+end

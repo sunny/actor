@@ -8,3 +8,10 @@ RSpec::Core::RakeTask.new(:spec)
 RuboCop::RakeTask.new(:rubocop)
 
 task default: %i[spec rubocop]
+
+desc "Validate the generated runtime loader"
+task :validate_loader do
+  abort "Basic loader is stale; run `bin/loader generate`" unless system("bin/loader", "validate")
+end
+
+Rake::Task[:build].enhance [:validate_loader]

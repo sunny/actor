@@ -5,6 +5,10 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 require "service_actor/version"
 
+# Bundler evaluates this local gemspec in development, defining the marker
+# that makes the library use Zeitwerk instead of the packaged static loader.
+ServiceActor::AUTOLOADERS = []
+
 Gem::Specification.new do |spec|
   spec.name = "service_actor"
   spec.version = ServiceActor::VERSION
@@ -35,8 +39,8 @@ Gem::Specification.new do |spec|
 
   spec.required_ruby_version = ">= 3.2"
 
-  # Loader
-  spec.add_runtime_dependency "zeitwerk", ">= 1.0"
+  # Development Loader
+  spec.add_development_dependency "zeitwerk", ">= 1.0"
 
   # Tests
   spec.add_development_dependency "rspec", ">= 3.0"

@@ -2,7 +2,6 @@ PATH
   remote: .
   specs:
     service_actor (5.0.0)
-      zeitwerk (>= 1.0)
 
 GEM
   remote: https://rubygems.org/
@@ -203,6 +202,7 @@ DEPENDENCIES
   service_actor!
   simplecov
   standard-rubocop-lts (>= 1.0.10)
+  zeitwerk (>= 1.0)
 
 BUNDLED WITH
   4.0.12
