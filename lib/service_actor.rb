@@ -1,6 +1,25 @@
 # frozen_string_literal: true
 
 require "service_actor/base"
+require "service_actor/core"
+require "service_actor/configurable"
+require "service_actor/attributable"
+require "service_actor/playable"
+require "service_actor/checks"
+require "service_actor/checks/base"
+require "service_actor/checks/type_check"
+require "service_actor/checks/must_check"
+require "service_actor/checks/inclusion_check"
+require "service_actor/checks/nil_check"
+require "service_actor/checkable"
+require "service_actor/defaultable"
+require "service_actor/failable"
+require "service_actor/valuable"
+require "service_actor/error"
+require "service_actor/argument_error"
+require "service_actor/arguments_validator"
+require "service_actor/failure"
+require "service_actor/result"
 
 # Class to inherit from in your application.
 class Actor

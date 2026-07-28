@@ -2,7 +2,6 @@ PATH
   remote: .
   specs:
     service_actor (5.0.0)
-      zeitwerk (>= 1.0)
 
 GEM
   remote: https://rubygems.org/
@@ -178,7 +177,6 @@ GEM
       unicode-emoji (~> 4.1)
     unicode-emoji (4.2.0)
     version_gem (1.1.12)
-    zeitwerk (2.8.2)
 
 PLATFORMS
   ruby
