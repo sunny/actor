@@ -35,9 +35,6 @@ Gem::Specification.new do |spec|
 
   spec.required_ruby_version = ">= 3.2"
 
-  # Loader
-  spec.add_runtime_dependency "zeitwerk", ">= 1.0"
-
   # Tests
   spec.add_development_dependency "rspec", ">= 3.0"
 
